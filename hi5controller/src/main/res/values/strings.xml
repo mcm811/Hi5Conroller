@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">HI5 용접 관리</string>
+
+    <string name="main_activity_exit_format">"뒤로 버튼을 %s번 더 누르시면 종료 됩니다"</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">설정</string>
+    <string name="action_backup">백업(복원)</string>
+    <string name="action_exit">종료</string>
+
+    <string name="OutputData">출력</string>
+    <string name="OutputType">종류</string>
+    <string name="SqueezeForce">가 압 력</string>
+    <string name="MoveTipClearance">이동극 제거율</string>
+    <string name="FixedTipClearance">고정극 제거율</string>
+    <string name="PannelThickness">패널 두께</string>
+    <string name="CommandOffset">명령 옵셋</string>
+
+    <string name="Editor_OutputData">출력 데이터 (Output data)</string>
+    <string name="Editor_OutputType">출력 종류</string>
+    <string name="Editor_SqueezeForce">가압력</string>
+    <string name="Editor_MoveTipClearance">이동극 제거율</string>
+    <string name="Editor_FixedTipClearance">고정극 제거율</string>
+    <string name="Editor_PannelThickness">패널 두께</string>
+    <string name="Editor_CommandOffset">명령 옵셋</string>
+    <string name="Editor_BeginNumber">시작 번호</string>
+
+    <string name="no_files_or_directories">No files or directories</string>
+    <string name="wcd_edit">선택 항목 수정</string>
+    <string name="wcd_ok">확인</string>
+    <string name="Load">읽기</string>
+    <string name="Settings">설정</string>
+    <string name="Backup">백업</string>
+    <string name="Share">공유</string>
+    <string name="Save">저장</string>
+    <string name="Exit">종료</string>
+    <string name="WorkPath">작업 경로</string>
+    <string name="BackupPath">백업 경로</string>
+    <string name="Read">읽기</string>
+    <string name="View">보기</string>
+    <string name="Edit">수정</string>
+
+    <string name="work_path_fragment">작업 경로</string>
+    <string name="weld_count_fragment">용접 카운트</string>
+    <string name="weld_condition_fragment">용접 조건</string>
+    <string name="backup_path_fragment">백업</string>
+    <string name="text_view_fragment">파일 보기</string>
+
+    <string name="nav_weld_count">용접 카운트</string>
+    <string name="nav_weld_condition">용접 조건</string>
+    <string name="nav_path_settings">이동</string>
+    <string name="nav_storage">저장소</string>
+    <string name="nav_sdcard">내부 저장소</string>
+    <string name="nav_extsdcard">SD 카드</string>
+    <string name="nav_usbstorage">USB 저장소</string>
+    <string name="nav_app_exit">앱</string>
+    <string name="nav_exit">종료</string>
+    <string name="nav_backup">@string/action_backup</string>
+    <string name="nav_restore">복원</string>
+    <string name="nav_home">홈</string>
+    <string name="nav_up">위로</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">프레그먼트</string>
+    <string name="title_activity_backup">@string/action_backup</string>
+
+    <string name="interstitial_ad_sample">Interstitial Ad Sample</string>
+    <string name="start_level">Level 1</string>
+    <string name="next_level">Next Level</string>
+    <!-- -
+        This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
+        For more information, see https://support.google.com/admob/answer/3052638
+    <!- -->
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+
+</resources>

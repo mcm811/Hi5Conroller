@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigationModel
+  ns = "http://schemas.android.com?import=com.android.tools.idea.editors.navigation.model.*">
+  <locations  
+    class = "java.util.ArrayList">
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.changyoung.hi5controller.BackupActivity"/>
+      <point      
+        x = "3084"      
+        y = "-88"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.google.android.gms.ads.AdActivity"/>
+      <point      
+        x = "544"      
+        y = "2212"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.changyoung.hi5controller.MainActivity"/>
+      <point      
+        x = "508"      
+        y = "92"/>
+    </statePointEntry>
+  </locations>
+</navigationModel>

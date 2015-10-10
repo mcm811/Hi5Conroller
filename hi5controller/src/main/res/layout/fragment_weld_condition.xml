@@ -1,0 +1,168 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.changyoung.hi5controller.WeldConditionFragment">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:minHeight="25px"
+            android:minWidth="25px"
+            android:paddingBottom="2dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp">
+            <!--android:background="@color/tab2_textview_background">-->
+            <TextView
+                android:id="@+id/tvOutputData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="right"
+                android:hint="@string/OutputData"
+                android:paddingLeft="4dp"
+                android:text="@string/OutputData"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvOutputData"
+                android:layout_marginLeft="5dp"
+                android:gravity="right"
+                android:hint="(Output data)"
+                android:text="(Output data)"
+                android:textSize="8dp" />
+
+            <TextView
+                android:id="@+id/tvPannelThickness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="right"
+                android:hint="@string/PannelThickness"
+                android:text="@string/PannelThickness"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/tvCommandOffset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tvPannelThickness"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:gravity="right|bottom"
+                android:hint="@string/CommandOffset"
+                android:text="@string/CommandOffset"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/tvMoveTipClearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toLeftOf="@id/tvPannelThickness"
+                android:gravity="right"
+                android:hint="@string/MoveTipClearance"
+                android:text="@string/MoveTipClearance"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/tvOutputType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/tvMoveTipClearance"
+                android:gravity="center"
+                android:hint="@string/OutputType"
+                android:paddingRight="4dp"
+                android:text="@string/OutputType"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvOutputType"
+                android:layout_toLeftOf="@id/tvMoveTipClearance"
+                android:gravity="right"
+                android:hint="(Output type)"
+                android:text="(Output type)"
+                android:textSize="8dp" />
+
+            <TextView
+                android:id="@+id/tvSqueezeForce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/tvOutputType"
+                android:layout_toRightOf="@id/tvOutputData"
+                android:gravity="center_horizontal"
+                android:hint="@string/SqueezeForce"
+                android:text="@string/SqueezeForce"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvSqueezeForce"
+                android:layout_toLeftOf="@id/tvOutputType"
+                android:layout_toRightOf="@id/tvOutputData"
+                android:gravity="center_horizontal"
+                android:hint="(Squeeze force)"
+                android:text="(Squeeze force)"
+                android:textSize="8dp" />
+
+            <TextView
+                android:id="@+id/tvFixedTipClearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvMoveTipClearance"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="2dp"
+                android:layout_toLeftOf="@id/tvCommandOffset"
+                android:gravity="right|bottom"
+                android:hint="@string/FixedTipClearance"
+                android:text="@string/FixedTipClearance"
+                android:textSize="10dp" />
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/wcdListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:choiceMode="multipleChoice"
+                android:minHeight="25px"
+                android:minWidth="25px" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_wcd"
+            app:backgroundTint="@color/blue_A200"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_edit_white" />
+    </android.support.design.widget.CoordinatorLayout>
+</FrameLayout>
