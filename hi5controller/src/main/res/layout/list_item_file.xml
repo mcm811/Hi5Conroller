@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+	<ImageView
+		android:id="@+id/file_picker_image"
+		android:layout_width="20dip"
+		android:layout_height="20dip"
+		android:layout_marginBottom="5dip"
+		android:layout_marginStart="5dip"
+		android:layout_marginTop="5dip"
+		android:scaleType="centerCrop"
+		android:src="@drawable/ic_description"/>
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/file_picker_fab"
+		android:layout_width="20dip"
+		android:layout_height="20dip"
+		android:layout_marginBottom="5dip"
+		android:layout_marginStart="5dip"
+		android:layout_marginTop="5dip"
+		android:rotation="180"
+		android:scaleType="centerCrop"
+		android:src="@drawable/ic_description"
+		app:backgroundTint="@color/grey_200"
+		app:borderWidth="0dp"
+		app:elevation="6dp"/>
+
+	<TextView
+		android:id="@+id/file_picker_text"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start|center_vertical"
+		android:layout_marginStart="10dip"
+		android:layout_weight="1"
+		android:singleLine="true"
+		android:text="filename"
+		android:textSize="14sp"/>
+
+	<TextView
+		android:id="@+id/file_picker_time"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="end|center_vertical"
+		android:layout_marginEnd="5dip"
+		android:singleLine="true"
+		android:text="filetime"
+		android:textSize="12sp"/>
+</LinearLayout>

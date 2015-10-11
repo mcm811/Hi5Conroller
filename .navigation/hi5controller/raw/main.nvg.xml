@@ -7,25 +7,41 @@
       <state      
         class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
         className = "com.changyoung.hi5controller.BackupActivity"/>
-      <point      
-        x = "3084"      
-        y = "-88"/>
+      <point
+          x="1520"
+          y="72"/>
     </statePointEntry>
     <statePointEntry>
       <state      
-        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"
+        className="com.changyoung.hi5controller.TextScrollingActivity"/>
+      <point
+          x="3056"
+          y="124"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state
+          class="com.android.tools.idea.editors.navigation.model.ActivityState"
+          className="com.changyoung.hi5controller.SettingsActivity"/>
+      <point
+          x="1528"
+          y="2224"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state
+          class="com.android.tools.idea.editors.navigation.model.ActivityState"
         className = "com.google.android.gms.ads.AdActivity"/>
-      <point      
-        x = "544"      
+      <point
+          x="136"
         y = "2212"/>
     </statePointEntry>
     <statePointEntry>
       <state      
         class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
         className = "com.changyoung.hi5controller.MainActivity"/>
-      <point      
-        x = "508"      
-        y = "92"/>
+      <point
+          x="140"
+          y="60"/>
     </statePointEntry>
   </locations>
 </navigationModel>
