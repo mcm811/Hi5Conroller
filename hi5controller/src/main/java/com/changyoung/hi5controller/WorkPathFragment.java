@@ -33,7 +33,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_WORK_PATH = "workPath";
 
-	private View view;
+	private View mView;
 
 	private String mWorkPath;
 
@@ -69,7 +69,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	@Override
 	public void refresh(boolean forced) {
 		if (forced) {
-			EditText etPath = (EditText) view.findViewById((R.id.etWorkPath));
+			EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
 			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 			etPath.setText(onGetWorkPath());
 			workPathFragment.refreshFilesList(etPath.getText().toString());
@@ -163,7 +163,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 		try {
 			if (msg == null)
 				return;
-			Snackbar.make(view.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+			Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
 			logDebug(msg);
 		} catch (Exception e) {
@@ -172,8 +172,8 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	}
 
 	public void onPathChanged(String path) {
-		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-		EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
+		EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
 		mWorkPath = onGetWorkPath();
 		if (mWorkPath.compareTo(path) == 0) {
@@ -197,7 +197,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		view = inflater.inflate(R.layout.fragment_work_path, container, false);
+		mView = inflater.inflate(R.layout.fragment_work_path, container, false);
 
 		String path = mWorkPath;
 		FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
@@ -209,15 +209,15 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			transaction.commit();
 		}
 
-		fragment.snackbarView = view.findViewById(R.id.coordinator_layout);
+		fragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
 		fragment.refreshFilesList(path);
-		EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+		EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
 		etPath.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-				EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 				try {
 					File file = new File(etPath.getText().toString());
 					if (file.isDirectory()) {
@@ -240,14 +240,14 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			}
 		});
 
-		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
 		if (fab != null) {
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Util.UiUtil.hideSoftKeyboard(getActivity(), null);
 					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-					EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
 					if (mWorkPath.compareTo(path) == 0) {
@@ -262,7 +262,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			});
 		}
 
-		Toolbar toolbar = (Toolbar) view.findViewById(R.id.work_path_toolbar);
+		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.work_path_toolbar);
 		toolbar.inflateMenu(R.menu.menu_toolbar_work_path);
 		toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
 			@Override
@@ -274,12 +274,12 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			}
 		});
 
-		AdView adView = (AdView) view.findViewById(R.id.adView);
+		AdView adView = (AdView) mView.findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
 
-		return view;
+		return mView;
 	}
 
 	public void onSetWorkPath(String path) {

@@ -30,9 +30,8 @@ import java.util.Comparator;
 public class FileListFragment extends android.support.v4.app.Fragment {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_DIR_PATH = "dirPath";
-
 	public View snackbarView;
-
+	View mView;
 	private OnPathChangedListener mListener;
 
 	private ListView listView;
@@ -102,9 +101,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_file_list, container, false);
+		mView = inflater.inflate(R.layout.fragment_file_list, container, false);
 
-		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) view.findViewById(R.id.srl);
+		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		if (refresher != null) {
 			refresher.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
@@ -116,7 +115,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		}
 
 		adapter = new FileListAdapter(getActivity(), new ArrayList<File>());
-		listView = (ListView) view.findViewById(R.id.listView);
+		listView = (ListView) mView.findViewById(R.id.listView);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -173,7 +172,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			}
 		});
 
-		return view;
+		return mView;
 	}
 
 	public String refreshParent() {

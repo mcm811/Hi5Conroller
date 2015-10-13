@@ -6,16 +6,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-
 /**
  * Created by chang on 2015-10-12.
  */
 public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 	private Activity mContext;
 
-	public WeldCountAdapter(Activity context, List<T> objects) {
-		super(context, R.layout.list_item_weld_count, objects);
+	public WeldCountAdapter(Activity context) {
+		super(context, R.layout.list_item_weld_count);
 		mContext = context;
 	}
 
@@ -55,13 +53,13 @@ public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 		}
 
 		public void update(T jobFile) {
-			// TODO: JobFile 클래스를 구현 했을때 주석 해제 할것
-//			tvFileName.setText(jobFile.JobCount.fi.Name);
-//			tvTime.setText(jobFile.JobCount.fi.LastWriteTime.ToString());
-//			tvSize.setText(jobFile.JobCount.fi.Length.ToString() + "B");
-//			tvCount.setText(jobFile.JobCount.GetString());
-//			tvPreview.setText(jobFile.JobCount.Preview);
-//			tvCN.setText(jobFile.GetCNList());
+			JobFile jf = (JobFile) jobFile;
+			tvFileName.setText(jf.getJobCount().fi.getName());
+			tvTime.setText(Util.TimeUtil.getLasModified(jf.getJobCount().fi));
+			tvSize.setText(((Long) jf.getJobCount().fi.length()).toString() + "B");
+			tvCount.setText(jf.getJobCount().getString());
+			tvPreview.setText(jf.getJobCount().getPreview());
+			tvCN.setText(jf.getCNList());
 		}
 	}
 }

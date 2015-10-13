@@ -29,7 +29,8 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener,
 		FileListFragment.OnPathChangedListener,
-		WorkPathFragment.OnWorkPathListener {
+		WorkPathFragment.OnWorkPathListener,
+		WeldCountFragment.OnWorkPathListener {
 
 	private int mBackPressedCount;
 
