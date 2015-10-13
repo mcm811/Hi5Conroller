@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+	android:id="@+id/cardlist_item"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:card_view="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_margin="1dp"
+	android:foreground="?android:attr/selectableItemBackground"
+	android:orientation="vertical"
+	card_view:cardCornerRadius="10dp"
+	card_view:cardElevation="@dimen/cardview_default_elevation">
+
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/tvFileName"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_alignParentTop="true"
+			android:text="FileName"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:textStyle="bold"/>
+
+		<TextView
+			android:id="@+id/tvPreview"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_below="@+id/tvCN"
+			android:text="Preview"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/tvCount"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_below="@+id/tvFileName"
+			android:layout_marginLeft="20dp"
+			android:layout_marginStart="20dp"
+			android:text="JobCount"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/tvSize"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignEnd="@+id/tvTime"
+			android:layout_alignRight="@+id/tvTime"
+			android:layout_alignTop="@+id/tvPreview"
+			android:text="FileSize"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/tvTime"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true"
+			android:text="FileTime"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/tvCN"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignLeft="@+id/tvCount"
+			android:layout_alignStart="@+id/tvCount"
+			android:layout_below="@+id/tvCount"
+			android:text="CN"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:textColor="@color/blue_A400"/>
+	</RelativeLayout>
+</android.support.v7.widget.CardView>

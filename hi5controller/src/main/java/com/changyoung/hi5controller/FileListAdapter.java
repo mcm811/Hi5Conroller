@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,13 +43,12 @@ public class FileListAdapter<T> extends ArrayAdapter<T> {
 		if (position == 0) {
 			String p = file.getParent();
 			if (p == null) {
-				viewHolder.Update(null, ".", R.drawable.ic_android);
+				viewHolder.update(null, ".", R.drawable.ic_android);
 			} else {
-				viewHolder.Update(null, file.getParentFile().getName() + "/..", R.drawable.ic_file_upload);
+				viewHolder.update(null, file.getParentFile().getName() + "/..", R.drawable.ic_file_upload);
 			}
 		} else {
-			viewHolder.Update(new SimpleDateFormat("yyyy-dd-MM a hh:mm:ss").format(new Date(file.lastModified())),
-					file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
+			viewHolder.update(Util.TimeUtil.getLasModified(file), file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
 		}
 
 		return row;
@@ -70,7 +67,7 @@ public class FileListAdapter<T> extends ArrayAdapter<T> {
 			Fab = fab;
 		}
 
-		public void Update(String fileTime, String fileName, int fileImageResourceId) {
+		public void update(String fileTime, String fileName, int fileImageResourceId) {
 			if (fileTime == null) {
 				TimeTextView.setText("");
 				TimeTextView.setVisibility(View.GONE);

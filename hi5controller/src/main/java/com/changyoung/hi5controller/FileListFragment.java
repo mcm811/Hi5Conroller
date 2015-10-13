@@ -1,8 +1,7 @@
 package com.changyoung.hi5controller;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
@@ -17,57 +16,44 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FileListFragment.OnFragmentInteractionListener} interface
+ * {@link OnPathChangedListener} interface
  * to handle interaction events.
  * Use the {@link FileListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class FileListFragment extends android.support.v4.app.Fragment {
-	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "dirPath";
-	private static final String ARG_PARAM2 = "param2";
+	private static final String ARG_DIR_PATH = "dirPath";
 
-	public String prefKey;
 	public View snackbarView;
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
-	private OnFragmentInteractionListener mListener;
+	private OnPathChangedListener mListener;
 
-	private View view;
 	private ListView listView;
 	private FileListAdapter adapter;
 	private File dirPath;
 
 	public FileListFragment() {
 		// Required empty public constructor
-		logDebug("constructor");
 	}
 
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
+	 * @param path Parameter 1.
 	 * @return A new instance of fragment FileListFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
-	public static FileListFragment newInstance(String param1, String param2) {
+	public static FileListFragment newInstance(String path) {
 		FileListFragment fragment = new FileListFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
+		args.putString(ARG_DIR_PATH, path);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -76,6 +62,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			Log.d(getActivity().getPackageName(), "FileListFragment: " + msg);
 		} catch (Exception e) {
+			Log.d(Pref.TAG_NAME, "FileListFragment: " + msg);
 		}
 	}
 
@@ -85,6 +72,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 				Snackbar.make(snackbarView, msg, Snackbar.LENGTH_SHORT).show();
 			logDebug(msg);
 		} catch (Exception e) {
+			logDebug(msg);
 		}
 	}
 
@@ -96,21 +84,25 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		this.dirPath = new File(value);
 	}
 
+	public File getDirFile() {
+		return dirPath;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+			setDirPath(getArguments().getString(ARG_DIR_PATH));
+		} else {
+			setDirPath(Environment.getExternalStorageDirectory().getAbsolutePath());
 		}
-		setDirPath(Environment.getExternalStorageDirectory().getAbsolutePath());
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		view = inflater.inflate(R.layout.fragment_file_list, container, false);
+		View view = inflater.inflate(R.layout.fragment_file_list, container, false);
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) view.findViewById(R.id.srl);
 		if (refresher != null) {
@@ -138,8 +130,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 				} else if (file.isDirectory()) {
 					refreshFilesList(file.getPath());
 				} else {
-//					Pref.textViewDialog(getContext(), Pref.readFileString(file.getPath()));
-					Pref.textViewActivity(getContext(), file.getName(), Pref.readFileString(file.getPath()));
+					Util.UiUtil.textViewActivity(getContext(), file.getName(), Util.FileUtil.readFileString(file.getPath()));
 				}
 			}
 		});
@@ -149,11 +140,10 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 				if (position == 0)
 					return false;
 
-				// TODO: 디렉토리 삭제 구현 해야됨 (제귀 호출)
 				final File file = (File) parent.getAdapter().getItem(position);
 				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
 				String fileType = file.isDirectory() ? "이 폴더를 " : "이 파일을 ";
-				String msg = fileType + "완전히 삭제 하시겠습니까?\n\n" + file.getName() + "\n\n수정한 날짜: " + new SimpleDateFormat("yyy-dd-MM a hh-mm-ss").format(new Date(file.lastModified()));
+				String msg = fileType + "완전히 삭제 하시겠습니까?\n\n" + file.getName() + "\n\n수정한 날짜: " + Util.TimeUtil.getLasModified(file);
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(actionName)
@@ -170,7 +160,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								try {
-									file.delete();
+									Util.FileUtil.delete(file, true);
 									refreshFilesList(getDirPath());
 								} catch (Exception e) {
 									show("삭제할 수 없습니다");
@@ -186,11 +176,30 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		return view;
 	}
 
-	public void refreshFilesList(String path) {
+	public String refreshParent() {
+		return refreshFilesList(dirPath.getParent());
+	}
+
+	public String refreshFilesList() {
+		final File file = null;
+		return refreshFilesList(file);
+	}
+
+	public String refreshFilesList(String path) {
 		try {
 			if (path == null)
 				path = getDirPath();
-			File dir = new File(path);
+			return refreshFilesList(new File(path));
+		} catch (Exception e) {
+			logDebug("refresh fail");
+		}
+		return getDirPath();
+	}
+
+	public String refreshFilesList(File dir) {
+		try {
+			if (dir == null)
+				dir = dirPath;
 
 			adapter.clear();
 			for (File item : dir.listFiles()) {
@@ -213,14 +222,15 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 				}
 			});
 			this.dirPath = dir;
-			Pref.setPath(getContext(), prefKey, dir.getPath());
-
 			adapter.insert(dir, 0);
 			adapter.notifyDataSetChanged();
 			listView.refreshDrawableState();
+			onDirPathChanged(dirPath);
 		} catch (Exception e) {
 			refreshFilesList(getDirPath());
 		}
+
+		return getDirPath();
 	}
 
 	@Override
@@ -229,21 +239,20 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		refreshFilesList(getDirPath());
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
+	public void onDirPathChanged(File path) {
 		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
+			mListener.onPathChanged(path);
 		}
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 		try {
-			mListener = (OnFragmentInteractionListener) activity;
+			mListener = (OnPathChangedListener) context;
 		} catch (ClassCastException e) {
-//			throw new ClassCastException(activity.toString()
-//					+ " must implement OnFragmentInteractionListener");
+//			throw new ClassCastException(context.toString()
+//					+ " must implement OnPathChangedListener");
 		}
 	}
 
@@ -263,8 +272,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
-		void onFragmentInteraction(Uri uri);
+	public interface OnPathChangedListener {
+		void onPathChanged(File path);
 	}
 }

@@ -1,37 +1,43 @@
 package com.changyoung.hi5controller;
 
-import android.app.Activity;
-import android.net.Uri;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.io.File;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link WorkPathFragment.OnFragmentInteractionListener} interface
+ * {@link OnWorkPathListener} interface
  * to handle interaction events.
  * Use the {@link WorkPathFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WorkPathFragment extends android.support.v4.app.Fragment {
-	// TODO: Rename parameter arguments, choose names that match
+public class WorkPathFragment extends android.support.v4.app.Fragment implements Refresh {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
+	private static final String ARG_WORK_PATH = "workPath";
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
+	private View view;
 
-	private OnFragmentInteractionListener mListener;
+	private String mWorkPath;
+
+	private OnWorkPathListener mListener;
 
 	public WorkPathFragment() {
 		// Required empty public constructor
@@ -41,26 +47,149 @@ public class WorkPathFragment extends android.support.v4.app.Fragment {
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
+	 * @param workPath Parameter 1.
 	 * @return A new instance of fragment WorkPathFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
-	public static WorkPathFragment newInstance(String param1, String param2) {
+	public static WorkPathFragment newInstance(String workPath) {
 		WorkPathFragment fragment = new WorkPathFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
+		args.putString(ARG_WORK_PATH, workPath);
 		fragment.setArguments(args);
 		return fragment;
+	}
+
+	private void logDebug(String msg) {
+		try {
+			Log.d(getActivity().getPackageName(), "WorkPathFragment: " + msg);
+		} catch (Exception e) {
+			Log.d(Pref.TAG_NAME, "WorkPathFragment: " + msg);
+		}
+	}
+
+	@Override
+	public void refresh(boolean forced) {
+		if (forced) {
+			EditText etPath = (EditText) view.findViewById((R.id.etWorkPath));
+			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+			etPath.setText(onGetWorkPath());
+			workPathFragment.refreshFilesList(etPath.getText().toString());
+		}
+	}
+
+	@Override
+	public boolean refresh(String path) {
+		if (path != null) {
+			try {
+				File dir = new File(path);
+				if (dir.isDirectory()) {
+					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+					fragment.refreshFilesList(dir);
+				}
+				return true;
+			} catch (Exception e) {
+				logDebug("refresh");
+			}
+		}
+		return false;
+	}
+
+	public String refresh(int menuId) {
+		String ret = null;
+		switch (menuId) {
+			case R.id.toolbar_work_path_menu_home:
+				if (!refresh(onGetWorkPath()))
+					ret = "경로 이동 실패: " + onGetWorkPath();
+				break;
+			case R.id.nav_storage:
+			case R.id.toolbar_work_path_menu_storage:
+				if (!refresh(Pref.STORAGE_PATH))
+					ret = "경로 이동 실패: " + Pref.STORAGE_PATH;
+				break;
+			case R.id.nav_sdcard:
+			case R.id.toolbar_work_path_menu_sdcard:
+				if (!refresh(Pref.EXTERNAL_STORAGE_PATH))
+					ret = "경로 이동 실패: " + Pref.EXTERNAL_STORAGE_PATH;
+				break;
+			case R.id.nav_extsdcard:
+			case R.id.toolbar_work_path_menu_extsdcard:
+				ret = "경로 이동 실패: " + "SD 카드";
+				try {
+					File dir = new File(Pref.STORAGE_PATH);
+					for (File file : dir.listFiles()) {
+						if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
+							for (File subItem : file.listFiles()) {
+								if (refresh(file.getPath())) {
+									ret = null;
+									break;
+								}
+							}
+						}
+					}
+				} catch (Exception e) {
+					logDebug("경로 이동 실패");
+				}
+				break;
+			case R.id.nav_usbstorage:
+			case R.id.toolbar_work_path_menu_usbstorage:
+				ret = "경로 이동 실패: " + "USB 저장소";
+				try {
+					File dir = new File(Pref.STORAGE_PATH);
+					for (File file : dir.listFiles()) {
+						if (file.getName().toLowerCase().startsWith("usb")) {
+							for (File subItem : file.listFiles()) {
+								if (refresh(file.getPath())) {
+									ret = null;
+									break;
+								}
+							}
+						}
+					}
+				} catch (Exception e) {
+					logDebug("경로 이동 실패");
+				}
+				break;
+		}
+		return ret;
+	}
+
+	@Override
+	public String onBackPressedFragment() {
+		FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+		return fragment.refreshParent();
+	}
+
+	@Override
+	public void show(String msg) {
+		try {
+			if (msg == null)
+				return;
+			Snackbar.make(view.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+					.setAction("Action", null).show();
+			logDebug(msg);
+		} catch (Exception e) {
+			logDebug(msg);
+		}
+	}
+
+	public void onPathChanged(String path) {
+		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+		EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+		etPath.setText(path);
+		mWorkPath = onGetWorkPath();
+		if (mWorkPath.compareTo(path) == 0) {
+			fab.setImageResource(R.drawable.ic_settings_backup_restore_white);
+		} else {
+			fab.setImageResource(R.drawable.ic_done_white);
+		}
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+			mWorkPath = getArguments().getString(ARG_WORK_PATH);
+		} else {
+			mWorkPath = onGetWorkPath();
 		}
 	}
 
@@ -68,15 +197,82 @@ public class WorkPathFragment extends android.support.v4.app.Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_work_path, container, false);
-		LinearLayout workPathLayout = (LinearLayout) view.findViewById(R.id.work_path_layout);
-		CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
+		view = inflater.inflate(R.layout.fragment_work_path, container, false);
 
-		String workPath = "/storage";
-		FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-		workPathFragment.refreshFilesList(workPath);
-		workPathFragment.snackbarView = coordinatorLayout;
-		//workPathFragment.prefKey = Pref.workPathKey;
+		String path = mWorkPath;
+		FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+		if (fragment == null) {
+			fragment = FileListFragment.newInstance(path);
+			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+			transaction.replace(R.id.work_path_fragment, fragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+		}
+
+		fragment.snackbarView = view.findViewById(R.id.coordinator_layout);
+		fragment.refreshFilesList(path);
+		EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+		etPath.setText(path);
+		etPath.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+				EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+				try {
+					File file = new File(etPath.getText().toString());
+					if (file.isDirectory()) {
+						onSetWorkPath(etPath.getText().toString());
+					} else {
+						throw new Exception();
+					}
+				} catch (Exception e) {
+					show("잘못된 경로: " + etPath.getText().toString());
+					etPath.setText(onGetWorkPath());
+				}
+				fragment.refreshFilesList(etPath.getText().toString());
+			}
+		});
+		etPath.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				Util.UiUtil.hideSoftKeyboard(getActivity(), event);
+				return false;
+			}
+		});
+
+		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+		if (fab != null) {
+			fab.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Util.UiUtil.hideSoftKeyboard(getActivity(), null);
+					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+					EditText etPath = (EditText) view.findViewById(R.id.etWorkPath);
+					String path = fragment.getDirPath();
+					mWorkPath = onGetWorkPath();
+					if (mWorkPath.compareTo(path) == 0) {
+						startActivity(new Intent(getContext(), BackupActivity.class));
+					} else {
+						etPath.setText(path);
+						onSetWorkPath(path);
+						fragment.refreshFilesList();
+						show("경로 설정 완료: " + path);
+					}
+				}
+			});
+		}
+
+		Toolbar toolbar = (Toolbar) view.findViewById(R.id.work_path_toolbar);
+		toolbar.inflateMenu(R.menu.menu_toolbar_work_path);
+		toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				String ret = refresh(item.getItemId());
+				if (ret != null)
+					show(ret);
+				return true;
+			}
+		});
 
 		AdView adView = (AdView) view.findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
@@ -86,21 +282,29 @@ public class WorkPathFragment extends android.support.v4.app.Fragment {
 		return view;
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
+	public void onSetWorkPath(String path) {
 		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
+			mListener.onSetWorkPath(path);
 		}
 	}
 
+	public String onGetWorkPath() {
+		if (mListener != null) {
+			return mListener.onGetWorkPath();
+		}
+		return null;
+	}
+
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(Context activity) {
 		super.onAttach(activity);
 		try {
-			mListener = (OnFragmentInteractionListener) activity;
+			mListener = (OnWorkPathListener) activity;
 		} catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
+/*
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnPathChangedListener");
+*/
 		}
 	}
 
@@ -120,9 +324,9 @@ public class WorkPathFragment extends android.support.v4.app.Fragment {
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
-		void onFragmentInteraction(Uri uri);
-	}
+	public interface OnWorkPathListener {
+		String onGetWorkPath();
 
+		void onSetWorkPath(String path);
+	}
 }

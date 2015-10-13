@@ -25,5 +25,6 @@
 			android:choiceMode="singleChoice"
 			android:minHeight="25dp"
 			android:minWidth="25dp"/>
+
 	</android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

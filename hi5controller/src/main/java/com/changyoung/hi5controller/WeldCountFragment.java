@@ -17,7 +17,7 @@ import android.view.ViewGroup;
  * Use the {@link WeldCountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WeldCountFragment extends android.support.v4.app.Fragment {
+public class WeldCountFragment extends android.support.v4.app.Fragment implements Refresh {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,7 +81,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
 //            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
+//                    + " must implement OnPathChangedListener");
         }
     }
 
@@ -89,6 +89,31 @@ public class WeldCountFragment extends android.support.v4.app.Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void refresh(boolean forced) {
+
+    }
+
+    @Override
+    public boolean refresh(String path) {
+        return false;
+    }
+
+    @Override
+    public String refresh(int menuId) {
+        return null;
+    }
+
+    @Override
+    public String onBackPressedFragment() {
+        return null;
+    }
+
+    @Override
+    public void show(String msg) {
+
     }
 
     /**

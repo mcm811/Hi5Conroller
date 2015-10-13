@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
-             xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.changyoung.hi5controller.WorkPathFragment">
+<FrameLayout
+	android:id="@+id/frame_layout"
+	xmlns:ads="http://schemas.android.com/apk/res-auto"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="com.changyoung.hi5controller.WorkPathFragment">
 
 	<LinearLayout
 		android:id="@+id/work_path_layout"
-		xmlns:tools="http://schemas.android.com/tools"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_marginTop="10dp"
 		android:fitsSystemWindows="true"
 		android:focusable="true"
 		android:focusableInTouchMode="true"
@@ -21,14 +23,13 @@
 			android:id="@+id/textInputLayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginStart="1dp">
+			android:layout_marginEnd="10dp"
+			android:layout_marginStart="10dp">
 
 			<EditText
 				android:id="@+id/etWorkPath"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginEnd="10dp"
-				android:layout_marginStart="10dp"
 				android:hint="@string/WorkPath"
 				android:singleLine="true"
 				android:textAppearance="?android:attr/textAppearanceSmall"/>
@@ -39,16 +40,10 @@
 			class="com.changyoung.hi5controller.FileListFragment"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_marginLeft="10dp"
-			android:layout_marginRight="10dp"
+			android:layout_marginEnd="10dp"
+			android:layout_marginStart="10dp"
 			android:layout_weight="1"
 			tools:layout="@layout/fragment_file_list"/>
-	</LinearLayout>
-
-	<android.support.design.widget.CoordinatorLayout
-		android:id="@+id/coordinator_layout"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
 
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/work_path_toolbar"
@@ -60,8 +55,24 @@
 			android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 			app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
 			app:titleTextAppearance="@style/Style.ToolBarTitle"/>
+	</LinearLayout>
 
-		<android.support.design.widget.FloatingActionButton
+	<com.google.android.gms.ads.AdView
+		android:id="@+id/adView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|start"
+		android:scaleX="0.4"
+		android:scaleY="0.4"
+		ads:adSize="BANNER"
+		ads:adUnitId="@string/banner_ad_unit_id"/>
+
+	<android.support.design.widget.CoordinatorLayout
+		android:id="@+id/coordinator_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+	<android.support.design.widget.FloatingActionButton
 			android:id="@+id/fab"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -72,14 +83,6 @@
 			app:borderWidth="0dp"
 			app:elevation="6dp"/>
 
-		<com.google.android.gms.ads.AdView
-			android:id="@+id/adView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|start"
-			android:scaleX="0.4"
-			android:scaleY="0.4"
-			ads:adSize="BANNER"
-			ads:adUnitId="@string/banner_ad_unit_id"/>
 	</android.support.design.widget.CoordinatorLayout>
+
 </FrameLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:local="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/toolbar_backup_path_menu_home"
+		android:icon="@drawable/ic_home_white"
+		android:title="@string/nav_home"
+		local:showAsAction="always"/>
+
+	<item
+		android:id="@+id/toolbar_backup_path_menu_done"
+		android:icon="@drawable/ic_done_white"
+		android:title="@string/nav_done"
+		local:showAsAction="always"/>
+
+</menu>

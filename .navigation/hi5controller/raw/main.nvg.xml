@@ -12,12 +12,12 @@
           y="72"/>
     </statePointEntry>
     <statePointEntry>
-      <state      
-        class = "com.android.tools.idea.editors.navigation.model.ActivityState"
-        className="com.changyoung.hi5controller.TextScrollingActivity"/>
+      <state
+          class="com.android.tools.idea.editors.navigation.model.ActivityState"
+          className="com.changyoung.hi5controller.TextScrollingActivity"/>
       <point
-          x="3056"
-          y="124"/>
+          x="2900"
+          y="52"/>
     </statePointEntry>
     <statePointEntry>
       <state
@@ -32,16 +32,24 @@
           class="com.android.tools.idea.editors.navigation.model.ActivityState"
         className = "com.google.android.gms.ads.AdActivity"/>
       <point
-          x="136"
-        y = "2212"/>
+          x="212"
+          y="2284"/>
     </statePointEntry>
     <statePointEntry>
       <state      
         class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
         className = "com.changyoung.hi5controller.MainActivity"/>
       <point
-          x="140"
-          y="60"/>
+          x="264"
+          y="24"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state
+          class="com.android.tools.idea.editors.navigation.model.ActivityState"
+          className="com.changyoung.hi5controller.SplashActivity"/>
+      <point
+          x="1556"
+          y="2304"/>
     </statePointEntry>
   </locations>
 </navigationModel>

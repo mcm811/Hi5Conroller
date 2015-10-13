@@ -21,4 +21,9 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="Theme.Splash" parent="android:Theme">
+        <item name="android:windowBackground">@drawable/splash_red</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>

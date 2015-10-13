@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.changyoung.hi5controller.BackupActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_restore"
+        android:icon="@drawable/ic_settings_backup_restore_white"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/action_restore"
+        app:showAsAction="always"/>
 </menu>
