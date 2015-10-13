@@ -250,8 +250,10 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			mListener = (OnPathChangedListener) context;
 		} catch (ClassCastException e) {
-//			throw new ClassCastException(context.toString()
-//					+ " must implement OnPathChangedListener");
+/*
+			throw new ClassCastException(context.toString()
+					+ " must implement OnPathChangedListener");
+*/
 		}
 	}
 

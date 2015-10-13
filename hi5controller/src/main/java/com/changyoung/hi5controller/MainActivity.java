@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity
 					mBackPressedCount = 0;
 				}
 			});
-			// fab.setVisibility(View.GONE);
 			findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -333,7 +332,6 @@ public class MainActivity extends AppCompatActivity
 		@Override
 		public Fragment getItem(int position) {
 			if (mFragments[position] == null) {
-				Log.d("fragment: ", Integer.toString(position));
 				switch (position) {
 					case WORK_PATH_FRAGMENT:
 						mFragments[position] = new WorkPathFragment();
@@ -347,7 +345,6 @@ public class MainActivity extends AppCompatActivity
 
 				}
 			}
-			Log.d("return: ", Integer.toString(position));
 			return mFragments[position];
 		}
 

@@ -25,6 +25,7 @@ class Job extends java.lang.Object {
 	public static final int ROWTYPES_CALL = 6;
 	public static final int ROWTYPES_END = 7;
 	public static final int ROWTYPES_ETC = 8;
+	private static final String TAG = "Job";
 	RowJob row;
 
 	public Job(Integer rowNumber, String rowString) {
@@ -63,8 +64,9 @@ class Job extends java.lang.Object {
 
 	public static void logDebug(String msg) {
 		try {
-			Log.d("Job", "[" + msg + "]");
+			Log.d(TAG, "[" + msg + "]");
 		} catch (Exception e) {
+			Log.d(TAG, "logDebug() called with: " + "msg = [" + msg + "]");
 		}
 	}
 
@@ -309,6 +311,8 @@ class Job extends java.lang.Object {
 }
 
 class JobCount {
+	private static final String TAG = "JobCount";
+
 	public File fi;
 	private Integer total;              // SPOT 의 총 카운트
 	private ArrayList<Integer> gn;      // SPOT 단어 다음에 나오는 첫번째 단어 분석 해서 종류 결정(GN1, GN2, GN3, G1, G2)
@@ -399,6 +403,8 @@ class JobCount {
 }
 
 public class JobFile {
+	private static final String TAG = "JobFile";
+
 	private ArrayList<Job> jobList;
 	private JobCount jobCount;
 
@@ -441,6 +447,7 @@ public class JobFile {
 			inputStreamReader.close();
 			fileInputStream.close();
 		} catch (Exception e) {
+			Log.d(TAG, "readFile() called with: " + "fileName = [" + fileName + "], items = [" + items + "]");
 		}
 		return items;
 	}
