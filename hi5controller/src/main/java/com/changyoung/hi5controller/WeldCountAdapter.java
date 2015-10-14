@@ -54,11 +54,11 @@ public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 
 		public void update(T jobFile) {
 			JobFile jf = (JobFile) jobFile;
-			tvFileName.setText(jf.getJobCount().fi.getName());
-			tvTime.setText(Util.TimeUtil.getLasModified(jf.getJobCount().fi));
-			tvSize.setText(((Long) jf.getJobCount().fi.length()).toString() + "B");
-			tvCount.setText(jf.getJobCount().getString());
-			tvPreview.setText(jf.getJobCount().getPreview());
+			tvFileName.setText(jf.getName());
+			tvTime.setText(Util.TimeUtil.getLasModified(jf));
+			tvSize.setText(((Long) jf.length()).toString() + "B");
+			tvCount.setText(jf.getJobInfo().getString());
+			tvPreview.setText(jf.getJobInfo().getPreview());
 			tvCN.setText(jf.getCNList());
 		}
 	}

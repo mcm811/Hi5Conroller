@@ -102,8 +102,8 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 				final JobFile jobFile = adapter.getItem(position);
-				if (jobFile.getJobCount().getTotal() == 0) {
-					Util.UiUtil.textViewActivity(getContext(), jobFile.getJobCount().fi.getName(), jobFile.getRowText());
+				if (jobFile.getJobInfo().getTotal() == 0) {
+					Util.UiUtil.textViewActivity(getContext(), jobFile.getName(), jobFile.getRowText());
 				} else {
 					listView_click(position);
 				}
@@ -122,7 +122,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 							listView_click(position);
 						} else if (which == 1) {
 							final JobFile jobFile = adapter.getItem(position);
-							Util.UiUtil.textViewActivity(getContext(), jobFile.getJobCount().fi.getName(), jobFile.getRowText());
+							Util.UiUtil.textViewActivity(getContext(), jobFile.getName(), jobFile.getRowText());
 						}
 					}
 				});
@@ -136,7 +136,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 
 	private void listView_click(final int position) {
 		final JobFile jobFile = adapter.getItem(position);
-		if (jobFile.getJobCount().getTotal() == 0) {
+		if (jobFile.getJobInfo().getTotal() == 0) {
 			show("CN 항목이 없습니다");
 			return;
 		}
@@ -146,7 +146,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		dialog.setView(dialogView);
 
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-		statusText.setText("계열 수정 (CN: " + jobFile.getJobCount().getTotal().toString() + "개)");
+		statusText.setText("계열 수정 (CN: " + jobFile.getJobInfo().getTotal().toString() + "개)");
 
 		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout);
 		final EditText etBeginNumber = (EditText) dialogView.findViewById(R.id.etBeginNumber);
@@ -154,7 +154,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 
 		final ArrayList<EditText> etList = new ArrayList<>();
 		for (int i = 0; i < jobFile.size(); i++) {
-			if (jobFile.get(i).getRowType() == Job.ROWTYPES_SPOT) {
+			if (jobFile.get(i).getRowType() == JobFile.Job.ROWTYPES_SPOT) {
 				TextInputLayout textInputLayout = new TextInputLayout(getContext());
 				final EditText etCN = new EditText(getContext());
 				etCN.setSingleLine();
@@ -168,10 +168,14 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 				etCN.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 					@Override
 					public void onFocusChange(View v, boolean hasFocus) {
-						Integer beginNumber = Integer.parseInt(etCN.getText().toString());
-						if (beginNumber > 255) {
-							beginNumber = 255;
-							etCN.setText(beginNumber.toString());
+						try {
+							Integer beginNumber = Integer.parseInt(etCN.getText().toString());
+							if (beginNumber > 255) {
+								beginNumber = 255;
+								etCN.setText(beginNumber.toString());
+							}
+						} catch (Exception e) {
+
 						}
 					}
 				});
@@ -191,17 +195,21 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		etBeginNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				Integer beginNumber = Integer.parseInt(etBeginNumber.getText().toString());
-				if (beginNumber > 255) {
-					beginNumber = 255;
-					etBeginNumber.setText(beginNumber.toString());
-				}
-				sbBeginNumber.setProgress(beginNumber - 1);
-
-				for (EditText et : etList) {
-					et.setText((beginNumber++).toString());
-					if (beginNumber > 255)
+				try {
+					Integer beginNumber = Integer.parseInt(etBeginNumber.getText().toString());
+					if (beginNumber > 255) {
 						beginNumber = 255;
+						etBeginNumber.setText(beginNumber.toString());
+					}
+					sbBeginNumber.setProgress(beginNumber - 1);
+
+					for (EditText et : etList) {
+						et.setText((beginNumber++).toString());
+						if (beginNumber > 255)
+							beginNumber = 255;
+					}
+				} catch (Exception e) {
+
 				}
 			}
 		});
@@ -249,14 +257,14 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				for (EditText et : etList) {
-					Job job = (Job) et.getTag();
+					JobFile.Job job = (JobFile.Job) et.getTag();
 					job.setCN(et.getText().toString());
 				}
-				if (jobFile.getJobCount().getTotal() > 0) {
+				if (jobFile.getJobInfo().getTotal() > 0) {
 					jobFile.saveFile();
 					adapter.notifyDataSetChanged();
 					mListView.refreshDrawableState();
-					show("저장 완료: " + jobFile.getJobCount().fi.getName());
+					show("저장 완료: " + jobFile.getName());
 				}
 			}
 		});
