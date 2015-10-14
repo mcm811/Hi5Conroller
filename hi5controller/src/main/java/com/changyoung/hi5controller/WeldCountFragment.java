@@ -101,27 +101,32 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+				final JobFile jobFile = adapter.getItem(position);
+				if (jobFile.getJobCount().getTotal() == 0) {
+					Util.UiUtil.textViewActivity(getContext(), jobFile.getJobCount().fi.getName(), jobFile.getRowText());
+				} else {
+					listView_click(position);
+				}
+			}
+		});
+		mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 				builder.setItems(R.array.select_dialog_items, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						String[] items = getResources().getStringArray(R.array.select_dialog_items);
-						String item = items[which];
+						//String[] items = getResources().getStringArray(R.array.select_dialog_items);
+						//String item = items[which];
 						if (which == 0) {
 							listView_click(position);
 						} else if (which == 1) {
-							JobFile jobFile = adapter.getItem(position);
+							final JobFile jobFile = adapter.getItem(position);
 							Util.UiUtil.textViewActivity(getContext(), jobFile.getJobCount().fi.getName(), jobFile.getRowText());
 						}
 					}
 				});
 				builder.create().show();
-			}
-		});
-		mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				listView_click(position);
 				return true;
 			}
 		});
@@ -129,14 +134,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		return mView;
 	}
 
-	private void listView_click(int position) {
-		if (adapter.getCount() == 0) {
-			refresh(false);
-			if (adapter.getCount() == 0)
-				show("항목이 없습니다");
-			return;
-		}
-
+	private void listView_click(final int position) {
 		final JobFile jobFile = adapter.getItem(position);
 		if (jobFile.getJobCount().getTotal() == 0) {
 			show("CN 항목이 없습니다");
@@ -163,7 +161,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 				etCN.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
 				etCN.setInputType(etBeginNumber.getInputType());
 				etCN.setSelectAllOnFocus(true);
-				etCN.setHint("CN[" + jobFile.get(i).getRowNumber() + "]");
+				etCN.setHint("CN[줄번호:" + jobFile.get(i).getRowNumber() + "]");
 				etCN.setText(jobFile.get(i).getCN());
 				etCN.setGravity(android.view.Gravity.CENTER);
 				etCN.setTag(jobFile.get(i));
@@ -335,7 +333,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		try {
 			if (msg == null)
 				return;
-			Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+			Snackbar.make(mView.findViewById(R.id.listView), msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
 			logDebug(msg);
 		} catch (Exception e) {
