@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
 	android:id="@+id/scrollView1"
+	xmlns:ads="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:minHeight="25px"
 	android:minWidth="25px"
-	android:padding="10dp">
+	android:padding="5dp">
 
+	<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:focusable="true"
 		android:focusableInTouchMode="true"
 		android:orientation="vertical">
-		<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
+
+		<com.google.android.gms.ads.AdView
+			android:id="@+id/adView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:scaleX="1"
+			android:scaleY="1"
+			ads:adSize="BANNER"
+			ads:adUnitId="@string/banner_ad_unit_id"/>
+
 		<TextView
 			android:id="@+id/statusText"
 			android:layout_width="match_parent"
@@ -69,7 +81,8 @@
 						android:hint="@string/Editor_OutputType"
 						android:inputType="number"
 						android:numeric="integer"
-						android:selectAllOnFocus="true"/>
+						android:selectAllOnFocus="true"
+						android:textSize="14dp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -86,6 +99,7 @@
 						android:inputType="number"
 						android:numeric="integer"
 						android:selectAllOnFocus="true"
+						android:textSize="14dp"
 						android:textStyle="bold"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
@@ -105,7 +119,8 @@
 						android:hint="@string/Editor_MoveTipClearance"
 						android:inputType="numberDecimal"
 						android:numeric="decimal"
-						android:selectAllOnFocus="true"/>
+						android:selectAllOnFocus="true"
+						android:textSize="12dp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -121,7 +136,8 @@
 						android:hint="@string/Editor_FixedTipClearance"
 						android:inputType="numberDecimal"
 						android:numeric="decimal"
-						android:selectAllOnFocus="true"/>
+						android:selectAllOnFocus="true"
+						android:textSize="12dp"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
 
@@ -140,7 +156,8 @@
 						android:hint="@string/Editor_PannelThickness"
 						android:inputType="numberDecimal"
 						android:numeric="decimal"
-						android:selectAllOnFocus="true"/>
+						android:selectAllOnFocus="true"
+						android:textSize="12dp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -156,7 +173,8 @@
 						android:hint="@string/Editor_CommandOffset"
 						android:inputType="numberDecimal"
 						android:numeric="decimal"
-						android:selectAllOnFocus="true"/>
+						android:selectAllOnFocus="true"
+						android:textSize="12dp"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
 		</TableLayout>
@@ -173,5 +191,6 @@
 			android:layout_height="wrap_content"
 			android:layout_column="0"
 			android:rotation="180"/>
+
 	</LinearLayout>
 </ScrollView>

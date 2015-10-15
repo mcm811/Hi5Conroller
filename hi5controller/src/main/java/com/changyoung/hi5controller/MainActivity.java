@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public void onBackPressed() {
-		final int EXIT_COUNT = 2;
+		final int EXIT_COUNT = 0;
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
@@ -224,12 +224,18 @@ public class MainActivity extends AppCompatActivity
 						mBackPressedCount = 0;
 				}
 			} catch (Exception e) {
-				if (++mBackPressedCount > EXIT_COUNT)
-					super.onBackPressed();
-				else
+				if (++mBackPressedCount > EXIT_COUNT) {
+					onExitDialog();
+				} else {
 					show(String.format(getResources().getString(R.string.main_activity_exit_format), Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
+				}
 			}
 		}
+	}
+
+	public void onExitDialog() {
+		Util.UiUtil.adMobExitDialog(this);
+		//super.onBackPressed();
 	}
 
 	@Override

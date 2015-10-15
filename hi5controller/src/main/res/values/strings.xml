@@ -64,8 +64,10 @@
 	<string name="nav_up">위로</string>
 	<string name="nav_done">완료</string>
 
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">프레그먼트</string>
+	<!-- WeldConditionFragment -->
+	<string name="weld_condition_dialog_title1">용접 조건 - 수정 항목: </string>;
+	<string name="weld_condition_dialog_title2">용접 조건 - 수정 범위: </string>;
+
 	<string name="title_activity_backup">@string/action_backup</string>
 	<string name="title_activity_text_scrolling">텍스트 뷰어</string>
 	<!-- -
@@ -74,7 +76,7 @@
 	<!- -->
 	<string name="banner_ad_unit_id_debug">ca-app-pub-3940256099942544/6300978111</string>
 	<string name="banner_ad_unit_id_release">ca-app-pub-4103700007170181/6544598462</string>
-	<string name="banner_ad_unit_id">@string/banner_ad_unit_id_debug</string>
+	<string name="banner_ad_unit_id">@string/banner_ad_unit_id_release</string>
 
 	<string-array name="select_dialog_items">
 		<item>계열 수정</item>

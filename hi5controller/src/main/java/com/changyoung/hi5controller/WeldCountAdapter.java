@@ -51,6 +51,24 @@ public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 		}
 	}
 
+	public boolean isRefresh(String path) {
+		boolean ret = true;
+		if (getCount() > 0) {
+			try {
+				File dir = new File(path);
+				for (File file : dir.listFiles()) {
+					if (file.getName().toUpperCase().endsWith(".JOB") || file.getName().toUpperCase().startsWith("HX")) {
+						ret = false;
+						break;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return ret;
+	}
+
 	public class ViewHolder extends java.lang.Object {
 		private TextView tvFileName;
 		private TextView tvTime;

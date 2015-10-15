@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
+<LinearLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:focusable="true"
               android:focusableInTouchMode="true"
-              android:orientation="vertical">
-	<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
+              android:orientation="vertical"
+              android:padding="5dp">
+
+	<com.google.android.gms.ads.AdView
+		android:id="@+id/adView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:scaleX="1"
+		android:scaleY="1"
+		ads:adSize="BANNER"
+		ads:adUnitId="@string/banner_ad_unit_id"/>
+
 	<TextView
 		android:id="@+id/statusText"
 		android:layout_width="match_parent"

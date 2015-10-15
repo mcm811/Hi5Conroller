@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
 
@@ -88,7 +92,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 			}
 		});
 
-		mListView = (ListView) mView.findViewById(R.id.listView);
+		mListView = (ListView) mView.findViewById(R.id.listView_weld_count);
 		mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -137,8 +141,13 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 		dialog.setView(dialogView);
 
+		AdView adView = (AdView) dialogView.findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest.Builder()
+				.setRequestAgent("android_studio:ad_template").build();
+		adView.loadAd(adRequest);
+
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-		statusText.setText("계열 수정 (CN: " + weldCountFile.getJobInfo().getTotal().toString() + "개)");
+		statusText.setText("계열 수정 (CN: " + weldCountFile.getJobInfo().getTotal() + "개)");
 
 		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout);
 		final EditText etBeginNumber = (EditText) dialogView.findViewById(R.id.etBeginNumber);
@@ -147,16 +156,16 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		final ArrayList<EditText> etList = new ArrayList<>();
 		for (int i = 0; i < weldCountFile.size(); i++) {
 			if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.ROWTYPES_SPOT) {
-				TextInputLayout textInputLayout = new TextInputLayout(getContext());
+				final TextInputLayout til = new TextInputLayout(getContext());
+				til.setHint("[줄번호:" + String.format("%03d", weldCountFile.get(i).getRowNumber()) + "] CN = " + weldCountFile.get(i).getCN());
 				final EditText etCN = new EditText(getContext());
+				etCN.setTag(weldCountFile.get(i));
 				etCN.setSingleLine();
-				etCN.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+				etCN.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+				etCN.setGravity(Gravity.CENTER_HORIZONTAL);
 				etCN.setInputType(etBeginNumber.getInputType());
 				etCN.setSelectAllOnFocus(true);
-				etCN.setHint("CN[줄번호:" + weldCountFile.get(i).getRowNumber() + "]");
 				etCN.setText(weldCountFile.get(i).getCN());
-				etCN.setGravity(android.view.Gravity.CENTER);
-				etCN.setTag(weldCountFile.get(i));
 				etCN.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 					@Override
 					public void onFocusChange(View v, boolean hasFocus) {
@@ -179,8 +188,8 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 						return false;
 					}
 				});
-				textInputLayout.addView(etCN);
-				linearLayout.addView(textInputLayout);
+				til.addView(etCN);
+				linearLayout.addView(til);
 				etList.add(etCN);
 			}
 		}
@@ -197,7 +206,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 					sbBeginNumber.setProgress(beginNumber - 1);
 
 					for (EditText et : etList) {
-						et.setText((beginNumber++).toString());
+						et.setText(String.valueOf(beginNumber++));
 						if (beginNumber > 255)
 							beginNumber = 255;
 					}
@@ -215,18 +224,25 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 			}
 		});
 
+		final int etListSize = etList.size();
 		sbBeginNumber.setMax(254);
 		sbBeginNumber.setProgress(0);
 		sbBeginNumber.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				Integer beginNumber = sbBeginNumber.getProgress() + 1;
-				etBeginNumber.setText(beginNumber.toString());
+				etBeginNumber.setText(String.valueOf(beginNumber));
+				if (etListSize < 30) {
+					for (EditText et : etList) {
+						et.setText(String.valueOf(beginNumber++));
+						if (beginNumber > 255)
+							beginNumber = 255;
+					}
+				}
 			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-
 			}
 
 			@Override
@@ -302,10 +318,10 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 	@Override
 	public void refresh(boolean forced) {
 		try {
-			if (forced || adapter.getCount() == 0) {
-				mWorkPath = onGetWorkPath();
-				if (adapter == null)
-					adapter = new WeldCountAdapter<>(getActivity());
+			mWorkPath = onGetWorkPath();
+			if (adapter == null)
+				adapter = new WeldCountAdapter<>(getActivity());
+			if (forced || adapter.isRefresh(mWorkPath)) {
 				adapter.refresh(mWorkPath);
 				if (mListView != null)
 					mListView.refreshDrawableState();
@@ -336,8 +352,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		try {
 			if (msg == null)
 				return;
-			Snackbar.make(mView.findViewById(R.id.listView), msg, Snackbar.LENGTH_SHORT)
-					.setAction("Action", null).show();
+			Snackbar.make(mListView, msg, Snackbar.LENGTH_SHORT).setAction("Action", null).show();
 			logDebug(msg);
 		} catch (Exception e) {
 			e.printStackTrace();

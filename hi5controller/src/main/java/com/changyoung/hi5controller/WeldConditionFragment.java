@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +23,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
 
@@ -97,7 +101,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				fab_click();
+				fab_click(0);
 			}
 		});
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
@@ -129,7 +133,8 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				fab_click();
+				lastPosition = position;
+				fab_click(position);
 				return true;
 			}
 		});
@@ -237,10 +242,10 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 	@Override
 	public void refresh(boolean forced) {
 		try {
+			mWorkPath = onGetWorkPath();
+			if (adapter == null)
+				adapter = new WeldConditionAdapter<>(getActivity());
 			if (forced || adapter.getCount() == 0) {
-				mWorkPath = onGetWorkPath();
-				if (adapter == null)
-					adapter = new WeldConditionAdapter<>(getActivity());
 				adapter.refresh(mWorkPath);
 				if (mListView != null)
 					mListView.refreshDrawableState();
@@ -292,8 +297,8 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_condition_fab);
 			if (adapter.getCount() == 0)
 				fab.setImageResource(R.drawable.ic_refresh_white);
-			else if (mListView.getCheckedItemCount() == 0)
-				fab.setImageResource(R.drawable.ic_subject_white);
+//			else if (mListView.getCheckedItemCount() == 0)
+//				fab.setImageResource(R.drawable.ic_subject_white);
 			else
 				fab.setImageResource(R.drawable.ic_edit_white);
 		} catch (NullPointerException e) {
@@ -302,7 +307,10 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		}
 	}
 
-	private void fab_click() {
+	private void fab_click(int position) {
+		final String dialog_title1 = getContext().getString(R.string.weld_condition_dialog_title1);
+		final String dialog_title2 = getContext().getString(R.string.weld_condition_dialog_title2);
+
 		if (snackbar != null) {
 			snackbar.dismiss();
 			snackbar = null;
@@ -315,16 +323,16 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			return;
 		}
 
-		final ArrayList<Integer> positions = new ArrayList<>();
+		final ArrayList<Integer> checkedPositions = new ArrayList<>();
 		try {
 			SparseBooleanArray checkedList = mListView.getCheckedItemPositions();
 			for (int i = 0; i < checkedList.size(); i++) {
 				if (checkedList.valueAt(i)) {
-					positions.add(checkedList.keyAt(i));
+					checkedPositions.add(checkedList.keyAt(i));
 				}
 			}
-			if (positions.size() == 0)
-				lastPosition = 0;
+			if (checkedPositions.size() == 0)
+				lastPosition = position;
 		} catch (NullPointerException e) {
 			return;
 		} catch (Exception e) {
@@ -332,63 +340,75 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			return;
 		}
 
-		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_weld_condition, null);
+		final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_weld_condition, null);
 		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 		dialog.setView(dialogView);
 
-		final ArrayList<EditText> etList = new ArrayList<>();
-		etList.add((EditText) dialogView.findViewById(R.id.etOutputData));
-		etList.add((EditText) dialogView.findViewById(R.id.etOutputType));
-		etList.add((EditText) dialogView.findViewById(R.id.etSqueezeForce));
-		etList.add((EditText) dialogView.findViewById(R.id.etMoveTipClearance));
-		etList.add((EditText) dialogView.findViewById(R.id.etFixedTipClearance));
-		etList.add((EditText) dialogView.findViewById(R.id.etPannelThickness));
-		etList.add((EditText) dialogView.findViewById(R.id.etCommandOffset));
+		AdView adView = (AdView) dialogView.findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest.Builder()
+				.setRequestAgent("android_studio:ad_template").build();
+		adView.loadAd(adRequest);
+
+		final ArrayList<TextInputLayout> tilList = new ArrayList<>();
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout2));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout3));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout4));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout5));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout6));
+		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout7));
 
 		// 임계치
-		int[] etMax = {2000, 100, 350, 500, 500, 500, 500, 1000, 1000};
-		for (int i = 0; i < etList.size(); i++) {
-			final EditText et = etList.get(i);
-			if (i == 0) {                                           // outputData
-				et.setText(adapter.getItem(lastPosition).get(i));   // 기본선택된 자료값 가져오기
+		final int[] valueMax = {2000, 100, 350, 500, 500, 500, 500, 1000, 1000};
+		for (int index = 0; index < tilList.size(); index++) {
+			final TextInputLayout til = tilList.get(index);
+			final EditText et = til.getEditText();
+			if (index == 0) {                                           // outputData
+				et.setText(adapter.getItem(lastPosition).get(index));   // 기본선택된 자료값 가져오기
 			} else {
-				et.setSingleLine();
+				et.setGravity(android.view.Gravity.CENTER);
 				et.setSelectAllOnFocus(true);
+				et.setSingleLine();
+				try {
+					til.setTag(til.getHint());
+					til.setHint(til.getTag() + "(" + adapter.getItem(lastPosition).get(index) + ")");
+				} catch (NullPointerException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			// 임계치 설정
-			if (i < 2) {
-				final int maxValue = etMax[i];
-				et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
+
+			final int finalIndex = index;
+			et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					if (hasFocus) {
+						final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
+						if (et.getText().length() == 0) {
+							et.setText(adapter.getItem(sampleSeekBar.getProgress()).get(finalIndex));
+							et.selectAll();
+						}
+					} else {
 						try {
-							Integer etNumber = Integer.parseInt(et.getText().toString());
-							if (etNumber > maxValue)
-								etNumber = maxValue;
-							et.setText(String.valueOf(etNumber));
+							// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
+							if (finalIndex < 3) {
+								Integer etNumber = Integer.parseInt(et.getText().toString());
+								if (etNumber > valueMax[finalIndex])
+									etNumber = valueMax[finalIndex];
+								et.setText(String.valueOf(etNumber));
+							} else {
+								Float etNumber = Float.parseFloat(et.getText().toString());
+								if (etNumber > (float) valueMax[finalIndex])
+									etNumber = (float) valueMax[finalIndex];
+								et.setText(String.format("%.1f", etNumber));
+							}
 						} catch (NumberFormatException e) {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
-				});
-			} else {
-				final Float maxValue = (float) etMax[i];
-				et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						try {
-							Float etNumber = Float.parseFloat(et.getText().toString());
-							if (etNumber > maxValue)
-								etNumber = maxValue;
-							et.setText(String.format("%.1f", etNumber));
-						} catch (NumberFormatException e) {
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
-			}
+				}
+			});
 			et.setOnKeyListener(new View.OnKeyListener() {
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -397,187 +417,202 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 					return false;
 				}
 			});
+		}
 
-			final TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-			statusText.setText(adapter.getItem(lastPosition).get(0));
-			if (positions.size() > 0) {
-				StringBuilder sb = new StringBuilder();
-				for (Integer pos : positions) {
-					sb.append(String.valueOf(pos + 1));
-					sb.append(" ");
+		final TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
+		statusText.setText(adapter.getItem(lastPosition).get(0));
+		if (checkedPositions.size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (Integer pos : checkedPositions) {
+				sb.append(String.valueOf(pos + 1));
+				sb.append(" ");
+			}
+			sb.insert(0, dialog_title1);
+			statusText.setText(sb.toString().trim());
+		} else {
+			String buf = dialog_title1 + String.valueOf(lastPosition + 1);
+			statusText.setText(buf);
+		}
+
+		final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
+		sampleSeekBar.setMax(adapter.getCount() - 1);
+		sampleSeekBar.setProgress(Integer.parseInt(adapter.getItem(lastPosition).get(0)) - 1);
+		sampleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if (fromUser) {
+					try {
+						tilList.get(0).getEditText().setText(adapter.getItem(progress).get(0));
+					} catch (NullPointerException e) {
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					for (int index = 1; index < tilList.size(); index++) {
+						try {
+							// 샘플바를 움직이면 힌트에 기존 값을 보여주도록 세팅한다
+							tilList.get(index).setHint(tilList.get(index).getTag() + "(" + adapter.getItem(progress).get(index) + ")");
+						} catch (NullPointerException e) {
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					if (checkedPositions.size() == 0) {
+						lastPosition = progress;
+						statusText.setText(String.format("%s %d", dialog_title1, lastPosition + 1));
+					}
 				}
-				sb.insert(0, "수정 항목: ");
-				statusText.setText(sb.toString().trim());
-			} else {
-				String buf = "수정 항목: " + String.valueOf(lastPosition + 1);
-				statusText.setText(buf);
 			}
 
-			final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
-			sampleSeekBar.setMax(adapter.getCount() - 1);
-			sampleSeekBar.setProgress(Integer.parseInt(adapter.getItem(lastPosition).get(0)) - 1);
-			sampleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					if (fromUser) {
-						for (int i = 0; i < etList.size(); i++) {
-							if (!etList.get(i).getText().toString().equals(""))
-								etList.get(i).setText(adapter.getItem(sampleSeekBar.getProgress()).get(i));
-						}
-						if (positions.size() == 0) {
-							lastPosition = sampleSeekBar.getProgress();
-							String buf = "수정 항목: " + String.valueOf(lastPosition + 1);
-							statusText.setText(buf);
-						}
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+
+			}
+		});
+
+		// 선택 시작
+		final SeekBar beginSeekBar = (SeekBar) dialogView.findViewById(R.id.sbBegin);
+		beginSeekBar.setMax(adapter.getCount() - 1);
+		beginSeekBar.setProgress(0);
+
+		// 선택 끝
+		final SeekBar endSeekBar = (SeekBar) dialogView.findViewById(R.id.sbEnd);
+		endSeekBar.setMax(adapter.getCount() - 1);
+		endSeekBar.setProgress(endSeekBar.getMax());
+
+		beginSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if (fromUser) {
+					int sb1Progress = beginSeekBar.getProgress();
+					int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
+					if (sb1Progress > sb2Progress) {
+						sb2Progress = sb1Progress;
+						endSeekBar.setProgress(endSeekBar.getMax() - sb1Progress);
 					}
-				}
-
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-
-				}
-
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-
-				}
-			});
-
-			// 선택 시작
-			final SeekBar beginSeekBar = (SeekBar) dialogView.findViewById(R.id.sbBegin);
-			beginSeekBar.setMax(adapter.getCount() - 1);
-			beginSeekBar.setProgress(0);
-
-			// 선택 끝
-			final SeekBar endSeekBar = (SeekBar) dialogView.findViewById(R.id.sbEnd);
-			endSeekBar.setMax(adapter.getCount() - 1);
-			endSeekBar.setProgress(endSeekBar.getMax());
-
-			beginSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					if (fromUser) {
-						int sb1Progress = beginSeekBar.getProgress();
-						int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
-						if (sb1Progress > sb2Progress) {
-							sb2Progress = sb1Progress;
-							endSeekBar.setProgress(endSeekBar.getMax() - sb1Progress);
-						}
-						if (sb1Progress == 0 && sb2Progress == 0 || sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
-							if (positions.size() > 0) {
-								StringBuilder sb = new StringBuilder();
-								for (int pos : positions) {
-									sb.append(String.valueOf(pos + 1));
-									sb.append(" ");
-								}
-								sb.insert(0, "수정 항목: ");
-								statusText.setText(sb.toString().trim());
-							} else {
-								String buf = "수정 항목: " + String.valueOf(lastPosition + 1);
-								statusText.setText(buf);
+					if (sb1Progress == 0 && sb2Progress == 0 || sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
+						if (checkedPositions.size() > 0) {
+							StringBuilder sb = new StringBuilder();
+							for (int pos : checkedPositions) {
+								sb.append(String.valueOf(pos + 1));
+								sb.append(" ");
 							}
+							sb.insert(0, dialog_title1);
+							statusText.setText(sb.toString().trim());
 						} else {
-							String buf = "수정 범위: " + String.valueOf(sb1Progress + 1) + " ~ " + String.valueOf(sb2Progress + 1);
+							String buf = dialog_title1 + String.valueOf(lastPosition + 1);
 							statusText.setText(buf);
 						}
+					} else {
+						String buf = dialog_title2 + String.valueOf(sb1Progress + 1) + " ~ " + String.valueOf(sb2Progress + 1);
+						statusText.setText(buf);
 					}
 				}
+			}
 
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
 
-				}
+			}
 
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
 
-				}
-			});
+			}
+		});
 
-			endSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					if (fromUser) {
-						int sb1Progress = beginSeekBar.getProgress();
-						int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
-						if (sb2Progress < sb1Progress) {
-							sb1Progress = sb2Progress;
-							beginSeekBar.setProgress(sb2Progress);
-						}
-						if (sb1Progress == 0 && sb2Progress == 0 || sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
-							if (positions.size() > 0) {
-								StringBuilder sb = new StringBuilder();
-								for (int pos : positions) {
-									sb.append(String.valueOf(pos + 1));
-									sb.append(" ");
-								}
-								sb.insert(0, "수정 항목: ");
-								statusText.setText(sb.toString().trim());
-							} else {
-								String buf = "수정 항목: " + String.valueOf(lastPosition + 1);
-								statusText.setText(buf);
+		endSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if (fromUser) {
+					int sb1Progress = beginSeekBar.getProgress();
+					int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
+					if (sb2Progress < sb1Progress) {
+						sb1Progress = sb2Progress;
+						beginSeekBar.setProgress(sb2Progress);
+					}
+					if (sb1Progress == 0 && sb2Progress == 0 || sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
+						if (checkedPositions.size() > 0) {
+							StringBuilder sb = new StringBuilder();
+							for (int pos : checkedPositions) {
+								sb.append(String.valueOf(pos + 1));
+								sb.append(" ");
 							}
+							sb.insert(0, dialog_title1);
+							statusText.setText(sb.toString().trim());
 						} else {
-							String buf = "수정 범위: " + String.valueOf(sb1Progress + 1) + " ~ " + String.valueOf(sb2Progress + 1);
+							String buf = dialog_title1 + String.valueOf(lastPosition + 1);
 							statusText.setText(buf);
 						}
+					} else {
+						String buf = dialog_title2 + String.valueOf(sb1Progress + 1) + " ~ " + String.valueOf(sb2Progress + 1);
+						statusText.setText(buf);
 					}
 				}
+			}
 
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
 
-				}
+			}
 
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
 
-				}
-			});
+			}
+		});
 
-			dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					setCheckedItem(false);
-				}
-			});
+		dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				setCheckedItem(true);
+			}
+		});
 
-			dialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					int seekBegin = beginSeekBar.getProgress() + 1;
-					int seekEnd = endSeekBar.getMax() - endSeekBar.getProgress() + 1;
-					boolean isSeek = !((seekBegin == 1 && seekEnd == 1) || (seekBegin == beginSeekBar.getMax() + 1 && seekEnd == endSeekBar.getMax() + 1));
-					boolean isUpdate = false;
+		dialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				int seekBegin = beginSeekBar.getProgress() + 1;
+				int seekEnd = endSeekBar.getMax() - endSeekBar.getProgress() + 1;
+				boolean isSeek = !((seekBegin == 1 && seekEnd == 1) || (seekBegin == beginSeekBar.getMax() + 1 && seekEnd == endSeekBar.getMax() + 1));
+				boolean isUpdate = false;
 
-					if (positions.size() == 0)
-						positions.add(lastPosition);
-					if (isSeek) {
-						positions.clear();
-						for (int rowNum = seekBegin - 1; rowNum < seekEnd; rowNum++) {
-							positions.add(rowNum);
-						}
+				if (checkedPositions.size() == 0)
+					checkedPositions.add(lastPosition);
+				if (isSeek) {
+					checkedPositions.clear();
+					for (int rowNum = seekBegin - 1; rowNum < seekEnd; rowNum++) {
+						checkedPositions.add(rowNum);
 					}
-					for (int rowNum : positions) {
-						for (int colNum = 1; colNum < etList.size(); colNum++) {
-							if (!etList.get(colNum).getText().toString().equals("")) {
-								adapter.getItem(rowNum).set(colNum, etList.get(colNum).getText().toString());
+				}
+				for (int rowNum : checkedPositions) {
+					for (int colNum = 1; colNum < tilList.size(); colNum++) {
+						try {
+							if (tilList.get(colNum).getEditText().getText().toString().length() > 0) {
+								adapter.getItem(rowNum).set(colNum, tilList.get(colNum).getEditText().getText().toString());
 								isUpdate = true;
 							}
+						} catch (NullPointerException e) {
+							e.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-						mListView.setItemChecked(rowNum, false);
-						adapter.getItem(rowNum).setItemChecked(false);
 					}
-					if (isUpdate) {
-						adapter.update(onGetWorkPath());
-						adapter.notifyDataSetChanged();
-					} else {
-						setCheckedItem(false);
-					}
+//					mListView.setItemChecked(rowNum, false);
+//					adapter.getItem(rowNum).setItemChecked(false);
+				}
+				if (isUpdate) {
+					adapter.update(onGetWorkPath());
+					adapter.notifyDataSetChanged();
 					fab_setImage();
 				}
-			});
-		}
+				setCheckedItem(true);
+			}
+		});
 
 		dialog.show();
 	}

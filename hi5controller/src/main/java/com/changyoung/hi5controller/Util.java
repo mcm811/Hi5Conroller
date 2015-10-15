@@ -13,6 +13,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,16 +141,42 @@ public class Util {
 
 			ScrollView scrollView = new ScrollView(context);
 			scrollView.addView(textView);
-			AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-			dialog.setView(scrollView);
+			AlertDialog.Builder builder = new AlertDialog.Builder(context);
+			builder.setView(scrollView);
 
-			dialog.setPositiveButton("닫기", new DialogInterface.OnClickListener() {
+			builder.setPositiveButton("닫기", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 				}
 			});
 
-			dialog.show();
+			builder.show();
+		}
+
+		public static void adMobExitDialog(final Activity context) {
+			AdView adView = new AdView(context);
+			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
+			adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id));
+			AdRequest adRequest = new AdRequest.Builder()
+					.setRequestAgent("android_studio:ad_template").build();
+			adView.loadAd(adRequest);
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(context);
+			builder.setTitle("HI5 용접 관리");
+			builder.setMessage("앱을 종료 하시겠습니까?");
+			builder.setView(adView);
+			builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					context.finish();
+				}
+			});
+			builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			builder.show();
 		}
 
 		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
