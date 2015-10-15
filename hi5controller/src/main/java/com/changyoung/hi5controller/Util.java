@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,7 +44,6 @@ public class Util {
 
 	public static class FileUtil {
 		public static String readFileString(String path) {
-			String ret = "";
 			try {
 				FileInputStream fileInputStream = new FileInputStream(path);
 				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
@@ -52,16 +52,17 @@ public class Util {
 				String read;
 				StringBuilder sb = new StringBuilder();
 				while ((read = bufferedReader.readLine()) != null) {
-					sb.append(read + "\n");
+					sb.append(read);
+					sb.append("\n");
 				}
-				ret = sb.toString();
-
 				bufferedReader.close();
 				inputStreamReader.close();
 				fileInputStream.close();
+				return sb.toString();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			return ret;
+			return "";
 		}
 
 		public static void delete(String path, boolean recursive) {
@@ -148,11 +149,18 @@ public class Util {
 			dialog.show();
 		}
 
-		public static void hideSoftKeyboard(Activity activity, KeyEvent event) {
+		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
 			if (event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
 				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-				activity.getCurrentFocus().clearFocus();
+				if (view == null)
+					view = activity.getCurrentFocus();
+				try {
+					imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+					view.clearFocus();
+				} catch (NullPointerException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

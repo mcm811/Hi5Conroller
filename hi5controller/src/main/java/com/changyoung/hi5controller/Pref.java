@@ -36,6 +36,7 @@ public class Pref {
 			SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 			return prefs.getString(key, EXTERNAL_STORAGE_PATH);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return EXTERNAL_STORAGE_PATH;
 		}
 	}
@@ -49,6 +50,7 @@ public class Pref {
 				prefEditor.commit();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

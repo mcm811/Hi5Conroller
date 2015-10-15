@@ -61,7 +61,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			Log.d(getActivity().getPackageName(), "FileListFragment: " + msg);
 		} catch (Exception e) {
-			Log.d(Pref.TAG_NAME, "FileListFragment: " + msg);
+			e.printStackTrace();
 		}
 	}
 
@@ -162,6 +162,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 									Util.FileUtil.delete(file, true);
 									refreshFilesList(getDirPath());
 								} catch (Exception e) {
+									e.printStackTrace();
 									show("삭제할 수 없습니다");
 								}
 							}
@@ -189,8 +190,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			if (path == null)
 				path = getDirPath();
 			return refreshFilesList(new File(path));
+		} catch (NullPointerException e) {
 		} catch (Exception e) {
-			logDebug("refresh fail");
+			e.printStackTrace();
 		}
 		return getDirPath();
 	}
@@ -199,6 +201,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			if (dir == null)
 				dir = dirPath;
+
+//			if (adapter == null)
+//				return null;
 
 			adapter.clear();
 			for (File item : dir.listFiles()) {
@@ -225,7 +230,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			adapter.notifyDataSetChanged();
 			listView.refreshDrawableState();
 			onDirPathChanged(dirPath);
+		} catch (NullPointerException e) {
 		} catch (Exception e) {
+			e.printStackTrace();
 			refreshFilesList(getDirPath());
 		}
 
@@ -250,10 +257,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			mListener = (OnPathChangedListener) context;
 		} catch (ClassCastException e) {
-/*
-			throw new ClassCastException(context.toString()
-					+ " must implement OnPathChangedListener");
-*/
+			e.printStackTrace();
+//			throw new ClassCastException(context.toString()
+//					+ " must implement OnPathChangedListener");
 		}
 	}
 

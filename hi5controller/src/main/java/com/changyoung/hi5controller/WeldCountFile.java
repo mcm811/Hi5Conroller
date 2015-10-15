@@ -14,13 +14,13 @@ import java.util.ArrayList;
 /**
  * Created by changmin on 2015-10-13.
  */
-public class JobFile extends File {
-	private static final String TAG = "JobFile";
+public class WeldCountFile extends File {
+	private static final String TAG = "WeldCountFile";
 
 	private ArrayList<Job> jobList;
 	private JobInfo jobInfo;
 
-	public JobFile(String path) {
+	public WeldCountFile(String path) {
 		super(path);
 		readFile();
 	}
@@ -62,7 +62,7 @@ public class JobFile extends File {
 			inputStreamReader.close();
 			fileInputStream.close();
 		} catch (Exception e) {
-			Log.d(TAG, "readFile() called with: " + "fileName = [" + fileName + "]");
+			e.printStackTrace();
 		}
 		return items;
 	}
@@ -85,7 +85,7 @@ public class JobFile extends File {
 			outputStreamReader.close();
 			fileOutputStream.close();
 		} catch (Exception e) {
-			Log.d(TAG, "saveFile() called with: " + "fileName = [" + fileName + "]");
+			e.printStackTrace();
 		}
 		return createJobInfo(jobList, new JobInfo());
 	}
@@ -138,8 +138,10 @@ public class JobFile extends File {
 
 		for (Job job : jobList) {
 			String cn = job.getCN();
-			if (cn != null)
-				sb.append(job.getRowNumber().toString() + ": CN=" + cn + "\n");
+			if (cn != null) {
+				sb.append(job.getRowNumber().toString() + ": CN=" + cn);
+				sb.append("\n");
+			}
 		}
 
 		return sb.toString();
@@ -148,7 +150,8 @@ public class JobFile extends File {
 	public String getRowText() {
 		StringBuilder sb = new StringBuilder();
 		for (Job Job : jobList) {
-			sb.append(Job.getRowString() + "\n");
+			sb.append(Job.getRowString());
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
@@ -302,7 +305,7 @@ public class JobFile extends File {
 			try {
 				Log.d(TAG, "[" + msg + "]");
 			} catch (Exception e) {
-				Log.d(TAG, "logDebug() called with: " + "msg = [" + msg + "]");
+				e.printStackTrace();
 			}
 		}
 

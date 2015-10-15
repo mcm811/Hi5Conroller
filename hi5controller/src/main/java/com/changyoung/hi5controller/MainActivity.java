@@ -27,10 +27,12 @@ import android.view.View;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener,
+		implements
+		NavigationView.OnNavigationItemSelectedListener,
 		FileListFragment.OnPathChangedListener,
 		WorkPathFragment.OnWorkPathListener,
-		WeldCountFragment.OnWorkPathListener {
+		WeldCountFragment.OnWorkPathListener,
+		WeldConditionFragment.OnWorkPathListener {
 
 	private int mBackPressedCount;
 
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity
 		try {
 			Log.d(getPackageName(), "MainActivity: " + msg);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity
 			if (refresh != null)
 				refresh.show(msg);
 		} catch (Exception e) {
+			e.printStackTrace();
 			ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 			Snackbar.make(viewPager, msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity
 		tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
 		PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), getApplicationContext());
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+		final ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 		tabLayout.setupWithViewPager(viewPager);
@@ -176,6 +180,15 @@ public class MainActivity extends AppCompatActivity
 				if (tabLayout != null) {
 					tabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
 					tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
+				}
+
+				try {
+					Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab.getPosition());
+					if (refresh != null)
+						refresh.refresh(false);
+				} catch (NullPointerException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -286,7 +299,7 @@ public class MainActivity extends AppCompatActivity
 			if (refresh != null)
 				show(refresh.refresh(id));
 		} catch (Exception e) {
-			logDebug("refresh");
+			e.printStackTrace();
 		}
 
 		return true;
@@ -296,7 +309,8 @@ public class MainActivity extends AppCompatActivity
 	public void onPathChanged(File path) {
 		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) viewPager.getAdapter()).getItem(PagerAdapter.WORK_PATH_FRAGMENT);
-		fragment.onPathChanged(path.getPath());
+		if (fragment != null)
+			fragment.onPathChanged(path.getPath());
 	}
 
 	@Override

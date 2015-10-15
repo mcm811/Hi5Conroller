@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.io.File;
+
 /**
  * Created by chang on 2015-10-12.
  */
@@ -30,18 +32,32 @@ public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 			viewHolder = (ViewHolder) row.getTag();
 		}
 
-		viewHolder.update(getItem(position));
+		viewHolder.update((WeldCountFile) getItem(position));
 
 		return row;
 	}
 
+	public void refresh(String path) {
+		try {
+			clear();
+			File dir = new File(path);
+			for (File file : dir.listFiles()) {
+				if (file.getName().toUpperCase().endsWith(".JOB") || file.getName().toUpperCase().startsWith("HX"))
+					add((T) new WeldCountFile(file.getPath()));
+			}
+			notifyDataSetChanged();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public class ViewHolder extends java.lang.Object {
-		public TextView tvFileName;
-		public TextView tvTime;
-		public TextView tvSize;
-		public TextView tvCount;
-		public TextView tvPreview;
-		public TextView tvCN;
+		private TextView tvFileName;
+		private TextView tvTime;
+		private TextView tvSize;
+		private TextView tvCount;
+		private TextView tvPreview;
+		private TextView tvCN;
 
 		public ViewHolder(View row) {
 			tvFileName = (TextView) row.findViewById(R.id.tvFileName);
@@ -52,14 +68,13 @@ public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 			tvCN = (TextView) row.findViewById(R.id.tvCN);
 		}
 
-		public void update(T jobFile) {
-			JobFile jf = (JobFile) jobFile;
-			tvFileName.setText(jf.getName());
-			tvTime.setText(Util.TimeUtil.getLasModified(jf));
-			tvSize.setText(((Long) jf.length()).toString() + "B");
-			tvCount.setText(jf.getJobInfo().getString());
-			tvPreview.setText(jf.getJobInfo().getPreview());
-			tvCN.setText(jf.getCNList());
+		public void update(WeldCountFile jobFile) {
+			tvFileName.setText(jobFile.getName());
+			tvTime.setText(Util.TimeUtil.getLasModified(jobFile));
+			tvSize.setText(((Long) jobFile.length()).toString() + "B");
+			tvCount.setText(jobFile.getJobInfo().getString());
+			tvPreview.setText(jobFile.getJobInfo().getPreview());
+			tvCN.setText(jobFile.getCNList());
 		}
 	}
 }

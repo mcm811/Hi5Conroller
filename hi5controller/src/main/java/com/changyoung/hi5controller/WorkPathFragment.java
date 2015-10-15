@@ -62,17 +62,21 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 		try {
 			Log.d(getActivity().getPackageName(), "WorkPathFragment: " + msg);
 		} catch (Exception e) {
-			Log.d(Pref.TAG_NAME, "WorkPathFragment: " + msg);
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void refresh(boolean forced) {
-		if (forced) {
-			EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
-			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-			etPath.setText(onGetWorkPath());
-			workPathFragment.refreshFilesList(etPath.getText().toString());
+		try {
+			if (forced) {
+				EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
+				FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+				etPath.setText(onGetWorkPath());
+				workPathFragment.refreshFilesList(etPath.getText().toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -87,6 +91,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 				}
 				return true;
 			} catch (Exception e) {
+				e.printStackTrace();
 				logDebug("refresh");
 			}
 		}
@@ -126,6 +131,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					logDebug("경로 이동 실패");
 				}
 				break;
@@ -145,6 +151,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					logDebug("경로 이동 실패");
 				}
 				break;
@@ -167,6 +174,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 					.setAction("Action", null).show();
 			logDebug(msg);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logDebug(msg);
 		}
 	}
@@ -225,7 +233,9 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 					} else {
 						throw new Exception();
 					}
+				} catch (NullPointerException e) {
 				} catch (Exception e) {
+					e.printStackTrace();
 					show("잘못된 경로: " + etPath.getText().toString());
 					etPath.setText(onGetWorkPath());
 				}
@@ -235,7 +245,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 		etPath.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				Util.UiUtil.hideSoftKeyboard(getActivity(), event);
+				Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
 				return false;
 			}
 		});
@@ -245,7 +255,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Util.UiUtil.hideSoftKeyboard(getActivity(), null);
+					Util.UiUtil.hideSoftKeyboard(getActivity(), null, null);
 					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
@@ -301,10 +311,9 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 		try {
 			mListener = (OnWorkPathListener) activity;
 		} catch (ClassCastException e) {
-/*
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnPathChangedListener");
-*/
+			e.printStackTrace();
+//			throw new ClassCastException(activity.toString()
+//					+ " must implement OnPathChangedListener");
 		}
 	}
 

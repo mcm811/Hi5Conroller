@@ -25,7 +25,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 		try {
 			Log.d(getPackageName(), "BackupActivity: " + msg);
 		} catch (Exception e) {
-			Log.d(Pref.TAG_NAME, "BackupActivity: " + msg);
+			e.printStackTrace();
 		}
 	}
 
@@ -62,6 +62,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 								throw new Exception();
 							}
 						} catch (Exception e) {
+							e.printStackTrace();
 							show("잘못된 경로: " + etPath.getText().toString());
 							etPath.setText(Pref.getBackupPath(getContext()));
 						}
@@ -71,7 +72,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 				etPath.setOnKeyListener(new View.OnKeyListener() {
 					@Override
 					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Util.UiUtil.hideSoftKeyboard(getActivity(), event);
+						Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
 						return false;
 					}
 				});
@@ -104,6 +105,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 				}
 			});
 		} catch (Exception e) {
+			e.printStackTrace();
 			logDebug("onBackPressed()");
 		}
 
@@ -112,7 +114,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					Util.UiUtil.hideSoftKeyboard(getActivity(), null);
+					Util.UiUtil.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
 					show(backup());
 				}
@@ -144,11 +146,15 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 
 	@Override
 	public void refresh(boolean forced) {
-		if (forced) {
-			final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
-			final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-			etPath.setText(Pref.getBackupPath(getContext()));
-			fragment.refreshFilesList(etPath.getText().toString());
+		try {
+			if (forced) {
+				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
+				final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+				etPath.setText(Pref.getBackupPath(getContext()));
+				fragment.refreshFilesList(etPath.getText().toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -163,7 +169,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 				}
 				return true;
 			} catch (Exception e) {
-				logDebug("refresh");
+				e.printStackTrace();
 			}
 		}
 		return false;
@@ -214,8 +220,10 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 			if (ret == null)
 				throw new Exception();
 		} catch (IOException e) {
+			e.printStackTrace();
 			ret = "복원 실패: 파일 복사 오류";
 		} catch (Exception e) {
+			e.printStackTrace();
 			ret = "복원 실패";
 		}
 
@@ -241,8 +249,10 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 				throw new Exception();
 			refresh(Pref.getBackupPath(getContext()));
 		} catch (IOException e) {
+			e.printStackTrace();
 			ret = "백업 실패: 파일 복사 오류";
 		} catch (Exception e) {
+			e.printStackTrace();
 			ret = "백업 실패";
 		}
 
@@ -281,7 +291,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 					.setAction("Action", null).show();
 			logDebug(msg);
 		} catch (Exception e) {
-			logDebug(msg);
+			e.printStackTrace();
 		}
 	}
 
