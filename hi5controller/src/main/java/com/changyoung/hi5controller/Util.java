@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,25 +49,26 @@ public class Util {
 
 	public static class FileUtil {
 		public static String readFileString(String path) {
+			StringBuilder sb = new StringBuilder();
 			try {
 				FileInputStream fileInputStream = new FileInputStream(path);
 				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
 				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
 				String read;
-				StringBuilder sb = new StringBuilder();
 				while ((read = bufferedReader.readLine()) != null) {
 					sb.append(read);
 					sb.append("\n");
 				}
+
 				bufferedReader.close();
 				inputStreamReader.close();
 				fileInputStream.close();
-				return sb.toString();
+			} catch (FileNotFoundException e) {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return "";
+			return sb.toString();
 		}
 
 		public static void delete(String path, boolean recursive) {
@@ -104,16 +106,14 @@ public class Util {
 			}
 		}
 
-		private static void copy(java.io.File source, java.io.File dest) throws IOException {
-			FileChannel inputChannel = null;
-			FileChannel outputChannel = null;
+		private static void copy(File source, File dest) throws IOException {
 			try {
-				inputChannel = new FileInputStream(source).getChannel();
-				outputChannel = new FileOutputStream(dest).getChannel();
+				FileChannel inputChannel = new FileInputStream(source).getChannel();
+				FileChannel outputChannel = new FileOutputStream(dest).getChannel();
 				outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-			} finally {
 				inputChannel.close();
 				outputChannel.close();
+			} finally {
 				// 삼성커널에서 setLastModified 미지원 인듯
 				if (dest.setLastModified(source.lastModified())) {
 					Log.d("Last Time - Source", TimeUtil.getLasModified(source));
@@ -156,10 +156,10 @@ public class Util {
 		public static void adMobExitDialog(final Activity context) {
 			AdView adView = new AdView(context);
 			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
-//			if (BuildConfig.DEBUG)
-//				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_debug));
-//			else
-//				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_release));
+			if (BuildConfig.DEBUG)
+				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_debug));
+			else
+				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_release));
 			AdRequest adRequest = new AdRequest.Builder()
 					.setRequestAgent("android_studio:ad_template").build();
 			adView.loadAd(adRequest);

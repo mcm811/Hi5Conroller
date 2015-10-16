@@ -2,7 +2,6 @@ package com.changyoung.hi5controller;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -52,11 +52,11 @@ public class WeldConditionAdapter<T> extends ArrayAdapter<T> {
 
 	public void refresh(String path) {
 		clear();
-		File file = new File(path);
 		try {
 			FileInputStream fileInputStream = new FileInputStream(path);
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
 			String rowString;
 			boolean addText = false;
 			while ((rowString = bufferedReader.readLine()) != null) {
@@ -71,14 +71,14 @@ public class WeldConditionAdapter<T> extends ArrayAdapter<T> {
 			inputStreamReader.close();
 			fileInputStream.close();
 			notifyDataSetChanged();
+		} catch (FileNotFoundException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d(TAG, "읽기 실패: " + file.getName());
 		}
 	}
 
 	public String update(String path) {
-		String ret;
+		String ret = null;
 		StringBuilder sb = new StringBuilder();
 		File file = new File(path);
 
@@ -86,6 +86,7 @@ public class WeldConditionAdapter<T> extends ArrayAdapter<T> {
 			FileInputStream fileInputStream = new FileInputStream(path);
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
 			String rowString;
 			boolean addText = true;
 			boolean wciText = true;
@@ -122,10 +123,11 @@ public class WeldConditionAdapter<T> extends ArrayAdapter<T> {
 			fileOutputStream.close();
 
 			ret = "저장 완료: " + file.getName();
+		} catch (FileNotFoundException e) {
+			ret = "저장 실패" + file.getName();
 		} catch (Exception e) {
 			e.printStackTrace();
 			ret = "저장 실패" + file.getName();
-			Log.d(TAG, ret);
 		}
 
 		return ret;

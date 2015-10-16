@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -61,6 +62,7 @@ public class WeldCountFile extends File {
 			bufferedReader.close();
 			inputStreamReader.close();
 			fileInputStream.close();
+		} catch (FileNotFoundException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

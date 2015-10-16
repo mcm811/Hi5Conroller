@@ -29,6 +29,7 @@ import java.util.Comparator;
  */
 public class FileListFragment extends android.support.v4.app.Fragment {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+	private static final String TAG = "FileListFragment";
 	private static final String ARG_DIR_PATH = "dirPath";
 	public View snackbarView;
 	View mView;
