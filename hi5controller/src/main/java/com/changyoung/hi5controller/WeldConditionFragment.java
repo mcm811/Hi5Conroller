@@ -345,6 +345,10 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		dialog.setView(dialogView);
 
 		AdView adView = (AdView) dialogView.findViewById(R.id.adView);
+//		if (BuildConfig.DEBUG)
+//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
+//		else
+//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);

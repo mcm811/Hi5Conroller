@@ -156,7 +156,10 @@ public class Util {
 		public static void adMobExitDialog(final Activity context) {
 			AdView adView = new AdView(context);
 			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
-			adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id));
+//			if (BuildConfig.DEBUG)
+//				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_debug));
+//			else
+//				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_release));
 			AdRequest adRequest = new AdRequest.Builder()
 					.setRequestAgent("android_studio:ad_template").build();
 			adView.loadAd(adRequest);
