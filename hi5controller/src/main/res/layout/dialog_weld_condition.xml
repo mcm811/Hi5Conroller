@@ -7,7 +7,7 @@
 	android:layout_height="wrap_content"
 	android:minHeight="25px"
 	android:minWidth="25px"
-	android:padding="5dp">
+	android:padding="2dp">
 
 	<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
 	<LinearLayout
