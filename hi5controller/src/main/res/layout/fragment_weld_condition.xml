@@ -5,12 +5,31 @@
              android:layout_height="match_parent"
              tools:context="com.changyoung.hi5controller.WeldConditionFragment">
 
+	<ImageView
+		android:id="@+id/imageView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="top"
+		android:contentDescription="Changyoung robot"
+		android:scaleType="fitStart"
+		android:src="@drawable/banner_changyoung"/>
+
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="작업 경로를 설정 하십시오"
+		android:textSize="18dp"
+		android:textStyle="bold"/>
+
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:orientation="vertical">
 
 		<include
+			android:id="@+id/list_title"
 			layout="@layout/list_title_weld_condition"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
@@ -34,7 +53,8 @@
 	<android.support.design.widget.CoordinatorLayout
 		android:id="@+id/coordinator_layout"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		android:layout_gravity="top">
 
 		<android.support.design.widget.FloatingActionButton
 			android:id="@+id/weld_condition_fab"
@@ -43,6 +63,6 @@
 			android:layout_gravity="bottom|end"
 			android:layout_margin="16dp"
 			android:src="@drawable/ic_edit_white"
-			app:backgroundTint="@color/blue_A200"/>
+			app:backgroundTint="@color/pink_A200"/>
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

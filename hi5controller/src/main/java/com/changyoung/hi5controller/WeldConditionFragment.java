@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +15,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +24,13 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
@@ -112,7 +118,6 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			}
 		});
 
-		final int selectedBackGroundColor = ContextCompat.getColor(getContext(), R.color.tab3_textview_background);
 		mListView = (ListView) mView.findViewById(R.id.weld_condition_list_view);
 		mListView.setAdapter(adapter);
 		mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -122,7 +127,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 				adapter.getItem(position).setItemChecked(mListView.isItemChecked(position));
 				if (mListView.isItemChecked(position)) {
 					lastPosition = position;
-					view.setBackgroundColor(selectedBackGroundColor);
+					view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.tab3_textview_background));
 				} else {
 					view.setBackgroundColor(Color.TRANSPARENT);
 				}
@@ -252,8 +257,20 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			}
 			setCheckedItem(true);
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		if (mView != null) {
+			if (adapter.getCount() > 0) {
+				mView.findViewById(R.id.list_title).setVisibility(View.VISIBLE);
+				mView.findViewById(R.id.imageView).setVisibility(View.GONE);
+				mView.findViewById(R.id.textView).setVisibility(View.GONE);
+			} else {
+				mView.findViewById(R.id.list_title).setVisibility(View.GONE);
+				mView.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+				mView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -308,8 +325,8 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 	}
 
 	private void fab_click(int position) {
-		final String dialog_title1 = getContext().getString(R.string.weld_condition_dialog_title1);
-		final String dialog_title2 = getContext().getString(R.string.weld_condition_dialog_title2);
+		final String dialog_title1 = getContext().getString(R.string.weld_condition_dialog_title1) + " ";
+		final String dialog_title2 = getContext().getString(R.string.weld_condition_dialog_title2) + " ";
 
 		if (snackbar != null) {
 			snackbar.dismiss();
@@ -341,17 +358,32 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		}
 
 		final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_weld_condition, null);
-		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-		dialog.setView(dialogView);
+		final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+		dialogBuilder.setView(dialogView);
 
-		AdView adView = (AdView) dialogView.findViewById(R.id.adView);
-//		if (BuildConfig.DEBUG)
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
-//		else
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
+		// Custom Title
+		TextView textViewTitle = new TextView(getContext());
+		textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+		textViewTitle.setTypeface(Typeface.DEFAULT_BOLD);
+		textViewTitle.setPadding(20, 10, 20, 10);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+			textViewTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+		textViewTitle.setText("용접 조건 수정");
+		dialogBuilder.setCustomTitle(textViewTitle);
+
+		AdView adView = new AdView(getContext());
+		adView.setAdSize(AdSize.BANNER);
+		adView.setScaleX(0.95f);
+		adView.setScaleY(0.95f);
+		if (BuildConfig.DEBUG)
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
+		else
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
+		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
+		linearLayout.addView(adView, linearLayout.getChildCount());
 
 		final ArrayList<TextInputLayout> tilList = new ArrayList<>();
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
@@ -370,7 +402,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			if (index == 0) {                                           // outputData
 				et.setText(adapter.getItem(lastPosition).get(index));   // 기본선택된 자료값 가져오기
 			} else {
-				et.setGravity(android.view.Gravity.CENTER);
+				et.setGravity(Gravity.CENTER);
 				et.setSelectAllOnFocus(true);
 				et.setSingleLine();
 				try {
@@ -570,14 +602,14 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			}
 		});
 
-		dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+		dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				setCheckedItem(true);
 			}
 		});
 
-		dialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+		dialogBuilder.setPositiveButton("저장", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				int seekBegin = beginSeekBar.getProgress() + 1;
@@ -618,7 +650,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 			}
 		});
 
-		dialog.show();
+		dialogBuilder.show();
 	}
 
 	/**

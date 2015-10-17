@@ -23,6 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
@@ -141,19 +142,24 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 		dialog.setView(dialogView);
 
-		AdView adView = (AdView) dialogView.findViewById(R.id.adView);
-//		if (BuildConfig.DEBUG)
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
-//		else
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
+		AdView adView = new AdView(getContext());
+		adView.setAdSize(AdSize.BANNER);
+		adView.setScaleX(0.85f);
+		adView.setScaleY(0.85f);
+		if (BuildConfig.DEBUG)
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
+		else
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
+		LinearLayout linearLayoutWeldCount = (LinearLayout) dialogView.findViewById(R.id.linearLayout_WeldCount);
+		linearLayoutWeldCount.addView(adView, 2);
 
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText("계열 수정 (CN: " + weldCountFile.getJobInfo().getTotal() + "개)");
 
-		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout);
+		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
 		final EditText etBeginNumber = (EditText) dialogView.findViewById(R.id.etBeginNumber);
 		final SeekBar sbBeginNumber = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
 
@@ -329,6 +335,15 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 				adapter.refresh(mWorkPath);
 				if (mListView != null)
 					mListView.refreshDrawableState();
+			}
+			if (mView != null) {
+				if (adapter.getCount() > 0) {
+					mView.findViewById(R.id.imageView).setVisibility(View.GONE);
+					mView.findViewById(R.id.textView).setVisibility(View.GONE);
+				} else {
+					mView.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+					mView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+				}
 			}
 		} catch (NullPointerException e) {
 		} catch (Exception e) {

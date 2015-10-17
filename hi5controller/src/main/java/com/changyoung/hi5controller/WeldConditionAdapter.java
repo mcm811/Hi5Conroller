@@ -2,6 +2,7 @@ package com.changyoung.hi5controller;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -44,7 +45,7 @@ public class WeldConditionAdapter<T> extends ArrayAdapter<T> {
 		}
 
 		WeldConditionItem item = (WeldConditionItem) getItem(position);
-		row.setBackgroundColor(item.isItemChecked() ? Color.parseColor("#FFE0B2") : Color.TRANSPARENT);
+		row.setBackgroundColor(item.isItemChecked() ? ContextCompat.getColor(mContext, R.color.tab3_textview_background) : Color.TRANSPARENT);
 		viewHolder.update(item);
 
 		return row;

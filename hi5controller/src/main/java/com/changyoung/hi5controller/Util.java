@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -156,6 +159,8 @@ public class Util {
 		public static void adMobExitDialog(final Activity context) {
 			AdView adView = new AdView(context);
 			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
+			adView.setScaleX(0.95f);
+			adView.setScaleY(0.95f);
 			if (BuildConfig.DEBUG)
 				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_debug));
 			else
@@ -164,10 +169,22 @@ public class Util {
 					.setRequestAgent("android_studio:ad_template").build();
 			adView.loadAd(adRequest);
 
+			TextView tvMessage = new TextView(context);
+			tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+			tvMessage.setTypeface(Typeface.DEFAULT_BOLD);
+			tvMessage.setPadding(40, 10, 40, 0);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+				tvMessage.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+			tvMessage.setText("종료 하시겠습니까?");
+
+			LinearLayout linearLayout = new LinearLayout(context);
+			linearLayout.setOrientation(LinearLayout.VERTICAL);
+			linearLayout.addView(adView);
+			linearLayout.addView(tvMessage);
+
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle("HI5 용접 관리");
-			builder.setMessage("앱을 종료 하시겠습니까?");
-			builder.setView(adView);
+			builder.setView(linearLayout);
 			builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

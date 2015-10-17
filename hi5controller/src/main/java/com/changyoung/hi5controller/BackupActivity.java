@@ -6,13 +6,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.io.File;
@@ -92,14 +95,22 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 			}
 		});
 
-		AdView adView = (AdView) view.findViewById(R.id.adView);
-//		if (BuildConfig.DEBUG)
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
-//		else
-//			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
+		AdView adView = new AdView(getContext());
+		adView.setAdSize(AdSize.BANNER);
+		adView.setScaleX(0.4f);
+		adView.setScaleY(0.4f);
+		adView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT,
+				Gravity.BOTTOM | Gravity.START));
+		if (BuildConfig.DEBUG)
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
+		else
+			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
+		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
+		frameLayout.addView(adView, frameLayout.getChildCount() - 1);
 
 		try {
 			findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {

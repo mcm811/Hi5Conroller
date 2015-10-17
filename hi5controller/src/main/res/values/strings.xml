@@ -6,7 +6,7 @@
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
 	<string name="action_settings">설정</string>
-	<string name="action_backup">백업(복원)</string>
+	<string name="action_backup">백업 / 복원</string>
 	<string name="action_restore">복원</string>
 	<string name="action_exit">종료</string>
 	<string name="action_done">완료</string>
@@ -65,8 +65,8 @@
 	<string name="nav_done">완료</string>
 
 	<!-- WeldConditionFragment -->
-	<string name="weld_condition_dialog_title1">용접 조건 - 수정 항목: </string>;
-	<string name="weld_condition_dialog_title2">용접 조건 - 수정 범위: </string>;
+	<string name="weld_condition_dialog_title2">선택 범위:</string>;
+	<string name="weld_condition_dialog_title1">선택 항목:</string>;
 
 	<string name="title_activity_backup">@string/action_backup</string>
 	<string name="title_activity_text_scrolling">텍스트 뷰어</string>

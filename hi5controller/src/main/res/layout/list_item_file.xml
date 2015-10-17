@@ -8,27 +8,26 @@
 
 	<ImageView
 		android:id="@+id/file_picker_image"
-		android:layout_width="20dip"
-		android:layout_height="20dip"
-		android:layout_marginBottom="5dip"
-		android:layout_marginStart="5dip"
-		android:layout_marginTop="5dip"
-		android:scaleType="centerCrop"
+		android:layout_width="30dip"
+		android:layout_height="30dip"
+		android:layout_gravity="center"
+		android:alpha="0.8"
+		android:foregroundTint="@color/brown_200"
+		android:scaleType="center"
 		android:src="@drawable/ic_description"/>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/file_picker_fab"
-		android:layout_width="20dip"
-		android:layout_height="20dip"
-		android:layout_marginBottom="5dip"
-		android:layout_marginStart="5dip"
-		android:layout_marginTop="5dip"
-		android:rotation="180"
-		android:scaleType="centerCrop"
+		android:layout_width="30dip"
+		android:layout_height="30dip"
+		android:layout_gravity="center"
+		android:layout_margin="5dp"
+		android:alpha="0.8"
+		android:foregroundTint="@color/brown_200"
+		android:rotation="0"
+		android:scaleType="center"
 		android:src="@drawable/ic_description"
-		app:backgroundTint="@color/grey_200"
-		app:borderWidth="0dp"
-		app:elevation="6dp"/>
+		app:backgroundTint="@color/grey_200"/>
 
 	<TextView
 		android:id="@+id/file_picker_text"
