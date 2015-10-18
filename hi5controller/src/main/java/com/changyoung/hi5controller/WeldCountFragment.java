@@ -165,7 +165,7 @@ public class WeldCountFragment extends android.support.v4.app.Fragment implement
 
 		final ArrayList<EditText> etList = new ArrayList<>();
 		for (int i = 0; i < weldCountFile.size(); i++) {
-			if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.ROWTYPES_SPOT) {
+			if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.JOB_SPOT) {
 				final TextInputLayout til = new TextInputLayout(getContext());
 				til.setHint("[줄번호:" + String.format("%03d", weldCountFile.get(i).getRowNumber()) + "] CN = " + weldCountFile.get(i).getCN());
 				final EditText etCN = new EditText(getContext());

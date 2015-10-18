@@ -1,6 +1,5 @@
 package com.changyoung.hi5controller;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -10,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
  * Use the {@link WeldConditionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WeldConditionFragment extends android.support.v4.app.Fragment
+public class WeldConditionFragment extends Fragment
 		implements Refresh {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_WORK_PATH = "workPath";
@@ -51,7 +51,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 
 	private View mView;
 	private ListView mListView;
-	private WeldConditionAdapter<WeldConditionItem> adapter;
+	private WeldCondition.ConditionAdapter adapter;
 	private Snackbar snackbar;
 
 	private String mWorkPath;
@@ -249,7 +249,7 @@ public class WeldConditionFragment extends android.support.v4.app.Fragment
 		try {
 			mWorkPath = onGetWorkPath();
 			if (adapter == null)
-				adapter = new WeldConditionAdapter<>(getActivity());
+				adapter = new WeldCondition.ConditionAdapter(getActivity());
 			if (forced || adapter.getCount() == 0) {
 				adapter.refresh(mWorkPath);
 				if (mListView != null)

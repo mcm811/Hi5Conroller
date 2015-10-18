@@ -10,6 +10,7 @@ import java.io.File;
 
 /**
  * Created by chang on 2015-10-12.
+ * changmin811@gmail.com
  */
 public class WeldCountAdapter<T> extends ArrayAdapter<T> {
 	private Activity mContext;
