@@ -12,7 +12,8 @@
 		android:layout_gravity="top"
 		android:contentDescription="Changyoung robot"
 		android:scaleType="fitStart"
-		android:src="@drawable/banner_changyoung"/>
+		android:src="@drawable/banner_changyoung"
+		android:visibility="gone"/>
 
 	<TextView
 		android:id="@+id/textView"
@@ -21,7 +22,8 @@
 		android:layout_gravity="center"
 		android:text="작업 경로를 설정 하십시오"
 		android:textSize="18dp"
-		android:textStyle="bold"/>
+		android:textStyle="bold"
+		android:visibility="gone"/>
 
 	<LinearLayout
 		android:layout_width="fill_parent"

@@ -1,9 +1,16 @@
 package com.changyoung.hi5controller;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,11 +20,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,17 +38,22 @@ import java.util.Comparator;
  * Use the {@link FileListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FileListFragment extends android.support.v4.app.Fragment {
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class FileListFragment extends Fragment {
+	private static final int REFRESH_DIR = 0;
+	private static final int REFRESH_PARENT_DIR = 1;
+
 	private static final String TAG = "FileListFragment";
-	private static final String ARG_DIR_PATH = "dirPath";
+	private static final String ARG_DIR_PATH = "mDirPath";
 	public View snackbarView;
-	View mView;
+	private View mView;
 	private OnPathChangedListener mListener;
 
 	private ListView listView;
 	private FileListAdapter adapter;
-	private File dirPath;
+
+	private File mDirPath;
+	private FileListObserver mFileObserver;
+	private FileListHandler mHandler;
 
 	public FileListFragment() {
 		// Required empty public constructor
@@ -58,9 +74,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		return fragment;
 	}
 
-	private void logDebug(String msg) {
+	private void logD(String msg) {
 		try {
-			Log.d(getActivity().getPackageName(), "FileListFragment: " + msg);
+			Log.d(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,22 +86,26 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 		try {
 			if (snackbarView != null)
 				Snackbar.make(snackbarView, msg, Snackbar.LENGTH_SHORT).show();
-			logDebug(msg);
+			logD(msg);
 		} catch (Exception e) {
-			logDebug(msg);
+			logD(msg);
 		}
 	}
 
 	public String getDirPath() {
-		return dirPath.getPath();
+		return mDirPath.getPath();
+	}
+
+	public void setDirPath(File value) {
+		this.mDirPath = value;
 	}
 
 	public void setDirPath(String value) {
-		this.dirPath = new File(value);
+		this.mDirPath = new File(value);
 	}
 
 	public File getDirFile() {
-		return dirPath;
+		return mDirPath;
 	}
 
 	@Override
@@ -99,7 +119,7 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_file_list, container, false);
@@ -151,7 +171,6 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 						.setNegativeButton("취소", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								refreshFilesList(getDirPath());
 								show("삭제가 취소 되었습니다");
 
 							}
@@ -160,8 +179,8 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								try {
-									Util.FileUtil.delete(file, true);
-									refreshFilesList(getDirPath());
+									new Util.AsyncTaskCopyDialog(getContext(), snackbarView, "삭제")
+											.execute(file);
 								} catch (Exception e) {
 									e.printStackTrace();
 									show("삭제할 수 없습니다");
@@ -174,11 +193,13 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			}
 		});
 
+		mHandler = new FileListHandler(Looper.getMainLooper());
+
 		return mView;
 	}
 
 	public String refreshParent() {
-		return refreshFilesList(dirPath.getParent());
+		return refreshFilesList(mDirPath.getParent());
 	}
 
 	public String refreshFilesList() {
@@ -191,7 +212,6 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			if (path == null)
 				path = getDirPath();
 			return refreshFilesList(new File(path));
-		} catch (NullPointerException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -201,10 +221,9 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	public String refreshFilesList(File dir) {
 		try {
 			if (dir == null)
-				dir = dirPath;
+				dir = mDirPath;
 
-//			if (adapter == null)
-//				return null;
+			Log.d(TAG, dir.getName());
 
 			adapter.clear();
 			for (File item : dir.listFiles()) {
@@ -226,12 +245,17 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 					return ret;
 				}
 			});
-			this.dirPath = dir;
+
+			setDirPath(dir);
 			adapter.insert(dir, 0);
 			adapter.notifyDataSetChanged();
 			listView.refreshDrawableState();
-			onDirPathChanged(dirPath);
+			onDirPathChanged(dir);
+
+			mFileObserver = new FileListObserver(dir, mHandler);
+			mFileObserver.startWatching();
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			refreshFilesList(getDirPath());
@@ -259,8 +283,8 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 			mListener = (OnPathChangedListener) context;
 		} catch (ClassCastException e) {
 			e.printStackTrace();
-//			throw new ClassCastException(context.toString()
-//					+ " must implement OnPathChangedListener");
+			throw new ClassCastException(context.toString()
+					+ " must implement OnPathChangedListener");
 		}
 	}
 
@@ -268,6 +292,15 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
+		mView = null;
+		snackbarView = null;
+		listView = null;
+		adapter.clear();
+		adapter = null;
+		mDirPath = null;
+		mHandler = null;
+		mFileObserver.stopWatching();
+		mFileObserver = null;
 	}
 
 	/**
@@ -282,5 +315,166 @@ public class FileListFragment extends android.support.v4.app.Fragment {
 	 */
 	public interface OnPathChangedListener {
 		void onPathChanged(File path);
+	}
+
+	public static class FileListObserver extends FileObserver {
+		static final String TAG = "FILE_LIST_OBSERVER";
+		static final int mask = (FileObserver.CREATE |
+				FileObserver.DELETE |
+				FileObserver.DELETE_SELF |
+				FileObserver.MODIFY |
+				FileObserver.MOVED_FROM |
+				FileObserver.MOVED_TO |
+				FileObserver.MOVE_SELF |
+				FileObserver.CLOSE_WRITE);
+		File rootPath;
+		private Handler handler;
+
+		public FileListObserver(File root, Handler handler) {
+			super(root.getPath(), mask);
+			this.rootPath = root;
+			this.handler = handler;
+		}
+
+		public void onEvent(int event, String path) {
+			if (path == null)
+				return;
+			switch (event) {
+				case FileObserver.CREATE:
+					Log.d(TAG, "CREATE:" + rootPath + path);
+					break;
+				case FileObserver.DELETE:
+					Log.d(TAG, "DELETE:" + rootPath + path);
+					break;
+				case FileObserver.DELETE_SELF:
+					Log.d(TAG, "DELETE_SELF:" + rootPath + path);
+					break;
+				case FileObserver.MODIFY:
+					Log.d(TAG, "MODIFY:" + rootPath + path);
+					break;
+				case FileObserver.MOVED_FROM:
+					Log.d(TAG, "MOVED_FROM:" + rootPath + path);
+					break;
+				case FileObserver.MOVED_TO:
+					Log.d(TAG, "MOVED_TO:" + path);
+					break;
+				case FileObserver.MOVE_SELF:
+					Log.d(TAG, "MOVE_SELF:" + path);
+					break;
+				case FileObserver.CLOSE_WRITE:
+					Log.d(TAG, "CLOSE_WRITE:" + path);
+//					Message msg = Message.obtain(handler);
+//					Bundle bundle = new Bundle();
+//					bundle.putString("typeoperation", "CLOSE_WRITE");
+//					bundle.putString("path", rootPath + path);
+//					msg.setData(b);
+//					handler.sendMessage(msg);
+					break;
+				default:
+					Log.d(TAG, String.format("EVENT(%d): %s", event, path));
+					break;
+			}
+
+			stopWatching();
+			Message msg = handler.obtainMessage();
+			msg.what = REFRESH_DIR;
+			msg.obj = rootPath;
+			handler.sendMessage(msg);
+		}
+	}
+
+	public class FileListAdapter extends ArrayAdapter<File> {
+		private Activity mContext;
+
+		public FileListAdapter(Activity context, List<File> objects) {
+			super(context, R.layout.list_item_file, objects);
+			mContext = context;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder viewHolder;
+			View row = convertView;
+
+			if (row == null) {
+				row = mContext.getLayoutInflater().inflate(R.layout.list_item_file, parent, false);
+				viewHolder = new ViewHolder((TextView) row.findViewById(R.id.file_picker_time),
+						(TextView) row.findViewById(R.id.file_picker_text),
+						(ImageView) row.findViewById(R.id.file_picker_image),
+						(FloatingActionButton) row.findViewById(R.id.file_picker_fab));
+				row.setTag(viewHolder);
+			} else {
+				viewHolder = (ViewHolder) row.getTag();
+			}
+
+			File file = getItem(position);
+			if (position == 0) {
+				String p = file.getParent();
+				if (p == null) {
+					viewHolder.update(null, ".", R.drawable.ic_android);
+				} else {
+					viewHolder.update(null, file.getParentFile().getName() + "/..", R.drawable.ic_file_upload);
+				}
+			} else {
+				viewHolder.update(Util.TimeUtil.getLasModified(file), file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
+			}
+
+			return row;
+		}
+
+		public class ViewHolder {
+			private TextView TimeTextView;
+			private android.widget.TextView TextView;
+			private android.widget.ImageView ImageView;
+			private FloatingActionButton Fab;
+
+			public ViewHolder(TextView timeTextView, TextView textView, ImageView imageView, FloatingActionButton fab) {
+				TimeTextView = timeTextView;
+				TextView = textView;
+				ImageView = imageView;
+				Fab = fab;
+			}
+
+			public void update(String fileTime, String fileName, int fileImageResourceId) {
+				if (fileTime == null) {
+					TimeTextView.setText("");
+					TimeTextView.setVisibility(View.GONE);
+				} else {
+					TimeTextView.setText(fileTime);
+					TimeTextView.setVisibility(View.VISIBLE);
+				}
+				TextView.setText(fileName);
+				ImageView.setImageResource(fileImageResourceId);
+				Fab.setImageResource(fileImageResourceId);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					Fab.setVisibility(View.VISIBLE);
+					ImageView.setVisibility(View.GONE);
+				} else {
+					Fab.setVisibility(View.GONE);
+					ImageView.setVisibility(View.VISIBLE);
+				}
+			}
+		}
+	}
+
+	private class FileListHandler extends Handler {
+		public FileListHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+				case REFRESH_DIR:
+					refreshFilesList((File) msg.obj);
+					break;
+				case REFRESH_PARENT_DIR:
+					refreshFilesList(((File) msg.obj).getParentFile());
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }

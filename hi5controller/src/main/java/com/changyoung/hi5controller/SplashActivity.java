@@ -10,7 +10,7 @@ public class SplashActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
-			Thread.sleep(800);
+			Thread.sleep(1500);
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		} catch (Exception e) {

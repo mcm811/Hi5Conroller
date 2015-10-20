@@ -1,7 +1,6 @@
 package com.changyoung.hi5controller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -32,12 +31,11 @@ import java.io.File;
  * Use the {@link WorkPathFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WorkPathFragment extends android.support.v4.app.Fragment implements Refresh {
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class WorkPathFragment extends Fragment implements Refresh {
+	private static final String TAG = "WorPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
-
+	FileListFragment fragment;
 	private View mView;
-
 	private String mWorkPath;
 
 	private OnWorkPathListener mListener;
@@ -53,6 +51,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	 * @param workPath Parameter 1.
 	 * @return A new instance of fragment WorkPathFragment.
 	 */
+	@SuppressWarnings("unused")
 	public static WorkPathFragment newInstance(String workPath) {
 		WorkPathFragment fragment = new WorkPathFragment();
 		Bundle args = new Bundle();
@@ -61,9 +60,9 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 		return fragment;
 	}
 
-	private void logDebug(String msg) {
+	private void logD(String msg) {
 		try {
-			Log.d(getActivity().getPackageName(), "WorkPathFragment: " + msg);
+			Log.d(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -72,7 +71,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	@Override
 	public void refresh(boolean forced) {
 		try {
-			if (forced) {
+			if (forced && isAdded()) {
 				EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
 				FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 				etPath.setText(onGetWorkPath());
@@ -85,7 +84,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 
 	@Override
 	public boolean refresh(String path) {
-		if (path != null) {
+		if (path != null && isAdded()) {
 			try {
 				File dir = new File(path);
 				if (dir.isDirectory()) {
@@ -95,7 +94,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				logDebug("refresh");
+				logD("refresh");
 			}
 		}
 		return false;
@@ -110,23 +109,23 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 				break;
 			case R.id.nav_storage:
 			case R.id.toolbar_work_path_menu_storage:
-				if (!refresh(Pref.STORAGE_PATH))
-					ret = "경로 이동 실패: " + Pref.STORAGE_PATH;
+				if (!refresh(Util.Pref.STORAGE_PATH))
+					ret = "경로 이동 실패: " + Util.Pref.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
 			case R.id.toolbar_work_path_menu_sdcard:
-				if (!refresh(Pref.EXTERNAL_STORAGE_PATH))
-					ret = "경로 이동 실패: " + Pref.EXTERNAL_STORAGE_PATH;
+				if (!refresh(Util.Pref.EXTERNAL_STORAGE_PATH))
+					ret = "경로 이동 실패: " + Util.Pref.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
 			case R.id.toolbar_work_path_menu_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
-					File dir = new File(Pref.STORAGE_PATH);
+					File dir = new File(Util.Pref.STORAGE_PATH);
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
 							for (File subItem : file.listFiles()) {
-								if (refresh(file.getPath())) {
+								if (subItem.exists() && refresh(file.getPath())) {
 									ret = null;
 									break;
 								}
@@ -135,18 +134,18 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					logDebug("경로 이동 실패");
+					logD("경로 이동 실패");
 				}
 				break;
 			case R.id.nav_usbstorage:
 			case R.id.toolbar_work_path_menu_usbstorage:
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
-					File dir = new File(Pref.STORAGE_PATH);
+					File dir = new File(Util.Pref.STORAGE_PATH);
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("usb")) {
 							for (File subItem : file.listFiles()) {
-								if (refresh(file.getPath())) {
+								if (subItem.exists() && refresh(file.getPath())) {
 									ret = null;
 									break;
 								}
@@ -155,7 +154,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					logDebug("경로 이동 실패");
+					logD("경로 이동 실패");
 				}
 				break;
 		}
@@ -164,8 +163,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 
 	@Override
 	public String onBackPressedFragment() {
-		FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-		return fragment.refreshParent();
+		return isAdded() ? fragment.refreshParent() : null;
 	}
 
 	@Override
@@ -175,22 +173,28 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 				return;
 			Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
-			logDebug(msg);
+			logD(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logDebug(msg);
+			logD(msg);
 		}
 	}
 
 	public void onPathChanged(String path) {
-		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
-		EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-		etPath.setText(path);
-		mWorkPath = onGetWorkPath();
-		if (mWorkPath.compareTo(path) == 0) {
-			fab.setImageResource(R.drawable.ic_settings_backup_restore_white);
-		} else {
-			fab.setImageResource(R.drawable.ic_done_white);
+		try {
+			if (isAdded()) {
+				mWorkPath = onGetWorkPath();
+				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
+				etPath.setText(path);
+				FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
+				if (mWorkPath.compareTo(path) == 0) {
+					fab.setImageResource(R.drawable.ic_archive_white);
+				} else {
+					fab.setImageResource(R.drawable.ic_done_white);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -207,12 +211,13 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
+		Log.d(TAG, "onCreateView");
 		mView = inflater.inflate(R.layout.fragment_work_path, container, false);
 
 		String path = mWorkPath;
-		FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+		fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 		if (fragment == null) {
+			Log.d(TAG, "fragment == null");
 			fragment = FileListFragment.newInstance(path);
 			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 			transaction.replace(R.id.work_path_fragment, fragment);
@@ -237,6 +242,7 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 						throw new Exception();
 					}
 				} catch (NullPointerException e) {
+					logD(e.getLocalizedMessage());
 				} catch (Exception e) {
 					e.printStackTrace();
 					show("잘못된 경로: " + etPath.getText().toString());
@@ -264,7 +270,10 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
 					if (mWorkPath.compareTo(path) == 0) {
-						startActivity(new Intent(getContext(), BackupActivity.class));
+//						startActivity(new Intent(getContext(), BackupActivity.class));
+						String ret = Util.FileUtil.backup(getContext(), mView.findViewById(R.id.coordinator_layout));
+						if (ret != null)
+							show(ret);
 					} else {
 						etPath.setText(path);
 						onSetWorkPath(path);
@@ -327,8 +336,8 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 			mListener = (OnWorkPathListener) activity;
 		} catch (ClassCastException e) {
 			e.printStackTrace();
-//			throw new ClassCastException(activity.toString()
-//					+ " must implement OnPathChangedListener");
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnPathChangedListener");
 		}
 	}
 
@@ -336,6 +345,9 @@ public class WorkPathFragment extends android.support.v4.app.Fragment implements
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
+		mView = null;
+		mWorkPath = null;
+		fragment = null;
 	}
 
 	/**

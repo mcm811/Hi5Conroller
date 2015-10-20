@@ -21,12 +21,14 @@ import com.google.android.gms.ads.AdView;
 import java.io.File;
 import java.io.IOException;
 
-public class BackupActivity extends AppCompatActivity implements Refresh, FileListFragment.OnPathChangedListener {
+public class BackupActivity extends AppCompatActivity
+		implements Refresh, FileListFragment.OnPathChangedListener {
+	private final static String TAG = "BackupActivity";
 	private int mBackPressedCount;
 
-	private void logDebug(String msg) {
+	private void logD(String msg) {
 		try {
-			Log.d(getPackageName(), "BackupActivity: " + msg);
+			Log.d(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,8 +48,9 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 		setContentView(R.layout.activity_backup);
 		BackupActivity view = this;
 
-		String path = Pref.getBackupPath(getContext());
-		final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+		String path = Util.Pref.getBackupPath(getContext());
+		final FileListFragment fragment = (FileListFragment)
+				getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		if (fragment != null) {
 			fragment.refreshFilesList(path);
 			fragment.snackbarView = view.findViewById(R.id.coordinator_layout);
@@ -60,14 +63,14 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 						try {
 							File file = new File(etPath.getText().toString());
 							if (file.isDirectory()) {
-								Pref.setBackupPath(getContext(), etPath.getText().toString());
+								Util.Pref.setBackupPath(getContext(), etPath.getText().toString());
 							} else {
 								throw new Exception();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 							show("잘못된 경로: " + etPath.getText().toString());
-							etPath.setText(Pref.getBackupPath(getContext()));
+							etPath.setText(Util.Pref.getBackupPath(getContext()));
 						}
 						fragment.refreshFilesList(etPath.getText().toString());
 					}
@@ -121,7 +124,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 			});
 		} catch (Exception e) {
 			e.printStackTrace();
-			logDebug("onBackPressed()");
+			logD("onBackPressed()");
 		}
 
 		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -131,7 +134,9 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 				public void onClick(View view) {
 					Util.UiUtil.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
-					show(backup());
+					String ret = restore();
+					if (ret != null)
+						show(ret);
 				}
 			});
 		}
@@ -151,8 +156,8 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 
-		if (id == R.id.action_restore) {
-			show(restore());
+		if (id == R.id.action_backup) {
+			backup();
 			return true;
 		}
 
@@ -165,7 +170,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 			if (forced) {
 				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
 				final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-				etPath.setText(Pref.getBackupPath(getContext()));
+				etPath.setText(Util.Pref.getBackupPath(getContext()));
 				fragment.refreshFilesList(etPath.getText().toString());
 			}
 		} catch (Exception e) {
@@ -194,7 +199,7 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 	public String refresh(int menuId) {
 		switch (menuId) {
 			case R.id.toolbar_backup_path_menu_home:
-				if (!refresh(Pref.getBackupPath(getContext())))
+				if (!refresh(Util.Pref.getBackupPath(getContext())))
 					show("백업 폴더가 없습니다");
 				break;
 			case R.id.toolbar_backup_path_menu_done:
@@ -206,15 +211,16 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 	}
 
 	private String restore() {
-		String ret = null;
+		String ret;
+		boolean sourceChecked = false;
 
 		try {
 			final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 			File source = fragment.getDirFile();
-			File dest = new File(Pref.getWorkPath(getContext()));
-
+			File dest = new File(Util.Pref.getWorkPath(getContext()));
+			if (source.equals(dest))
+				throw new Exception();
 			// 복원할 파일을 먼저 확인
-			boolean sourceChecked = false;
 			if (source.exists()) {
 				for (File file : source.listFiles()) {
 					String fileName = file.getName().toUpperCase();
@@ -227,51 +233,34 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 					if (dest.exists())
 						Util.FileUtil.delete(dest, false);
 					if (dest.mkdirs())
-						logDebug("dest.mkdir");
-					Util.FileUtil.copy(source, dest, false);
-					ret = "복원 완료: " + source.getName();
+						logD("dest.mkdirs");
+//					Util.FileUtil.copy(source, dest, false);
+					new Util.AsyncTaskCopyDialog(getContext(),
+							findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
+					return null;
 				}
 			}
-			if (ret == null)
-				throw new Exception();
+			throw new Exception();
 		} catch (IOException e) {
 			e.printStackTrace();
 			ret = "복원 실패: 파일 복사 오류";
 		} catch (Exception e) {
 			e.printStackTrace();
-			ret = "복원 실패";
+			if (!sourceChecked)
+				ret = "복원 실패: 백업 폴더 안으로 이동해 주세요.";
+			else
+				ret = "복원 실패";
 		}
 
 		return ret;
 	}
 
-	public String backup() {
-		String ret = null;
-
-		try {
-			File source = new File(Pref.getWorkPath(getContext()));
-			File dest = new File(source.getPath() + "/Backup/" + source.getName() + Util.TimeUtil.getTimeString("_yyyyMMdd_HHmmss", System.currentTimeMillis()));
-
-			if (source.exists() && source.isDirectory()) {
-				if (dest.exists())
-					Util.FileUtil.delete(dest, false);
-				if (dest.mkdirs())
-					logDebug("dest.mkdir");
-				Util.FileUtil.copy(source, dest, false);
-				ret = "백업 완료: " + dest.getName();
-			}
-			if (ret == null)
-				throw new Exception();
-			refresh(Pref.getBackupPath(getContext()));
-		} catch (IOException e) {
-			e.printStackTrace();
-			ret = "백업 실패: 파일 복사 오류";
-		} catch (Exception e) {
-			e.printStackTrace();
-			ret = "백업 실패";
-		}
-
-		return ret;
+	public void backup() {
+		String ret = Util.FileUtil.backup(getContext(), findViewById(R.id.coordinator_layout));
+		if (ret == null)
+			refresh(Util.Pref.getBackupPath(getContext()));
+		else
+			show(ret);
 	}
 
 	@Override
@@ -300,11 +289,11 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 	@Override
 	public void show(String msg) {
 		try {
-			if (msg == null)
-				return;
-			Snackbar.make(findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
-					.setAction("Action", null).show();
-			logDebug(msg);
+			if (msg != null) {
+				Snackbar.make(findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+						.setAction("Action", null).show();
+				logD(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -314,14 +303,5 @@ public class BackupActivity extends AppCompatActivity implements Refresh, FileLi
 	public void onPathChanged(File path) {
 		EditText etPath = (EditText) findViewById(R.id.etBackupPath);
 		etPath.setText(path.getPath());
-/*
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		mWorkPath = onGetWorkPath();
-		if (mWorkPath.compareTo(path) == 0) {
-			fab.setImageResource(R.drawable.ic_home_white);
-		} else {
-			fab.setImageResource(R.drawable.ic_done_white);
-		}
-*/
 	}
 }

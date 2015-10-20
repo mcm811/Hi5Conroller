@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -27,12 +28,11 @@ import android.view.View;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity
-		implements
-		NavigationView.OnNavigationItemSelectedListener,
-		FileListFragment.OnPathChangedListener,
-		WorkPathFragment.OnWorkPathListener,
-		WeldCountFragment.OnWorkPathListener,
-		WeldConditionFragment.OnWorkPathListener {
+		implements NavigationView.OnNavigationItemSelectedListener,
+		FileListFragment.OnPathChangedListener, WorkPathFragment.OnWorkPathListener,
+		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
+
+	private final static String TAG = "MainActivity";
 
 	private int mBackPressedCount;
 
@@ -40,13 +40,9 @@ public class MainActivity extends AppCompatActivity
 		return this;
 	}
 
-	MainActivity getActivity() {
-		return this;
-	}
-
-	private void logDebug(String msg) {
+	private void logD(String msg) {
 		try {
-			Log.d(getPackageName(), "MainActivity: " + msg);
+			Log.d(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -66,12 +62,13 @@ public class MainActivity extends AppCompatActivity
 			ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 			Snackbar.make(viewPager, msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
-			logDebug(msg);
+			logD(msg);
 		}
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -182,14 +179,14 @@ public class MainActivity extends AppCompatActivity
 					tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
 				}
 
-				try {
-					Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab.getPosition());
-					if (refresh != null)
-						refresh.refresh(false);
-				} catch (NullPointerException e) {
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+//				try {
+//					Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab.getPosition());
+//					if (refresh != null) {
+//						refresh.refresh(false);
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
 			}
 
 			@Override
@@ -202,6 +199,12 @@ public class MainActivity extends AppCompatActivity
 
 			}
 		});
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+		Log.d(TAG, "onSaveInstanceState");
+		super.onSaveInstanceState(outState, outPersistentState);
 	}
 
 	@Override
@@ -270,7 +273,6 @@ public class MainActivity extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
 		mBackPressedCount = 0;
@@ -313,6 +315,7 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public void onPathChanged(File path) {
+		Log.d(TAG, "onPathChanged");
 		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) viewPager.getAdapter()).getItem(PagerAdapter.WORK_PATH_FRAGMENT);
 		if (fragment != null)
@@ -321,15 +324,24 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public String onGetWorkPath() {
-		return Pref.getWorkPath(getContext());
+		return Util.Pref.getWorkPath(getContext());
 	}
 
 	@Override
 	public void onSetWorkPath(String path) {
-		Pref.setWorkPath(getContext(), path);
+		Log.d(TAG, "onSetWorkPath");
+		Util.Pref.setWorkPath(getContext(), path);
+		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+
+		final int[] tabs = {PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT};
+		for (int tab : tabs) {
+			Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab);
+			if (refresh != null)
+				refresh.refresh(true);
+		}
 	}
 
-	public class PagerAdapter extends FragmentStatePagerAdapter {
+	public static class PagerAdapter extends FragmentStatePagerAdapter {
 		public final static int WORK_PATH_FRAGMENT = 0;
 		public final static int WELD_COUNT_FRAGMENT = 1;
 		public final static int WELD_CONDITION_FRAGMENT = 2;

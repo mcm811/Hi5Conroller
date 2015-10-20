@@ -1,7 +1,12 @@
 package com.changyoung.hi5controller;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -10,7 +15,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -23,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,28 +42,33 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnWorkPathListener} interface
- * to handle interaction events.
- * Use the {@link WeldConditionFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Created by chang on 2015-10-14.
+ * changmin811@gmail.com
  */
 public class WeldConditionFragment extends Fragment
-		implements Refresh {
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+		implements Refresh, LoaderManager.LoaderCallbacks<List<WeldConditionFragment.WeldConditionItem>> {
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldConditionFragment";
 
 	private View mView;
 	private ListView mListView;
-	private WeldCondition.ConditionAdapter adapter;
+	private WeldConditionAdapter adapter;
 	private Snackbar snackbar;
 
-	private String mWorkPath;
+	//	private String mWorkPath;
 	private int lastPosition = 0;
 
 	private OnWorkPathListener mListener;
@@ -70,6 +84,7 @@ public class WeldConditionFragment extends Fragment
 	 * @param workPath Parameter 1.
 	 * @return A new instance of fragment WeldConditionFragment.
 	 */
+	@SuppressWarnings("unused")
 	public static WeldConditionFragment newInstance(String workPath) {
 		WeldConditionFragment fragment = new WeldConditionFragment();
 		Bundle args = new Bundle();
@@ -78,20 +93,36 @@ public class WeldConditionFragment extends Fragment
 		return fragment;
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onAttach(Activity activity) {
+		Log.d(TAG, "onAttach");
+		super.onAttach(activity);
+		try {
+			mListener = (OnWorkPathListener) activity;
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnPathChangedListener");
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		// onCreated -> onCreatedView -> onActivityCreated
+		logD("onCreated");
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			mWorkPath = getArguments().getString(ARG_WORK_PATH) + "/ROBOT.SWD";
-		} else {
-			mWorkPath = onGetWorkPath();
-		}
-		refresh(true);
+//		if (getArguments() != null) {
+//			mWorkPath = getArguments().getString(ARG_WORK_PATH) + "/ROBOT.SWD";
+//		} else {
+//			mWorkPath = onGetWorkPath();
+//		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		logD("onCreatedView");
 		mView = inflater.inflate(R.layout.fragment_weld_condition, container, false);
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
@@ -107,7 +138,7 @@ public class WeldConditionFragment extends Fragment
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				fab_click(0);
+				dialog_show(0);
 			}
 		});
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
@@ -118,6 +149,7 @@ public class WeldConditionFragment extends Fragment
 			}
 		});
 
+		adapter = new WeldConditionAdapter(getActivity());
 		mListView = (ListView) mView.findViewById(R.id.weld_condition_list_view);
 		mListView.setAdapter(adapter);
 		mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -139,138 +171,57 @@ public class WeldConditionFragment extends Fragment
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				lastPosition = position;
-				fab_click(position);
+				dialog_show(position);
 				return true;
 			}
 		});
-
-		fab_setImage();
 
 		return mView;
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		refresh(true);
-	}
-
-	private void snackbar_setCheckedItem() {
-		if (mView == null)
-			return;
+	public void onActivityCreated(Bundle savedInstanceState) {
+		logD("onActivityCreated");
+		super.onActivityCreated(savedInstanceState);
 		try {
-			if (snackbar == null || !snackbar.isShown()) {
-				snackbar = Snackbar
-						.make(mView.findViewById(R.id.coordinator_layout),
-								String.valueOf(mListView.getCheckedItemCount()) + "개 항목 선택됨",
-								Snackbar.LENGTH_INDEFINITE)
-						.setAction("선택 취소", new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								setCheckedItem(false);
-								snackbar = null;
-							}
-						});
-			}
-			if (mListView.getCheckedItemCount() > 0 && adapter.getCount() > 0) {
-				if (snackbar.isShown())
-					snackbar.setText(String.valueOf(mListView.getCheckedItemCount()) + "개 항목 선택됨");
-				else
-					snackbar.show();
-			} else {
-				snackbar.dismiss();
-				snackbar = null;
-			}
-		} catch (NullPointerException e) {
+			getLoaderManager().initLoader(0, null, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void setCheckedItem(boolean value) {
-		try {
-			if (adapter.getCount() == 0)
-				mListView.clearChoices();
-			SparseBooleanArray checkedArray = mListView.getCheckedItemPositions();
-			for (int i = 0; i < checkedArray.size(); i++) {
-				if (checkedArray.valueAt(i)) {
-					int position = checkedArray.keyAt(i);
-					mListView.setItemChecked(position, value);
-					adapter.getItem(position).setItemChecked(value);
-				}
-			}
-			adapter.notifyDataSetChanged();
-			mListView.refreshDrawableState();
-			fab_setImage();
-		} catch (NullPointerException e) {
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		snackbar_setCheckedItem();
-	}
-
-	private void logDebug(String msg) {
-		try {
-			Log.d(getActivity().getPackageName(), TAG + ": " + msg);
-		} catch (NullPointerException e) {
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public String onGetWorkPath() {
-		if (mListener != null) {
-			return mListener.onGetWorkPath() + "/ROBOT.SWD";
-		}
-		return null;
 	}
 
 	@Override
-	public void onAttach(Context activity) {
-		super.onAttach(activity);
-		try {
-			mListener = (OnWorkPathListener) activity;
-		} catch (NullPointerException e) {
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-//			throw new ClassCastException(activity.toString()
-//					+ " must implement OnPathChangedListener");
-		}
+	public void onResume() {
+		Log.d(TAG, "onResume");
+		super.onResume();
 	}
 
 	@Override
 	public void onDetach() {
+		Log.d(TAG, "onDetach");
 		super.onDetach();
 		mListener = null;
+
+		adapter.clear();
+		adapter = null;
+		mView = null;
+		mListView = null;
+		snackbar = null;
+		getLoaderManager().destroyLoader(0);
 	}
 
+	// TODO: FileObserver로 구현 할것
 	@Override
 	public void refresh(boolean forced) {
 		try {
-			mWorkPath = onGetWorkPath();
-			if (adapter == null)
-				adapter = new WeldCondition.ConditionAdapter(getActivity());
-			if (forced || adapter.getCount() == 0) {
-				adapter.refresh(mWorkPath);
-				if (mListView != null)
-					mListView.refreshDrawableState();
+			if (isAdded()) {
+				Log.d(TAG, "refresh: restartLoader");
+				getLoaderManager().restartLoader(0, null, this);
 			}
-			setCheckedItem(true);
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			Log.d(TAG, e.getLocalizedMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		if (mView != null) {
-			if (adapter.getCount() > 0) {
-				mView.findViewById(R.id.list_title).setVisibility(View.VISIBLE);
-				mView.findViewById(R.id.imageView).setVisibility(View.GONE);
-				mView.findViewById(R.id.textView).setVisibility(View.GONE);
-			} else {
-				mView.findViewById(R.id.list_title).setVisibility(View.GONE);
-				mView.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
-				mView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
-			}
 		}
 	}
 
@@ -289,7 +240,7 @@ public class WeldConditionFragment extends Fragment
 		if (mListView != null) {
 			if (mListView.getCheckedItemCount() > 0) {
 				setCheckedItem(false);
-				return "unslect";
+				return "cancel";
 			}
 		}
 		return null;
@@ -298,33 +249,17 @@ public class WeldConditionFragment extends Fragment
 	@Override
 	public void show(String msg) {
 		try {
-			if (msg == null)
-				return;
-			Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
-					.setAction("Action", null).show();
-			logDebug(msg);
-		} catch (NullPointerException e) {
+			if (msg != null && isAdded()) {
+				Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+						.setAction("Action", null).show();
+				logD(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void fab_setImage() {
-		try {
-			FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_condition_fab);
-			if (adapter.getCount() == 0)
-				fab.setImageResource(R.drawable.ic_refresh_white);
-//			else if (mListView.getCheckedItemCount() == 0)
-//				fab.setImageResource(R.drawable.ic_subject_white);
-			else
-				fab.setImageResource(R.drawable.ic_edit_white);
-		} catch (NullPointerException e) {
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void fab_click(int position) {
+	private void dialog_show(int position) {
 		final String dialog_title1 = getContext().getString(R.string.weld_condition_dialog_title1) + " ";
 		final String dialog_title2 = getContext().getString(R.string.weld_condition_dialog_title2) + " ";
 
@@ -340,7 +275,7 @@ public class WeldConditionFragment extends Fragment
 			return;
 		}
 
-		final ArrayList<Integer> checkedPositions = new ArrayList<>();
+		final List<Integer> checkedPositions = new ArrayList<>();
 		try {
 			SparseBooleanArray checkedList = mListView.getCheckedItemPositions();
 			for (int i = 0; i < checkedList.size(); i++) {
@@ -357,7 +292,7 @@ public class WeldConditionFragment extends Fragment
 			return;
 		}
 
-		final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_weld_condition, null);
+		@SuppressLint("InflateParams") final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_weld_condition, null);
 		final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 		dialogBuilder.setView(dialogView);
 
@@ -385,7 +320,7 @@ public class WeldConditionFragment extends Fragment
 		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
 		linearLayout.addView(adView, linearLayout.getChildCount());
 
-		final ArrayList<TextInputLayout> tilList = new ArrayList<>();
+		final List<TextInputLayout> tilList = new ArrayList<>();
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout2));
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout3));
@@ -399,60 +334,63 @@ public class WeldConditionFragment extends Fragment
 		for (int index = 0; index < tilList.size(); index++) {
 			final TextInputLayout til = tilList.get(index);
 			final EditText et = til.getEditText();
-			if (index == 0) {                                           // outputData
-				et.setText(adapter.getItem(lastPosition).get(index));   // 기본선택된 자료값 가져오기
-			} else {
-				et.setGravity(Gravity.CENTER);
-				et.setSelectAllOnFocus(true);
-				et.setSingleLine();
-				try {
-					til.setTag(til.getHint());
-					til.setHint(til.getTag() + "(" + adapter.getItem(lastPosition).get(index) + ")");
-				} catch (NullPointerException e) {
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-			final int finalIndex = index;
-			et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					if (hasFocus) {
-						final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
-						if (et.getText().length() == 0) {
-							et.setText(adapter.getItem(sampleSeekBar.getProgress()).get(finalIndex));
-							et.selectAll();
-						}
-					} else {
-						try {
-							// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
-							if (finalIndex < 3) {
-								Integer etNumber = Integer.parseInt(et.getText().toString());
-								if (etNumber > valueMax[finalIndex])
-									etNumber = valueMax[finalIndex];
-								et.setText(String.valueOf(etNumber));
-							} else {
-								Float etNumber = Float.parseFloat(et.getText().toString());
-								if (etNumber > (float) valueMax[finalIndex])
-									etNumber = (float) valueMax[finalIndex];
-								et.setText(String.format("%.1f", etNumber));
-							}
-						} catch (NumberFormatException e) {
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+			if (et != null) {
+				if (index == 0) {                                           // outputData
+					et.setText(adapter.getItem(lastPosition).get(index));   // 기본선택된 자료값 가져오기
+				} else {
+					et.setGravity(Gravity.CENTER);
+					et.setSelectAllOnFocus(true);
+					et.setSingleLine();
+					try {
+						til.setTag(til.getHint());
+						til.setHint(til.getTag() + "(" + adapter.getItem(lastPosition).get(index) + ")");
+					} catch (NullPointerException e) {
+						logD(e.getLocalizedMessage());
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
-			});
-			et.setOnKeyListener(new View.OnKeyListener() {
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
-					Log.d(TAG, "KeyCode: " + String.valueOf(keyCode));
-					return false;
-				}
-			});
+				final int finalIndex = index;
+				et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+					@Override
+					public void onFocusChange(View v, boolean hasFocus) {
+						if (hasFocus) {
+							final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
+							if (et.getText().length() == 0) {
+								et.setText(adapter.getItem(sampleSeekBar.getProgress()).get(finalIndex));
+								et.selectAll();
+							}
+						} else {
+							try {
+								// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
+								if (finalIndex < 3) {
+									Integer etNumber = Integer.parseInt(et.getText().toString());
+									if (etNumber > valueMax[finalIndex])
+										etNumber = valueMax[finalIndex];
+									et.setText(String.valueOf(etNumber));
+								} else {
+									Float etNumber = Float.parseFloat(et.getText().toString());
+									if (etNumber > (float) valueMax[finalIndex])
+										etNumber = (float) valueMax[finalIndex];
+									et.setText(String.format("%.1f", etNumber));
+								}
+							} catch (NumberFormatException e) {
+								logD(e.getLocalizedMessage());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+				et.setOnKeyListener(new View.OnKeyListener() {
+					@Override
+					public boolean onKey(View v, int keyCode, KeyEvent event) {
+						Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+						//Log.d(TAG, "KeyCode: " + String.valueOf(keyCode));
+						return false;
+					}
+				});
+			}
 		}
 
 		final TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
@@ -478,8 +416,11 @@ public class WeldConditionFragment extends Fragment
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
 					try {
-						tilList.get(0).getEditText().setText(adapter.getItem(progress).get(0));
+						EditText editText0 = tilList.get(0).getEditText();
+						if (editText0 != null)
+							editText0.setText(adapter.getItem(progress).get(0));
 					} catch (NullPointerException e) {
+						logD(e.getLocalizedMessage());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -488,6 +429,7 @@ public class WeldConditionFragment extends Fragment
 							// 샘플바를 움직이면 힌트에 기존 값을 보여주도록 세팅한다
 							tilList.get(index).setHint(tilList.get(index).getTag() + "(" + adapter.getItem(progress).get(index) + ")");
 						} catch (NullPointerException e) {
+							logD(e.getLocalizedMessage());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -628,12 +570,11 @@ public class WeldConditionFragment extends Fragment
 				for (int rowNum : checkedPositions) {
 					for (int colNum = 1; colNum < tilList.size(); colNum++) {
 						try {
-							if (tilList.get(colNum).getEditText().getText().toString().length() > 0) {
-								adapter.getItem(rowNum).set(colNum, tilList.get(colNum).getEditText().getText().toString());
+							EditText editText = tilList.get(colNum).getEditText();
+							if (editText != null && editText.getText().toString().length() > 0) {
+								adapter.getItem(rowNum).set(colNum, editText.getText().toString());
 								isUpdate = true;
 							}
-						} catch (NullPointerException e) {
-							e.printStackTrace();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -653,6 +594,122 @@ public class WeldConditionFragment extends Fragment
 		dialogBuilder.show();
 	}
 
+	private void snackbar_setCheckedItem() {
+		try {
+			if (mView != null && isAdded()) {
+				if (snackbar == null || !snackbar.isShown()) {
+					snackbar = Snackbar
+							.make(mView.findViewById(R.id.coordinator_layout),
+									String.valueOf(mListView.getCheckedItemCount()) + "개 항목 선택됨",
+									Snackbar.LENGTH_INDEFINITE)
+							.setAction("선택 취소", new View.OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									setCheckedItem(false);
+									snackbar = null;
+								}
+							});
+				}
+				if (mListView.getCheckedItemCount() > 0 && adapter.getCount() > 0) {
+					if (snackbar.isShown())
+						snackbar.setText(String.valueOf(mListView.getCheckedItemCount()) + "개 항목 선택됨");
+					else
+						snackbar.show();
+				} else {
+					snackbar.dismiss();
+					snackbar = null;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setCheckedItem(boolean value) {
+		try {
+			if (isAdded()) {
+				if (adapter.getCount() == 0)
+					mListView.clearChoices();
+				SparseBooleanArray checkedArray = mListView.getCheckedItemPositions();
+				for (int i = 0; i < checkedArray.size(); i++) {
+					if (checkedArray.valueAt(i)) {
+						int position = checkedArray.keyAt(i);
+						mListView.setItemChecked(position, value);
+						adapter.getItem(position).setItemChecked(value);
+					}
+				}
+				adapter.notifyDataSetChanged();
+				mListView.refreshDrawableState();
+				fab_setImage();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		snackbar_setCheckedItem();
+	}
+
+	private void fab_setImage() {
+		try {
+			if (isAdded()) {
+				FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_condition_fab);
+				if (adapter.getCount() == 0)
+					fab.setImageResource(R.drawable.ic_refresh_white);
+				else
+					fab.setImageResource(R.drawable.ic_edit_white);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public String onGetWorkPath() {
+		if (mListener != null) {
+			return mListener.onGetWorkPath() + "/ROBOT.SWD";
+		}
+		return null;
+	}
+
+	private void logD(String msg) {
+		try {
+			Log.d(TAG, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Loader<List<WeldConditionItem>> onCreateLoader(int id, Bundle args) {
+		Log.d(TAG, "onCreateLoader: " + id);
+		return new WeldConditionLoader(getActivity(), mListener);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<List<WeldConditionItem>> loader, List<WeldConditionItem> data) {
+		Log.d(TAG, String.format("%d onLoadFinished() data.size: %d", loader.getId(), data.size()));
+		adapter.setData(data);
+		if (mListView != null)
+			mListView.refreshDrawableState();
+		if (mView != null) {
+			if (adapter.getCount() > 0) {
+				mView.findViewById(R.id.list_title).setVisibility(View.VISIBLE);
+				mView.findViewById(R.id.imageView).setVisibility(View.GONE);
+				mView.findViewById(R.id.textView).setVisibility(View.GONE);
+			} else {
+				mView.findViewById(R.id.list_title).setVisibility(View.GONE);
+				mView.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+				mView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+			}
+		}
+		setCheckedItem(true);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<List<WeldConditionItem>> loader) {
+		Log.d(TAG, "onLoaderReset: " + loader.getId());
+		adapter.setData(null);
+		adapter.notifyDataSetInvalidated();
+	}
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction : this fragment to be communicated
@@ -665,5 +722,369 @@ public class WeldConditionFragment extends Fragment
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+	}
+
+	public static class WeldConditionItem {
+		//		public static final int OUTPUT_DATA = 0;            // 출력 데이터
+//		public static final int OUTPUT_TYPE = 1;            // 출력 타입
+//		public static final int SQUEEZE_FORCE = 2;          // 가압력
+//		public static final int MOVE_TIP_CLEARANCE = 3;     // 이동극 제거율
+//		public static final int FIXED_TIP_CLEARANCE = 4;    // 고정극 제거율
+//		public static final int PANNEL_THICKNESS = 5;       // 패널 두께
+//		public static final int COMMAND_OFFSET = 6;         // 명령 옵셋
+//		private static final String TAG = "WeldConditionItem";
+		private List<String> rowList;
+		private String rowString;
+
+		private boolean itemChecked;
+
+		public WeldConditionItem(String value) {
+			rowList = new ArrayList<>();
+			if (value != null) {
+				setRowString(value);
+				setString(value);
+			}
+			itemChecked = false;
+		}
+
+		public String get(int index) {
+			String ret = null;
+			try {
+				ret = rowList.get(index);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return ret;
+		}
+
+		public String set(int index, String object) {
+			return rowList.set(index, object);
+		}
+
+//		public Integer size() {
+//			return rowList.size();
+//		}
+
+		public String getString() {
+			if (rowList == null)
+				return rowString;
+
+			StringBuilder sb = new StringBuilder();
+			try {
+				Iterator iter = rowList.iterator();
+				String outputData = (String) iter.next();
+				if (Integer.parseInt(outputData) < 10)
+					sb.append("\t- ").append(outputData).append("=").append(outputData);
+				else
+					sb.append("\t-").append(outputData).append("=").append(outputData);
+				while (iter.hasNext()) {
+					sb.append(",").append(iter.next());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return rowString;
+			}
+
+			return sb.toString();
+		}
+
+		public void setString(String value) {
+			try {
+				String[] header = value.trim().split("=");
+
+				if (header.length != 2)
+					return;
+
+				String[] data = header[1].trim().split(",");
+				for (String item : data) {
+					rowList.add(item.trim());
+				}
+			} catch (NullPointerException e) {
+				Log.d(TAG, e.getLocalizedMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+//		public String getRowString() {
+//			return rowString;
+//		}
+
+		public void setRowString(String rowString) {
+			this.rowString = rowString;
+		}
+
+		public boolean isItemChecked() {
+			return itemChecked;
+		}
+
+		public void setItemChecked(boolean itemChecked) {
+			this.itemChecked = itemChecked;
+		}
+	}
+
+	public static class WeldConditionLoader extends AsyncTaskLoader<List<WeldConditionItem>> {
+		private static final String TAG = "WeldConditionLoader";
+
+		WeldConditionFragment.OnWorkPathListener mCallBack;
+		List<WeldConditionItem> mList;
+		WeldConditionReceiver mReceiver;
+
+		public WeldConditionLoader(Context context,
+		                           WeldConditionFragment.OnWorkPathListener callBack) {
+			super(context);
+			mCallBack = callBack;
+		}
+
+		@Override
+		public List<WeldConditionItem> loadInBackground() {
+			Log.d(TAG, "loadInBackground");
+			if (mCallBack == null)
+				return null;
+			String path = mCallBack.onGetWorkPath() + "/ROBOT.SWD";
+			List<WeldConditionItem> list = new ArrayList<>();
+			try {
+				FileInputStream fileInputStream = new FileInputStream(path);
+				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+				String rowString;
+				boolean addText = false;
+				while ((rowString = bufferedReader.readLine()) != null) {
+					if (rowString.startsWith("#006"))
+						break;
+					if (addText && rowString.trim().length() > 0)
+						list.add(new WeldConditionItem(rowString));
+					if (rowString.startsWith("#005"))
+						addText = true;
+				}
+				bufferedReader.close();
+				inputStreamReader.close();
+				fileInputStream.close();
+			} catch (FileNotFoundException e) {
+				Log.d(TAG, e.getLocalizedMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Log.d(TAG, "loadInBackground() list.size: " + list.size());
+			return list;
+		}
+
+		@Override
+		public void deliverResult(List<WeldConditionItem> data) {
+			Log.d(TAG, "deliverResult");
+
+			if (isReset()) {
+				if (data != null)
+					onReleaseResources(data);
+			}
+
+			List<WeldConditionItem> oldList = mList;
+			mList = data;
+
+			if (isStarted()) {
+				super.deliverResult(data);
+			}
+
+			if (oldList != null)
+				onReleaseResources(oldList);
+
+			if (mList != null)
+				Log.d(TAG, "deliverResult() mList.size: " + mList.size());
+		}
+
+		protected void onReleaseResources(List<WeldConditionItem> data) {
+			// For a simple List<> there is nothing to do.  For something
+			// like a Cursor, we would close it here.
+			if (data != null) {
+				Log.d(TAG, "dataSize: " + data.size());
+			}
+		}
+
+		@Override
+		protected void onStartLoading() {
+			Log.d(TAG, "onStartLoading");
+
+			if (mList != null) {
+				deliverResult(mList);
+			}
+
+			if (mReceiver == null) {
+				mReceiver = new WeldConditionReceiver(this);
+			}
+
+			if (takeContentChanged() || mList == null) {
+				forceLoad();
+			}
+		}
+
+		@Override
+		protected void onStopLoading() {
+			Log.d(TAG, "onStopLoading");
+			cancelLoad();
+		}
+
+		@Override
+		public void onCanceled(List<WeldConditionItem> data) {
+			Log.d(TAG, "onCanceled");
+			super.onCanceled(data);
+			onReleaseResources(data);
+		}
+
+		@Override
+		protected void onReset() {
+			Log.d(TAG, "onReset");
+
+			super.onReset();
+
+			onStopLoading();
+
+			if (mList != null) {
+				onReleaseResources(mList);
+				mList = null;
+			}
+
+			if (mReceiver != null) {
+				getContext().unregisterReceiver(mReceiver);
+				mReceiver = null;
+			}
+		}
+
+		public static class WeldConditionReceiver extends BroadcastReceiver {
+			public static final String WELD_CONDITION_LOAD = "com.changyoung.hi5controller.weld_condition_load";
+			public static final String WELD_CONDITION_UPDATE = "com.changyoung.hi5controller.weld_condition_update";
+
+			final WeldConditionLoader mLoader;
+
+			public WeldConditionReceiver(WeldConditionLoader loader) {
+				mLoader = loader;
+				IntentFilter filter = new IntentFilter(WELD_CONDITION_LOAD);
+				filter.addAction(WELD_CONDITION_UPDATE);
+				mLoader.getContext().registerReceiver(this, filter);
+			}
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				mLoader.onContentChanged();
+			}
+		}
+	}
+
+	public static class WeldConditionAdapter extends ArrayAdapter<WeldConditionItem> {
+//		private static final String TAG = "WeldConditionAdapter";
+
+		private Activity mContext;
+
+		public WeldConditionAdapter(Activity context) {
+			super(context, R.layout.list_item_weld_condition);
+			mContext = context;
+		}
+
+		public void setData(List<WeldConditionItem> data) {
+			clear();
+			if (data != null) {
+				addAll(data);
+				notifyDataSetChanged();
+			} else {
+				notifyDataSetInvalidated();
+			}
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder viewHolder;
+			View row = convertView;
+
+			if (row == null) {
+				row = mContext.getLayoutInflater().inflate(R.layout.list_item_weld_condition, parent, false);
+				viewHolder = new ViewHolder(row);
+				row.setTag(viewHolder);
+			} else {
+				viewHolder = (ViewHolder) row.getTag();
+			}
+
+			WeldConditionItem item = getItem(position);
+			row.setBackgroundColor(item.isItemChecked() ? ContextCompat.getColor(mContext, R.color.tab3_textview_background) : Color.TRANSPARENT);
+			viewHolder.update(item);
+
+			return row;
+		}
+
+		public String update(String path) {
+			String ret;
+			StringBuilder sb = new StringBuilder();
+			File file = new File(path);
+
+			try {
+				FileInputStream fileInputStream = new FileInputStream(path);
+				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+				String rowString;
+				boolean addText = true;
+				boolean wciText = true;
+				while ((rowString = bufferedReader.readLine()) != null) {
+					if (!addText && wciText) {
+						for (int i = 0; i < getCount(); i++) {
+							sb.append(getItem(i).getString());
+							sb.append("\n");
+						}
+						sb.append("\n");
+						wciText = false;
+					}
+					if (rowString.startsWith("#006"))
+						addText = true;
+					if (addText) {
+						sb.append(rowString);
+						sb.append("\n");
+					}
+					if (rowString.startsWith("#005"))
+						addText = false;
+				}
+				bufferedReader.close();
+				inputStreamReader.close();
+				fileInputStream.close();
+
+				FileOutputStream fileOutputStream = new FileOutputStream(path);
+				OutputStreamWriter outputStreamReader = new OutputStreamWriter(fileOutputStream, "EUC-KR");
+				BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
+
+				bufferedWriter.write(sb.toString());
+
+				bufferedWriter.close();
+				outputStreamReader.close();
+				fileOutputStream.close();
+
+				ret = "저장 완료: " + file.getName();
+			} catch (FileNotFoundException e) {
+				ret = "저장 실패" + file.getName();
+			} catch (Exception e) {
+				e.printStackTrace();
+				ret = "저장 실패" + file.getName();
+			}
+
+			return ret;
+		}
+
+		public class ViewHolder {
+			private List<TextView> tvList;
+
+			public ViewHolder(View row) {
+				tvList = new ArrayList<>();
+				tvList.add((TextView) row.findViewById(R.id.tvOutputData));
+				tvList.add((TextView) row.findViewById(R.id.tvOutputType));
+				tvList.add((TextView) row.findViewById(R.id.tvSqueezeForce));
+				tvList.add((TextView) row.findViewById(R.id.tvMoveTipClearance));
+				tvList.add((TextView) row.findViewById(R.id.tvFixedTipClearance));
+				tvList.add((TextView) row.findViewById(R.id.tvPannelThickness));
+				tvList.add((TextView) row.findViewById(R.id.tvCommandOffset));
+			}
+
+			public void update(WeldConditionItem weldConditionItem) {
+				for (int i = 0; i < tvList.size(); i++) {
+					tvList.get(i).setText(weldConditionItem.get(i));
+				}
+			}
+		}
 	}
 }

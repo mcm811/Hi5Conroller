@@ -80,7 +80,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|left"
 			android:layout_margin="16dp"
-			android:src="@drawable/ic_archive_white"
+			android:src="@drawable/ic_settings_backup_restore_white"
 			app:backgroundTint="@color/pink_A200"
 			app:borderWidth="0dp"
 			app:elevation="6dp"/>
