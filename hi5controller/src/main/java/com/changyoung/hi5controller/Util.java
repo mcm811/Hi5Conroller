@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -215,7 +216,7 @@ public class Util {
 						Util.FileUtil.delete(dest, false);
 					if (dest.mkdirs())
 						Log.d("backup", "dest.mkdirs");
-					new AsyncTaskCopyDialog(context, view, "백업").execute(source, dest);
+					new AsyncTaskFileDialog(context, view, "백업").execute(source, dest);
 					return null;
 				}
 				throw new Exception();
@@ -324,16 +325,28 @@ public class Util {
 		}
 	}
 
-	public static class AsyncTaskCopyDialog extends AsyncTask<File, String, String> {
+	public static class AsyncTaskFileDialog extends AsyncTask<File, String, String> {
+		private static final int MSG_REFRESH_DIR = 0;
+		private static final int MSG_REFRESH_PARENT_DIR = 1;
+
+		private final static long BASE_SLEEP_TIME = 250;
 		private ProgressDialog progressDialog;
 		private Context mContext;
 		private View view;
 		private String msg;
+		private Handler handler;
 
-		public AsyncTaskCopyDialog(Context context, View view, String msg) {
+		public AsyncTaskFileDialog(Context context, View view, String msg) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;
+		}
+
+		public AsyncTaskFileDialog(Context context, View view, String msg, Handler handler) {
+			mContext = context;
+			this.view = view;
+			this.msg = msg;
+			this.handler = handler;
 		}
 
 		@Override
@@ -363,18 +376,26 @@ public class Util {
 					File[] files = source.listFiles();
 					publishProgress("max", String.valueOf(files.length));
 					for (int i = 0, filesLength = files.length; i < filesLength; i++) {
+						final long sleepTime = BASE_SLEEP_TIME / filesLength;
 						File file = files[i];
 						if (file.isFile()) {
 							publishProgress("progress", String.valueOf(i),
 									String.format("%s %s 중", file.getName(), msg));
 							FileUtil.copy(file, new File(dest.getPath() + "/" + file.getName()));
+							if (filesLength < 20) {
+								try {
+									Thread.sleep(sleepTime);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
 						}
 					}
 				} catch (IOException e) {
 					return e.getLocalizedMessage();
 				}
 			}
-			return "백업 완료: " + dest.getName();
+			return String.format("%s 완료: %s", msg, dest.getName());
 		}
 
 		private void searchFile(List<File> deleteList, File dir) {
@@ -390,6 +411,7 @@ public class Util {
 			List<File> deleteList = new ArrayList<>();
 			searchFile(deleteList, dir);
 			publishProgress("max", String.valueOf(deleteList.size()));
+			long sleepTime = BASE_SLEEP_TIME / deleteList.size();
 
 			for (int i = 0, deleteListSize = deleteList.size(); i < deleteListSize; i++) {
 				File file = deleteList.get(i);
@@ -397,6 +419,13 @@ public class Util {
 						String.format("%s %s 중", file.getName(), msg));
 				//noinspection ResultOfMethodCallIgnored
 				file.delete();
+				if (deleteListSize < 20) {
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 			return "삭제 완료: " + dir.getName();
 		}
@@ -431,6 +460,12 @@ public class Util {
 						.setAction("Action", null).show();
 				Log.d("AsyncTask", "onPostExecute: " + result);
 			}
+//			if (handler != null) {
+//				Message msg = handler.obtainMessage();
+//				msg.what = MSG_REFRESH_DIR;
+//				msg.obj = null;
+//				handler.sendMessage(msg);
+//			}
 		}
 	}
 }

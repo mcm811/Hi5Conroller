@@ -8,6 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -52,12 +56,18 @@ import java.util.List;
  */
 public class WeldCountFragment extends Fragment
 		implements Refresh, LoaderManager.LoaderCallbacks<List<WeldCountFragment.WeldCountFile>> {
+
+	private static final int MSG_REFRESH = 0;
+
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldCountFragment";
 
 	private View mView;
 	private ListView mListView;
 	private WeldCountAdapter adapter;
+
+	private LooperHandler looperHandler;
+	private WeldCountObserver observer;
 
 	//	private String mWorkPath;
 
@@ -160,6 +170,10 @@ public class WeldCountFragment extends Fragment
 			}
 		});
 
+		looperHandler = new LooperHandler(Looper.getMainLooper());
+		observer = new WeldCountObserver(onGetWorkPath(), looperHandler);
+		observer.startWatching();
+
 		return mView;
 	}
 
@@ -200,6 +214,8 @@ public class WeldCountFragment extends Fragment
 			if (isAdded()) {
 				Log.d(TAG, "refresh: restartLoader");
 				getLoaderManager().restartLoader(0, null, this);
+				observer = new WeldCountObserver(onGetWorkPath(), looperHandler);
+				observer.startWatching();
 			}
 		} catch (IllegalStateException e) {
 			Log.d(TAG, e.getLocalizedMessage());
@@ -398,12 +414,12 @@ public class WeldCountFragment extends Fragment
 		dialog.show();
 	}
 
-//	public String onGetWorkPath() {
-//		if (mListener != null) {
-//			return mListener.onGetWorkPath();
-//		}
-//		return null;
-//	}
+	public String onGetWorkPath() {
+		if (mListener != null) {
+			return mListener.onGetWorkPath();
+		}
+		return null;
+	}
 
 	private void logD(String msg) {
 		try {
@@ -455,6 +471,54 @@ public class WeldCountFragment extends Fragment
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+	}
+
+	public static class WeldCountObserver extends FileObserver {
+		static final String TAG = "WeldCountObserver";
+		static final int mask = CREATE | DELETE | DELETE_SELF |
+				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
+		File file;
+		private Handler handler;
+
+		@SuppressWarnings("unused")
+		public WeldCountObserver(File file, Handler handler) {
+			super(file.getPath(), mask);
+			this.file = file;
+			this.handler = handler;
+			Log.d(TAG, "FILE_OBSERVER: " + file.getPath());
+		}
+
+		public WeldCountObserver(String path, Handler handler) {
+			super(path, mask);
+			this.file = new File(path);
+			this.handler = handler;
+			Log.d(TAG, "FILE_OBSERVER: " + path);
+		}
+
+		public void onEvent(int event, String path) {
+			if ((event & CREATE) == CREATE)
+				Log.d(TAG, String.format("CREATE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE) == DELETE)
+				Log.d(TAG, String.format("DELETE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE_SELF) == DELETE_SELF)
+				Log.d(TAG, String.format("DELETE_SELF: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_FROM) == MOVED_FROM)
+				Log.d(TAG, String.format("MOVED_FROM: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_TO) == MOVED_TO)
+				Log.d(TAG, String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
+			else if ((event & MOVE_SELF) == MOVE_SELF)
+				Log.d(TAG, String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
+			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
+				Log.d(TAG, String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
+			else
+				return;
+
+			stopWatching();
+			Message msg = handler.obtainMessage();
+			msg.what = MSG_REFRESH;
+			msg.obj = file;
+			handler.sendMessage(msg);
+		}
 	}
 
 	public static class WeldCountFile extends File {
@@ -1114,7 +1178,6 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-
 	public static class WeldCountAdapter extends ArrayAdapter<WeldCountFile> {
 		private Activity mContext;
 
@@ -1209,6 +1272,25 @@ public class WeldCountFragment extends Fragment
 				tvCount.setText(jobFile.getJobInfo().getString());
 				tvPreview.setText(jobFile.getJobInfo().getPreview());
 				tvCN.setText(jobFile.getCNList());
+			}
+		}
+	}
+
+	private class LooperHandler extends Handler {
+		public LooperHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+				case MSG_REFRESH:
+					Log.d(TAG, "MSG_REFRESH");
+					refresh(true);
+					break;
+				default:
+					break;
 			}
 		}
 	}

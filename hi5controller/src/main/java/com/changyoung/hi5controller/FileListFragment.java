@@ -39,11 +39,11 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class FileListFragment extends Fragment {
-	private static final int REFRESH_DIR = 0;
-	private static final int REFRESH_PARENT_DIR = 1;
+	private static final int MSG_REFRESH_DIR = 0;
+	private static final int MSG_REFRESH_PARENT_DIR = 1;
 
 	private static final String TAG = "FileListFragment";
-	private static final String ARG_DIR_PATH = "mDirPath";
+	private static final String ARG_DIR_PATH = "dirPath";
 	public View snackbarView;
 	private View mView;
 	private OnPathChangedListener mListener;
@@ -51,9 +51,9 @@ public class FileListFragment extends Fragment {
 	private ListView listView;
 	private FileListAdapter adapter;
 
-	private File mDirPath;
-	private FileListObserver mFileObserver;
-	private FileListHandler mHandler;
+	private File dirPath;
+	private FileListObserver fileListObserver;
+	private LooperHandler looperHandler;
 
 	public FileListFragment() {
 		// Required empty public constructor
@@ -93,19 +93,19 @@ public class FileListFragment extends Fragment {
 	}
 
 	public String getDirPath() {
-		return mDirPath.getPath();
-	}
-
-	public void setDirPath(File value) {
-		this.mDirPath = value;
+		return dirPath.getPath();
 	}
 
 	public void setDirPath(String value) {
-		this.mDirPath = new File(value);
+		this.dirPath = new File(value);
+	}
+
+	public void setDirPath(File value) {
+		this.dirPath = value;
 	}
 
 	public File getDirFile() {
-		return mDirPath;
+		return dirPath;
 	}
 
 	@Override
@@ -150,7 +150,8 @@ public class FileListFragment extends Fragment {
 				} else if (file.isDirectory()) {
 					refreshFilesList(file.getPath());
 				} else {
-					Util.UiUtil.textViewActivity(getContext(), file.getName(), Util.FileUtil.readFileString(file.getPath()));
+					Util.UiUtil.textViewActivity(getContext(), file.getName(),
+							Util.FileUtil.readFileString(file.getPath()));
 				}
 			}
 		});
@@ -162,8 +163,9 @@ public class FileListFragment extends Fragment {
 
 				final File file = (File) parent.getAdapter().getItem(position);
 				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
-				String fileType = file.isDirectory() ? "이 폴더를 " : "이 파일을 ";
-				String msg = fileType + "완전히 삭제 하시겠습니까?\n\n" + file.getName() + "\n\n수정한 날짜: " + Util.TimeUtil.getLasModified(file);
+				String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
+				String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
+						fileType, file.getName(), Util.TimeUtil.getLasModified(file));
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(actionName)
@@ -179,7 +181,7 @@ public class FileListFragment extends Fragment {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								try {
-									new Util.AsyncTaskCopyDialog(getContext(), snackbarView, "삭제")
+									new Util.AsyncTaskFileDialog(getContext(), snackbarView, "삭제", looperHandler)
 											.execute(file);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -193,13 +195,13 @@ public class FileListFragment extends Fragment {
 			}
 		});
 
-		mHandler = new FileListHandler(Looper.getMainLooper());
+		looperHandler = new LooperHandler(Looper.getMainLooper());
 
 		return mView;
 	}
 
 	public String refreshParent() {
-		return refreshFilesList(mDirPath.getParent());
+		return refreshFilesList(dirPath.getParent());
 	}
 
 	public String refreshFilesList() {
@@ -221,7 +223,7 @@ public class FileListFragment extends Fragment {
 	public String refreshFilesList(File dir) {
 		try {
 			if (dir == null)
-				dir = mDirPath;
+				dir = dirPath;
 
 			Log.d(TAG, dir.getName());
 
@@ -252,8 +254,8 @@ public class FileListFragment extends Fragment {
 			listView.refreshDrawableState();
 			onDirPathChanged(dir);
 
-			mFileObserver = new FileListObserver(dir, mHandler);
-			mFileObserver.startWatching();
+			fileListObserver = new FileListObserver(dir, looperHandler);
+			fileListObserver.startWatching();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -297,10 +299,10 @@ public class FileListFragment extends Fragment {
 		listView = null;
 		adapter.clear();
 		adapter = null;
-		mDirPath = null;
-		mHandler = null;
-		mFileObserver.stopWatching();
-		mFileObserver = null;
+		dirPath = null;
+		looperHandler = null;
+		fileListObserver.stopWatching();
+		fileListObserver = null;
 	}
 
 	/**
@@ -318,67 +320,41 @@ public class FileListFragment extends Fragment {
 	}
 
 	public static class FileListObserver extends FileObserver {
-		static final String TAG = "FILE_LIST_OBSERVER";
-		static final int mask = (FileObserver.CREATE |
-				FileObserver.DELETE |
-				FileObserver.DELETE_SELF |
-				FileObserver.MODIFY |
-				FileObserver.MOVED_FROM |
-				FileObserver.MOVED_TO |
-				FileObserver.MOVE_SELF |
-				FileObserver.CLOSE_WRITE);
-		File rootPath;
+		static final String TAG = "FileListObserver";
+		static final int mask = CREATE | DELETE | DELETE_SELF |
+				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
+		File file;
 		private Handler handler;
 
-		public FileListObserver(File root, Handler handler) {
-			super(root.getPath(), mask);
-			this.rootPath = root;
+		public FileListObserver(File file, Handler handler) {
+			super(file.getPath(), mask);
+			this.file = file;
 			this.handler = handler;
+			Log.d(TAG, "FILE_OBSERVER: " + file.getPath());
 		}
 
 		public void onEvent(int event, String path) {
-			if (path == null)
+			if ((event & CREATE) == CREATE)
+				Log.d(TAG, String.format("CREATE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE) == DELETE)
+				Log.d(TAG, String.format("DELETE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE_SELF) == DELETE_SELF)
+				Log.d(TAG, String.format("DELETE_SELF: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_FROM) == MOVED_FROM)
+				Log.d(TAG, String.format("MOVED_FROM: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_TO) == MOVED_TO)
+				Log.d(TAG, String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
+			else if ((event & MOVE_SELF) == MOVE_SELF)
+				Log.d(TAG, String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
+			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
+				Log.d(TAG, String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
+			else
 				return;
-			switch (event) {
-				case FileObserver.CREATE:
-					Log.d(TAG, "CREATE:" + rootPath + path);
-					break;
-				case FileObserver.DELETE:
-					Log.d(TAG, "DELETE:" + rootPath + path);
-					break;
-				case FileObserver.DELETE_SELF:
-					Log.d(TAG, "DELETE_SELF:" + rootPath + path);
-					break;
-				case FileObserver.MODIFY:
-					Log.d(TAG, "MODIFY:" + rootPath + path);
-					break;
-				case FileObserver.MOVED_FROM:
-					Log.d(TAG, "MOVED_FROM:" + rootPath + path);
-					break;
-				case FileObserver.MOVED_TO:
-					Log.d(TAG, "MOVED_TO:" + path);
-					break;
-				case FileObserver.MOVE_SELF:
-					Log.d(TAG, "MOVE_SELF:" + path);
-					break;
-				case FileObserver.CLOSE_WRITE:
-					Log.d(TAG, "CLOSE_WRITE:" + path);
-//					Message msg = Message.obtain(handler);
-//					Bundle bundle = new Bundle();
-//					bundle.putString("typeoperation", "CLOSE_WRITE");
-//					bundle.putString("path", rootPath + path);
-//					msg.setData(b);
-//					handler.sendMessage(msg);
-					break;
-				default:
-					Log.d(TAG, String.format("EVENT(%d): %s", event, path));
-					break;
-			}
 
 			stopWatching();
 			Message msg = handler.obtainMessage();
-			msg.what = REFRESH_DIR;
-			msg.obj = rootPath;
+			msg.what = MSG_REFRESH_DIR;
+			msg.obj = file;
 			handler.sendMessage(msg);
 		}
 	}
@@ -457,8 +433,8 @@ public class FileListFragment extends Fragment {
 		}
 	}
 
-	private class FileListHandler extends Handler {
-		public FileListHandler(Looper looper) {
+	private class LooperHandler extends Handler {
+		public LooperHandler(Looper looper) {
 			super(looper);
 		}
 
@@ -466,11 +442,19 @@ public class FileListFragment extends Fragment {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
-				case REFRESH_DIR:
-					refreshFilesList((File) msg.obj);
+				case MSG_REFRESH_DIR:
+					Log.d(TAG, "MSG_REFRESH_DIR");
+					if (msg.obj == null)
+						refreshFilesList();
+					else
+						refreshFilesList((File) msg.obj);
 					break;
-				case REFRESH_PARENT_DIR:
-					refreshFilesList(((File) msg.obj).getParentFile());
+				case MSG_REFRESH_PARENT_DIR:
+					Log.d(TAG, "MSG_REFRESH_PARENT_DIR");
+					if (msg.obj == null)
+						refreshParent();
+					else
+						refreshFilesList(((File) msg.obj).getParentFile());
 					break;
 				default:
 					break;

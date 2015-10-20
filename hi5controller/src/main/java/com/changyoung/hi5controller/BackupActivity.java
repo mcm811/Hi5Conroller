@@ -234,8 +234,7 @@ public class BackupActivity extends AppCompatActivity
 						Util.FileUtil.delete(dest, false);
 					if (dest.mkdirs())
 						logD("dest.mkdirs");
-//					Util.FileUtil.copy(source, dest, false);
-					new Util.AsyncTaskCopyDialog(getContext(),
+					new Util.AsyncTaskFileDialog(getContext(),
 							findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
 					return null;
 				}

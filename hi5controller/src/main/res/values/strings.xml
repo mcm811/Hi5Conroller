@@ -16,7 +16,7 @@
 	<string name="SqueezeForce">가 압 력</string>
 	<string name="MoveTipClearance">이동극 제거율</string>
 	<string name="FixedTipClearance">고정극 제거율</string>
-	<string name="PannelThickness">패널 두께</string>
+	<string name="PanelThickness">패널 두께</string>
 	<string name="CommandOffset">명령 옵셋</string>
 
 	<string name="Editor_OutputData">출력 데이터 (Output data)</string>
@@ -24,7 +24,7 @@
 	<string name="Editor_SqueezeForce">가압력</string>
 	<string name="Editor_MoveTipClearance">이동극 제거율</string>
 	<string name="Editor_FixedTipClearance">고정극 제거율</string>
-	<string name="Editor_PannelThickness">패널 두께</string>
+	<string name="Editor_PanelThickness">패널 두께</string>
 	<string name="Editor_CommandOffset">명령 옵셋</string>
 	<string name="Editor_BeginNumber">시작 번호</string>
 

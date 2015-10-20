@@ -11,6 +11,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -60,6 +64,9 @@ import java.util.List;
  */
 public class WeldConditionFragment extends Fragment
 		implements Refresh, LoaderManager.LoaderCallbacks<List<WeldConditionFragment.WeldConditionItem>> {
+
+	private static final int MSG_REFRESH = 0;
+
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldConditionFragment";
 
@@ -67,6 +74,9 @@ public class WeldConditionFragment extends Fragment
 	private ListView mListView;
 	private WeldConditionAdapter adapter;
 	private Snackbar snackbar;
+
+	private LooperHandler looperHandler;
+	private WeldConditionObserver observer;
 
 	//	private String mWorkPath;
 	private int lastPosition = 0;
@@ -176,6 +186,10 @@ public class WeldConditionFragment extends Fragment
 			}
 		});
 
+		looperHandler = new LooperHandler(Looper.getMainLooper());
+		observer = new WeldConditionObserver(onGetWorkPath(), looperHandler);
+		observer.startWatching();
+
 		return mView;
 	}
 
@@ -208,15 +222,17 @@ public class WeldConditionFragment extends Fragment
 		mListView = null;
 		snackbar = null;
 		getLoaderManager().destroyLoader(0);
+		looperHandler = null;
 	}
 
-	// TODO: FileObserver로 구현 할것
 	@Override
 	public void refresh(boolean forced) {
 		try {
 			if (isAdded()) {
 				Log.d(TAG, "refresh: restartLoader");
 				getLoaderManager().restartLoader(0, null, this);
+				observer = new WeldConditionObserver(onGetWorkPath(), looperHandler);
+				observer.startWatching();
 			}
 		} catch (IllegalStateException e) {
 			Log.d(TAG, e.getLocalizedMessage());
@@ -679,13 +695,13 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public Loader<List<WeldConditionItem>> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, "onCreateLoader: " + id);
+		Log.d(TAG, String.format("ID_%d onCreateLoader()", id));
 		return new WeldConditionLoader(getActivity(), mListener);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<List<WeldConditionItem>> loader, List<WeldConditionItem> data) {
-		Log.d(TAG, String.format("%d onLoadFinished() data.size: %d", loader.getId(), data.size()));
+		Log.d(TAG, String.format("id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
 		adapter.setData(data);
 		if (mListView != null)
 			mListView.refreshDrawableState();
@@ -705,7 +721,7 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public void onLoaderReset(Loader<List<WeldConditionItem>> loader) {
-		Log.d(TAG, "onLoaderReset: " + loader.getId());
+		Log.d(TAG, String.format("ID_%d onLoaderReset()", loader.getId()));
 		adapter.setData(null);
 		adapter.notifyDataSetInvalidated();
 	}
@@ -724,15 +740,63 @@ public class WeldConditionFragment extends Fragment
 		String onGetWorkPath();
 	}
 
+	public static class WeldConditionObserver extends FileObserver {
+		static final String TAG = "WeldConditionObserver";
+		static final int mask = CREATE | DELETE | DELETE_SELF |
+				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
+		File file;
+		private Handler handler;
+
+		@SuppressWarnings("unused")
+		public WeldConditionObserver(File file, Handler handler) {
+			super(file.getPath(), mask);
+			this.file = file;
+			this.handler = handler;
+			Log.d(TAG, "FILE_OBSERVER: " + file.getPath());
+		}
+
+		public WeldConditionObserver(String path, Handler handler) {
+			super(path, mask);
+			this.file = new File(path);
+			this.handler = handler;
+			Log.d(TAG, "FILE_OBSERVER: " + path);
+		}
+
+		public void onEvent(int event, String path) {
+			if ((event & CREATE) == CREATE)
+				Log.d(TAG, String.format("CREATE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE) == DELETE)
+				Log.d(TAG, String.format("DELETE: %s/%s", file.getPath(), path));
+			else if ((event & DELETE_SELF) == DELETE_SELF)
+				Log.d(TAG, String.format("DELETE_SELF: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_FROM) == MOVED_FROM)
+				Log.d(TAG, String.format("MOVED_FROM: %s/%s", file.getPath(), path));
+			else if ((event & MOVED_TO) == MOVED_TO)
+				Log.d(TAG, String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
+			else if ((event & MOVE_SELF) == MOVE_SELF)
+				Log.d(TAG, String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
+			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
+				Log.d(TAG, String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
+			else
+				return;
+
+			stopWatching();
+			Message msg = handler.obtainMessage();
+			msg.what = MSG_REFRESH;
+			msg.obj = file;
+			handler.sendMessage(msg);
+		}
+	}
+
 	public static class WeldConditionItem {
 		//		public static final int OUTPUT_DATA = 0;            // 출력 데이터
 //		public static final int OUTPUT_TYPE = 1;            // 출력 타입
 //		public static final int SQUEEZE_FORCE = 2;          // 가압력
 //		public static final int MOVE_TIP_CLEARANCE = 3;     // 이동극 제거율
 //		public static final int FIXED_TIP_CLEARANCE = 4;    // 고정극 제거율
-//		public static final int PANNEL_THICKNESS = 5;       // 패널 두께
+//		public static final int PANEL_THICKNESS = 5;       // 패널 두께
 //		public static final int COMMAND_OFFSET = 6;         // 명령 옵셋
-//		private static final String TAG = "WeldConditionItem";
+		private static final String TAG = "WeldConditionItem";
 		private List<String> rowList;
 		private String rowString;
 
@@ -1076,7 +1140,7 @@ public class WeldConditionFragment extends Fragment
 				tvList.add((TextView) row.findViewById(R.id.tvSqueezeForce));
 				tvList.add((TextView) row.findViewById(R.id.tvMoveTipClearance));
 				tvList.add((TextView) row.findViewById(R.id.tvFixedTipClearance));
-				tvList.add((TextView) row.findViewById(R.id.tvPannelThickness));
+				tvList.add((TextView) row.findViewById(R.id.tvPanelThickness));
 				tvList.add((TextView) row.findViewById(R.id.tvCommandOffset));
 			}
 
@@ -1084,6 +1148,25 @@ public class WeldConditionFragment extends Fragment
 				for (int i = 0; i < tvList.size(); i++) {
 					tvList.get(i).setText(weldConditionItem.get(i));
 				}
+			}
+		}
+	}
+
+	private class LooperHandler extends Handler {
+		public LooperHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+				case MSG_REFRESH:
+					Log.d(TAG, "MSG_REFRESH");
+					refresh(true);
+					break;
+				default:
+					break;
 			}
 		}
 	}

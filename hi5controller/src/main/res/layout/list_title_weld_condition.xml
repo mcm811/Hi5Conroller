@@ -32,15 +32,15 @@
 		android:textSize="8dp"/>
 
 	<TextView
-		android:id="@+id/tvPannelThickness"
+		android:id="@+id/tvPanelThickness"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
 		android:gravity="right"
-		android:hint="@string/PannelThickness"
-		android:text="@string/PannelThickness"
+		android:hint="@string/PanelThickness"
+		android:text="@string/PanelThickness"
 		android:textSize="10dp"/>
 
 	<TextView
@@ -48,7 +48,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
-		android:layout_below="@id/tvPannelThickness"
+		android:layout_below="@id/tvPanelThickness"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
 		android:layout_marginTop="2dp"
@@ -62,7 +62,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginLeft="10dp"
-		android:layout_toLeftOf="@id/tvPannelThickness"
+		android:layout_toLeftOf="@id/tvPanelThickness"
 		android:gravity="right"
 		android:hint="@string/MoveTipClearance"
 		android:text="@string/MoveTipClearance"

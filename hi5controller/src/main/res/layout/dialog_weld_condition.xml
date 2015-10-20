@@ -155,11 +155,11 @@
 					android:layout_height="wrap_content">
 
 					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etPannelThickness"
+						android:id="@+id/etPanelThickness"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
 						android:gravity="left"
-						android:hint="@string/Editor_PannelThickness"
+						android:hint="@string/Editor_PanelThickness"
 						android:inputType="numberDecimal"
 						android:numeric="decimal"
 						android:selectAllOnFocus="true"
