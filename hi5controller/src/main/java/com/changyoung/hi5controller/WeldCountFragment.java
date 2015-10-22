@@ -12,6 +12,7 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -48,6 +49,8 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -62,12 +65,17 @@ public class WeldCountFragment extends Fragment
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldCountFragment";
 
+	private static final int ORDER_TYPE_ASCEND = 0;
+	private static final int ORDER_TYPE_DESCEND = 1;
+
 	private View mView;
 	private ListView mListView;
 	private WeldCountAdapter adapter;
 
 	private LooperHandler looperHandler;
 	private WeldCountObserver observer;
+
+	private int orderType = ORDER_TYPE_ASCEND;
 
 	//	private String mWorkPath;
 
@@ -130,6 +138,16 @@ public class WeldCountFragment extends Fragment
 			public void onRefresh() {
 				refresh(true);
 				refresher.setRefreshing(false);
+			}
+		});
+
+		final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_count_fab);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				orderType = orderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+				adapter.sortName(orderType);
+				fab.setScaleY(fab.getScaleY() * -1);
 			}
 		});
 
@@ -207,7 +225,6 @@ public class WeldCountFragment extends Fragment
 		getLoaderManager().destroyLoader(0);
 	}
 
-	// TODO: FileObserver로 구현 할것
 	@Override
 	public void refresh(boolean forced) {
 		try {
@@ -438,7 +455,7 @@ public class WeldCountFragment extends Fragment
 	@Override
 	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
 		Log.d(TAG, String.format("id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
-		adapter.setData(data);
+		adapter.setData(data, orderType);
 		if (mListView != null)
 			mListView.refreshDrawableState();
 		if (mView != null) {
@@ -455,7 +472,7 @@ public class WeldCountFragment extends Fragment
 	@Override
 	public void onLoaderReset(Loader<List<WeldCountFile>> loader) {
 		Log.d(TAG, String.format("id: %d, onLoaderReset()", loader.getId()));
-		adapter.setData(null);
+		adapter.setData(null, ORDER_TYPE_ASCEND);
 		adapter.notifyDataSetInvalidated();
 	}
 
@@ -1186,14 +1203,48 @@ public class WeldCountFragment extends Fragment
 			mContext = context;
 		}
 
-		public void setData(List<WeldCountFile> data) {
+		public void setData(List<WeldCountFile> data, int orderType) {
 			clear();
 			if (data != null) {
+				Collections.sort(data, new Comparator<File>() {
+					public int compare(File obj1, File obj2) {
+						int ret = 0;
+						if (obj1.isDirectory() && obj2.isDirectory())
+							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+						else if (obj1.isFile() && obj2.isFile())
+							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+						else if (obj1.isDirectory() && obj2.isFile())
+							ret = -1;
+						else if (obj1.isFile() && obj2.isDirectory()) {
+							ret = 1;
+						}
+						return ret;
+					}
+				});
+				if (orderType == ORDER_TYPE_DESCEND)
+					Collections.reverse(data);
 				addAll(data);
 				notifyDataSetChanged();
 			} else {
 				notifyDataSetInvalidated();
 			}
+		}
+
+		public void sortName(final int orderType) {
+			sort(new Comparator<File>() {
+				public int compare(File obj1, File obj2) {
+					int ret = 0;
+					if (obj1.isDirectory() && obj2.isDirectory())
+						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+					else if (obj1.isFile() && obj2.isFile())
+						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+					else if (obj1.isDirectory() && obj2.isFile())
+						ret = -1;
+					else if (obj1.isFile() && obj2.isDirectory())
+						ret = 1;
+					return orderType == 0 ? ret : -ret;
+				}
+			});
 		}
 
 		@Override

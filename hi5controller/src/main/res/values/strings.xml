@@ -77,6 +77,8 @@
 	<string name="banner_ad_unit_id_debug">ca-app-pub-3940256099942544/6300978111</string>
 	<string name="banner_ad_unit_id_release">ca-app-pub-4103700007170181/6544598462</string>
 	<string name="banner_ad_unit_id">@string/banner_ad_unit_id_debug</string>
+	<string name="setup_work_path">작업 경로를 설정 하십시오</string>
+	<string name="changyoung_robot">Changyoung robot</string>
 
 	<string-array name="dialog_items">
 		<item>계열 수정</item>

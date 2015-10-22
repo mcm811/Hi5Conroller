@@ -124,11 +124,15 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					File dir = new File(Util.Pref.STORAGE_PATH);
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
-							for (File subItem : file.listFiles()) {
-								if (subItem.exists() && refresh(file.getPath())) {
-									ret = null;
-									break;
+							try {
+								for (File subItem : file.listFiles()) {
+									if (subItem.exists() && refresh(file.getPath())) {
+										ret = null;
+										break;
+									}
 								}
+							} catch (NullPointerException e) {
+								Log.d(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
@@ -142,13 +146,19 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
 					File dir = new File(Util.Pref.STORAGE_PATH);
+					Log.d(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("usb")) {
-							for (File subItem : file.listFiles()) {
-								if (subItem.exists() && refresh(file.getPath())) {
-									ret = null;
-									break;
+							try {
+								for (File subItem : file.listFiles()) {
+									if (subItem.exists() && refresh(file.getPath())) {
+										Log.d(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
+										ret = null;
+										break;
+									}
 								}
+							} catch (NullPointerException e) {
+								Log.d(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
