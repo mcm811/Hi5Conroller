@@ -48,7 +48,7 @@ public class Helper {
 	public static class Pref {
 		public final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 		public final static String STORAGE_PATH = "/storage";
-		public final static String PACKAGE_NAME = "com.changyoung.hi5conroller";
+		public final static String PACKAGE_NAME = "com.changyoung.hi5controller";
 		public final static String WORK_PATH_KEY = "work_path";
 		public final static String BACKUP_PATH_KEY = "backup_path";
 
@@ -326,7 +326,9 @@ public class Helper {
 	}
 
 	public static class AsyncTaskFileDialog extends AsyncTask<File, String, String> {
+		@SuppressWarnings("unused")
 		private static final int MSG_REFRESH_DIR = 0;
+		@SuppressWarnings("unused")
 		private static final int MSG_REFRESH_PARENT_DIR = 1;
 
 		private final static long BASE_SLEEP_TIME = 250;
@@ -334,6 +336,7 @@ public class Helper {
 		private Context mContext;
 		private View view;
 		private String msg;
+		@SuppressWarnings("unused")
 		private Handler handler;
 
 		public AsyncTaskFileDialog(Context context, View view, String msg) {

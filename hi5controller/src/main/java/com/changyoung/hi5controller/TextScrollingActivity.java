@@ -25,8 +25,8 @@ public class TextScrollingActivity extends AppCompatActivity {
 				finish();
 			}
 		});
+		//noinspection ConstantConditions
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 		Intent intent = getIntent();
 		getSupportActionBar().setTitle(intent.getExtras().getString("title", "텍스트 뷰어"));
 		TextView textView = (TextView) findViewById(R.id.textView);
