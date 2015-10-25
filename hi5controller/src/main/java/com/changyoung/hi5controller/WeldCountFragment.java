@@ -159,7 +159,7 @@ public class WeldCountFragment extends Fragment
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 				final WeldCountFile weldCountFile = adapter.getItem(position);
 				if (weldCountFile.getJobInfo().getTotal() == 0) {
-					Util.UiUtil.textViewActivity(getContext(), weldCountFile.getName(),
+					Helper.UiHelper.textViewActivity(getContext(), weldCountFile.getName(),
 							weldCountFile.getRowText());
 				} else {
 					dialog_show(position);
@@ -178,7 +178,7 @@ public class WeldCountFragment extends Fragment
 							dialog_show(position);
 						} else if (which == 1) {
 							final WeldCountFile weldCountFile = adapter.getItem(position);
-							Util.UiUtil.textViewActivity(getContext(), weldCountFile.getName(),
+							Helper.UiHelper.textViewActivity(getContext(), weldCountFile.getName(),
 									weldCountFile.getRowText());
 						}
 					}
@@ -332,7 +332,7 @@ public class WeldCountFragment extends Fragment
 				etCN.setOnKeyListener(new View.OnKeyListener() {
 					@Override
 					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 						return false;
 					}
 				});
@@ -368,7 +368,7 @@ public class WeldCountFragment extends Fragment
 		etBeginNumber.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+				Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 				return false;
 			}
 		});
@@ -1318,7 +1318,7 @@ public class WeldCountFragment extends Fragment
 
 			public void update(WeldCountFile jobFile) {
 				tvFileName.setText(jobFile.getName());
-				tvTime.setText(Util.TimeUtil.getLasModified(jobFile));
+				tvTime.setText(Helper.TimeHelper.getLasModified(jobFile));
 				tvSize.setText(String.format("%dB", jobFile.length()));
 				tvCount.setText(jobFile.getJobInfo().getString());
 				tvPreview.setText(jobFile.getJobInfo().getPreview());

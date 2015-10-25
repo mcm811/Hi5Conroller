@@ -154,7 +154,7 @@ public class WeldConditionFragment extends Fragment
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				Util.UiUtil.textViewActivity(getContext(), "ROBOT.SWD", Util.FileUtil.readFileString(onGetWorkPath()));
+				Helper.UiHelper.textViewActivity(getContext(), "ROBOT.SWD", Helper.FileHelper.readFileString(onGetWorkPath()));
 				return true;
 			}
 		});
@@ -401,7 +401,7 @@ public class WeldConditionFragment extends Fragment
 				et.setOnKeyListener(new View.OnKeyListener() {
 					@Override
 					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 						//Log.d(TAG, "KeyCode: " + String.valueOf(keyCode));
 						return false;
 					}

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HI5Controller.iml" filepath="$PROJECT_DIR$/HI5Controller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Hi5Conroller.iml" filepath="$PROJECT_DIR$/Hi5Conroller.iml" />
       <module fileurl="file://$PROJECT_DIR$/hi5controller/hi5controller.iml" filepath="$PROJECT_DIR$/hi5controller/hi5controller.iml" />
     </modules>
   </component>

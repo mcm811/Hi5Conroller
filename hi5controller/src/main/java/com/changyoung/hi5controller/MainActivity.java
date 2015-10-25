@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public void onExitDialog() {
-		Util.UiUtil.adMobExitDialog(this);
+		Helper.UiHelper.adMobExitDialog(this);
 		//super.onBackPressed();
 	}
 
@@ -324,13 +324,13 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public String onGetWorkPath() {
-		return Util.Pref.getWorkPath(getContext());
+		return Helper.Pref.getWorkPath(getContext());
 	}
 
 	@Override
 	public void onSetWorkPath(String path) {
 		Log.d(TAG, "onSetWorkPath");
-		Util.Pref.setWorkPath(getContext(), path);
+		Helper.Pref.setWorkPath(getContext(), path);
 		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
 		final int[] tabs = {PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT};

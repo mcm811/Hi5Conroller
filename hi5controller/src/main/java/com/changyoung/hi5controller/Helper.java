@@ -44,7 +44,7 @@ import java.util.Locale;
  * Created by chang on 2015-10-13.
  * changmin811@gmail.com
  */
-public class Util {
+public class Helper {
 	public static class Pref {
 		public final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 		public final static String STORAGE_PATH = "/storage";
@@ -92,7 +92,7 @@ public class Util {
 		}
 	}
 
-	public static class TimeUtil {
+	public static class TimeHelper {
 		public static String getLasModified(File file) {
 			return getTimeString("yyyy-MM-dd a hh-mm-ss", file.lastModified());
 		}
@@ -107,8 +107,8 @@ public class Util {
 		}
 	}
 
-	public static class FileUtil {
-		private final static String TAG = "FileUtil";
+	public static class FileHelper {
+		private final static String TAG = "FileHelper";
 
 		public static String readFileString(String path) {
 			StringBuilder sb = new StringBuilder();
@@ -181,8 +181,8 @@ public class Util {
 			} finally {
 				// 삼성커널에서 setLastModified 미지원 인듯
 				if (dest.setLastModified(source.lastModified())) {
-					Log.d("Last Time - Source", TimeUtil.getLasModified(source));
-					Log.d("Last Time - Dest", TimeUtil.getLasModified(dest));
+					Log.d("Last Time - Source", TimeHelper.getLasModified(source));
+					Log.d("Last Time - Dest", TimeHelper.getLasModified(dest));
 				}
 			}
 		}
@@ -191,7 +191,7 @@ public class Util {
 			String ret = null;
 			boolean sourceChecked = false;
 			try {
-				File source = new File(Util.Pref.getWorkPath(context));
+				File source = new File(Helper.Pref.getWorkPath(context));
 
 				if (source.exists()) {
 					for (File file : source.listFiles()) {
@@ -209,11 +209,11 @@ public class Util {
 
 				@SuppressWarnings("SpellCheckingInspection")
 				File dest = new File(source.getPath() + "/Backup/" + source.getName()
-						+ Util.TimeUtil.getTimeString("_yyyyMMdd_HHmmss",
+						+ TimeHelper.getTimeString("_yyyyMMdd_HHmmss",
 						System.currentTimeMillis()));
 				if (source.exists() && source.isDirectory()) {
 					if (dest.exists())
-						Util.FileUtil.delete(dest, false);
+						FileHelper.delete(dest, false);
 					if (dest.mkdirs())
 						Log.d("backup", "dest.mkdirs");
 					new AsyncTaskFileDialog(context, view, "백업").execute(source, dest);
@@ -232,7 +232,7 @@ public class Util {
 		}
 	}
 
-	public static class UiUtil {
+	public static class UiHelper {
 		public static void textViewActivity(Context context, String title, String text) {
 			Intent intent = new Intent(context, TextScrollingActivity.class);
 			intent.putExtra("title", title);
@@ -367,7 +367,7 @@ public class Util {
 					publishProgress("max", "1");
 					publishProgress("progress", "1",
 							String.format("%s %s 중", source.getName(), msg));
-					FileUtil.copy(source, new File(dest.getPath() + "/" + source.getName()));
+					FileHelper.copy(source, new File(dest.getPath() + "/" + source.getName()));
 				} catch (IOException e) {
 					return e.getLocalizedMessage();
 				}
@@ -381,7 +381,7 @@ public class Util {
 						if (file.isFile()) {
 							publishProgress("progress", String.valueOf(i),
 									String.format("%s %s 중", file.getName(), msg));
-							FileUtil.copy(file, new File(dest.getPath() + "/" + file.getName()));
+							FileHelper.copy(file, new File(dest.getPath() + "/" + file.getName()));
 							if (filesLength < 20) {
 								try {
 									Thread.sleep(sleepTime);

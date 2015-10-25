@@ -109,19 +109,19 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				break;
 			case R.id.nav_storage:
 			case R.id.toolbar_work_path_menu_storage:
-				if (!refresh(Util.Pref.STORAGE_PATH))
-					ret = "경로 이동 실패: " + Util.Pref.STORAGE_PATH;
+				if (!refresh(Helper.Pref.STORAGE_PATH))
+					ret = "경로 이동 실패: " + Helper.Pref.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
 			case R.id.toolbar_work_path_menu_sdcard:
-				if (!refresh(Util.Pref.EXTERNAL_STORAGE_PATH))
-					ret = "경로 이동 실패: " + Util.Pref.EXTERNAL_STORAGE_PATH;
+				if (!refresh(Helper.Pref.EXTERNAL_STORAGE_PATH))
+					ret = "경로 이동 실패: " + Helper.Pref.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
 			case R.id.toolbar_work_path_menu_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
-					File dir = new File(Util.Pref.STORAGE_PATH);
+					File dir = new File(Helper.Pref.STORAGE_PATH);
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
 							try {
@@ -145,7 +145,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			case R.id.toolbar_work_path_menu_usbstorage:
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
-					File dir = new File(Util.Pref.STORAGE_PATH);
+					File dir = new File(Helper.Pref.STORAGE_PATH);
 					Log.d(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("usb")) {
@@ -264,7 +264,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		etPath.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+				Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 				return false;
 			}
 		});
@@ -274,14 +274,14 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Util.UiUtil.hideSoftKeyboard(getActivity(), null, null);
+					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
 					if (mWorkPath.compareTo(path) == 0) {
 //						startActivity(new Intent(getContext(), BackupActivity.class));
-						String ret = Util.FileUtil.backup(getContext(), mView.findViewById(R.id.coordinator_layout));
+						String ret = Helper.FileHelper.backup(getContext(), mView.findViewById(R.id.coordinator_layout));
 						if (ret != null)
 							show(ret);
 					} else {

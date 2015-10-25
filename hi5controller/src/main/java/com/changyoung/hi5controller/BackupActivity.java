@@ -48,7 +48,7 @@ public class BackupActivity extends AppCompatActivity
 		setContentView(R.layout.activity_backup);
 		BackupActivity view = this;
 
-		String path = Util.Pref.getBackupPath(getContext());
+		String path = Helper.Pref.getBackupPath(getContext());
 		final FileListFragment fragment = (FileListFragment)
 				getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		if (fragment != null) {
@@ -63,14 +63,14 @@ public class BackupActivity extends AppCompatActivity
 						try {
 							File file = new File(etPath.getText().toString());
 							if (file.isDirectory()) {
-								Util.Pref.setBackupPath(getContext(), etPath.getText().toString());
+								Helper.Pref.setBackupPath(getContext(), etPath.getText().toString());
 							} else {
 								throw new Exception();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 							show("잘못된 경로: " + etPath.getText().toString());
-							etPath.setText(Util.Pref.getBackupPath(getContext()));
+							etPath.setText(Helper.Pref.getBackupPath(getContext()));
 						}
 						fragment.refreshFilesList(etPath.getText().toString());
 					}
@@ -78,7 +78,7 @@ public class BackupActivity extends AppCompatActivity
 				etPath.setOnKeyListener(new View.OnKeyListener() {
 					@Override
 					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Util.UiUtil.hideSoftKeyboard(getActivity(), v, event);
+						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 						return false;
 					}
 				});
@@ -132,7 +132,7 @@ public class BackupActivity extends AppCompatActivity
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					Util.UiUtil.hideSoftKeyboard(getActivity(), null, null);
+					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
 					String ret = restore();
 					if (ret != null)
@@ -170,7 +170,7 @@ public class BackupActivity extends AppCompatActivity
 			if (forced) {
 				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
 				final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-				etPath.setText(Util.Pref.getBackupPath(getContext()));
+				etPath.setText(Helper.Pref.getBackupPath(getContext()));
 				fragment.refreshFilesList(etPath.getText().toString());
 			}
 		} catch (Exception e) {
@@ -199,7 +199,7 @@ public class BackupActivity extends AppCompatActivity
 	public String refresh(int menuId) {
 		switch (menuId) {
 			case R.id.toolbar_backup_path_menu_home:
-				if (!refresh(Util.Pref.getBackupPath(getContext())))
+				if (!refresh(Helper.Pref.getBackupPath(getContext())))
 					show("백업 폴더가 없습니다");
 				break;
 			case R.id.toolbar_backup_path_menu_done:
@@ -217,7 +217,7 @@ public class BackupActivity extends AppCompatActivity
 		try {
 			final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 			File source = fragment.getDirFile();
-			File dest = new File(Util.Pref.getWorkPath(getContext()));
+			File dest = new File(Helper.Pref.getWorkPath(getContext()));
 			if (source.equals(dest))
 				throw new Exception();
 			// 복원할 파일을 먼저 확인
@@ -231,10 +231,10 @@ public class BackupActivity extends AppCompatActivity
 				}
 				if (sourceChecked) {
 					if (dest.exists())
-						Util.FileUtil.delete(dest, false);
+						Helper.FileHelper.delete(dest, false);
 					if (dest.mkdirs())
 						logD("dest.mkdirs");
-					new Util.AsyncTaskFileDialog(getContext(),
+					new Helper.AsyncTaskFileDialog(getContext(),
 							findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
 					return null;
 				}
@@ -255,9 +255,9 @@ public class BackupActivity extends AppCompatActivity
 	}
 
 	public void backup() {
-		String ret = Util.FileUtil.backup(getContext(), findViewById(R.id.coordinator_layout));
+		String ret = Helper.FileHelper.backup(getContext(), findViewById(R.id.coordinator_layout));
 		if (ret == null)
-			refresh(Util.Pref.getBackupPath(getContext()));
+			refresh(Helper.Pref.getBackupPath(getContext()));
 		else
 			show(ret);
 	}

@@ -150,8 +150,8 @@ public class FileListFragment extends Fragment {
 				} else if (file.isDirectory()) {
 					refreshFilesList(file.getPath());
 				} else {
-					Util.UiUtil.textViewActivity(getContext(), file.getName(),
-							Util.FileUtil.readFileString(file.getPath()));
+					Helper.UiHelper.textViewActivity(getContext(), file.getName(),
+							Helper.FileHelper.readFileString(file.getPath()));
 				}
 			}
 		});
@@ -165,7 +165,7 @@ public class FileListFragment extends Fragment {
 				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
 				String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
 				String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
-						fileType, file.getName(), Util.TimeUtil.getLasModified(file));
+						fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(actionName)
@@ -181,7 +181,7 @@ public class FileListFragment extends Fragment {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								try {
-									new Util.AsyncTaskFileDialog(getContext(), snackbarView, "삭제", looperHandler)
+									new Helper.AsyncTaskFileDialog(getContext(), snackbarView, "삭제", looperHandler)
 											.execute(file);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -392,7 +392,7 @@ public class FileListFragment extends Fragment {
 					viewHolder.update(null, file.getParentFile().getName() + "/..", R.drawable.ic_file_upload);
 				}
 			} else {
-				viewHolder.update(Util.TimeUtil.getLasModified(file), file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
+				viewHolder.update(Helper.TimeHelper.getLasModified(file), file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
 			}
 
 			return row;
