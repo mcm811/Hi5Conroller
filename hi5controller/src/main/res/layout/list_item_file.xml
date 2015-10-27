@@ -4,20 +4,24 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
+	android:background="?android:attr/selectableItemBackground"
+	android:clickable="true"
+	android:focusable="true"
 	android:orientation="horizontal">
 
 	<ImageView
-		android:id="@+id/file_picker_image"
+		android:id="@+id/file_image"
 		android:layout_width="30dip"
 		android:layout_height="30dip"
 		android:layout_gravity="center"
 		android:alpha="0.8"
+		android:contentDescription="@string/file_icon_image"
 		android:foregroundTint="@color/brown_200"
 		android:scaleType="center"
 		android:src="@drawable/ic_description"/>
 
 	<android.support.design.widget.FloatingActionButton
-		android:id="@+id/file_picker_fab"
+		android:id="@+id/file_fab"
 		android:layout_width="30dip"
 		android:layout_height="30dip"
 		android:layout_gravity="center"
@@ -30,24 +34,24 @@
 		app:backgroundTint="@color/grey_200"/>
 
 	<TextView
-		android:id="@+id/file_picker_text"
+		android:id="@+id/file_text"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_gravity="start|center_vertical"
 		android:layout_marginStart="10dip"
 		android:layout_weight="1"
 		android:singleLine="true"
-		android:text="filename"
+		android:text="@string/file_name"
 		android:textSize="14sp"/>
 
 	<TextView
-		android:id="@+id/file_picker_time"
+		android:id="@+id/file_time"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="end|center_vertical"
 		android:layout_marginEnd="5dip"
 		android:singleLine="true"
-		android:text="filetime"
+		android:text="@string/file_time"
 		android:textSize="12sp"/>
 
 </LinearLayout>

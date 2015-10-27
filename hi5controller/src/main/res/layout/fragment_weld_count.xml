@@ -32,18 +32,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<ListView
-			android:id="@+id/listView_weld_count"
+		<android.support.v7.widget.RecyclerView
+			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:choiceMode="singleChoice"
-			android:divider="#00000000"
-			android:dividerHeight="6dp"
-			android:minHeight="25dp"
-			android:minWidth="25dp"
+			android:layout_height="match_parent"
 			android:paddingEnd="2dp"
-			android:paddingStart="2dp"/>
+			android:paddingStart="2dp"
+			android:scrollbars="vertical"/>
 
 	</android.support.v4.widget.SwipeRefreshLayout>
 

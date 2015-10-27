@@ -3,6 +3,10 @@ package com.changyoung.hi5controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,18 +19,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -48,8 +53,8 @@ public class FileListFragment extends Fragment {
 	private View mView;
 	private OnPathChangedListener mListener;
 
-	private ListView listView;
-	private FileListAdapter adapter;
+	private RecyclerView mRecyclerView;
+	private FileListAdapter mAdapter;
 
 	private File dirPath;
 	private FileListObserver fileListObserver;
@@ -82,6 +87,7 @@ public class FileListFragment extends Fragment {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void show(String msg) {
 		try {
 			if (snackbarView != null)
@@ -135,65 +141,16 @@ public class FileListFragment extends Fragment {
 			});
 		}
 
-		adapter = new FileListAdapter(getActivity(), new ArrayList<File>());
-		listView = (ListView) mView.findViewById(R.id.listView);
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				File file = (File) parent.getAdapter().getItem(position);
-				if (position == 0) {
-					String p = file.getParent();
-					if (p == null)
-						p = File.pathSeparator;
-					refreshFilesList(p);
-				} else if (file.isDirectory()) {
-					refreshFilesList(file.getPath());
-				} else {
-					Helper.UiHelper.textViewActivity(getContext(), file.getName(),
-							Helper.FileHelper.readFileString(file.getPath()));
-				}
-			}
-		});
-		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0)
-					return false;
-
-				final File file = (File) parent.getAdapter().getItem(position);
-				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
-				String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
-				String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
-						fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(actionName)
-						.setMessage(msg)
-						.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								show("삭제가 취소 되었습니다");
-
-							}
-						})
-						.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								try {
-									new Helper.AsyncTaskFileDialog(getContext(), snackbarView, "삭제", looperHandler)
-											.execute(file);
-								} catch (Exception e) {
-									e.printStackTrace();
-									show("삭제할 수 없습니다");
-								}
-							}
-						});
-				builder.create().show();
-
-				return true;
-			}
-		});
+		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
+		mRecyclerView.setHasFixedSize(true);
+		RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+		mRecyclerView.setLayoutManager(mLayoutManager);
+		mAdapter = new FileListAdapter(getActivity(), new ArrayList<File>());
+		mRecyclerView.setAdapter(mAdapter);
+		RecyclerView.ItemDecoration itemDecoration =
+				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+		mRecyclerView.addItemDecoration(itemDecoration);
+		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 		looperHandler = new LooperHandler(Looper.getMainLooper());
 
@@ -227,12 +184,12 @@ public class FileListFragment extends Fragment {
 
 			Log.d(TAG, dir.getName());
 
-			adapter.clear();
+			mAdapter.clear();
 			for (File item : dir.listFiles()) {
 				if (item.isFile() || item.isDirectory())
-					adapter.add(item);
+					mAdapter.add(item);
 			}
-			adapter.sort(new Comparator<File>() {
+			mAdapter.sort(new Comparator<File>() {
 				public int compare(File obj1, File obj2) {
 					int ret = 0;
 					if (obj1.isDirectory() && obj2.isDirectory())
@@ -249,9 +206,8 @@ public class FileListFragment extends Fragment {
 			});
 
 			setDirPath(dir);
-			adapter.insert(dir, 0);
-			adapter.notifyDataSetChanged();
-			listView.refreshDrawableState();
+			mAdapter.insert(dir, 0);
+			mAdapter.notifyDataSetChanged();
 			onDirPathChanged(dir);
 
 			fileListObserver = new FileListObserver(dir, looperHandler);
@@ -296,9 +252,8 @@ public class FileListFragment extends Fragment {
 		mListener = null;
 		mView = null;
 		snackbarView = null;
-		listView = null;
-		adapter.clear();
-		adapter = null;
+		mRecyclerView = null;
+		mAdapter = null;
 		dirPath = null;
 		looperHandler = null;
 		fileListObserver.stopWatching();
@@ -310,7 +265,7 @@ public class FileListFragment extends Fragment {
 	 * fragment to allow an interaction in this fragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
-	 * <p/>
+	 * <p>
 	 * See the Android Training lesson <a href=
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
@@ -359,76 +314,246 @@ public class FileListFragment extends Fragment {
 		}
 	}
 
-	public class FileListAdapter extends ArrayAdapter<File> {
-		private Activity mContext;
+	public static class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
-		public FileListAdapter(Activity context, List<File> objects) {
-			super(context, R.layout.list_item_file, objects);
-			mContext = context;
+		private static final int[] ATTRS = new int[]{
+				android.R.attr.listDivider
+		};
+
+		public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
+
+		public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
+
+		private Drawable mDivider;
+
+		private int mOrientation;
+
+		public DividerItemDecoration(Context context, int orientation) {
+			final TypedArray a = context.obtainStyledAttributes(ATTRS);
+			mDivider = a.getDrawable(0);
+			a.recycle();
+			setOrientation(orientation);
+		}
+
+		public void setOrientation(int orientation) {
+			if (orientation != HORIZONTAL_LIST && orientation != VERTICAL_LIST) {
+				throw new IllegalArgumentException("invalid orientation");
+			}
+			mOrientation = orientation;
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder;
-			View row = convertView;
-
-			if (row == null) {
-				row = mContext.getLayoutInflater().inflate(R.layout.list_item_file, parent, false);
-				viewHolder = new ViewHolder((TextView) row.findViewById(R.id.file_picker_time),
-						(TextView) row.findViewById(R.id.file_picker_text),
-						(ImageView) row.findViewById(R.id.file_picker_image),
-						(FloatingActionButton) row.findViewById(R.id.file_picker_fab));
-				row.setTag(viewHolder);
+		public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+			if (mOrientation == VERTICAL_LIST) {
+				drawVertical(c, parent);
 			} else {
-				viewHolder = (ViewHolder) row.getTag();
+				drawHorizontal(c, parent);
 			}
+		}
 
-			File file = getItem(position);
+		public void drawVertical(Canvas c, RecyclerView parent) {
+			final int left = parent.getPaddingLeft();
+			final int right = parent.getWidth() - parent.getPaddingRight();
+
+			final int childCount = parent.getChildCount();
+			for (int i = 0; i < childCount; i++) {
+				final View child = parent.getChildAt(i);
+				final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
+						.getLayoutParams();
+				final int top = child.getBottom() + params.bottomMargin;
+				final int bottom = top + mDivider.getIntrinsicHeight();
+				mDivider.setBounds(left, top, right, bottom);
+				mDivider.draw(c);
+			}
+		}
+
+		public void drawHorizontal(Canvas c, RecyclerView parent) {
+			final int top = parent.getPaddingTop();
+			final int bottom = parent.getHeight() - parent.getPaddingBottom();
+
+			final int childCount = parent.getChildCount();
+			for (int i = 0; i < childCount; i++) {
+				final View child = parent.getChildAt(i);
+				final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
+						.getLayoutParams();
+				final int left = child.getRight() + params.rightMargin;
+				final int right = left + mDivider.getIntrinsicHeight();
+				mDivider.setBounds(left, top, right, bottom);
+				mDivider.draw(c);
+			}
+		}
+
+		@Override
+		public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+		                           RecyclerView.State state) {
+			if (mOrientation == VERTICAL_LIST) {
+				outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
+			} else {
+				outRect.set(0, 0, mDivider.getIntrinsicWidth(), 0);
+			}
+		}
+	}
+
+	public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.ViewHolder> {
+		private List<File> mDataset;
+		private Context mContext;
+		@SuppressWarnings("unused")
+		private Activity mActivity;
+
+		public FileListAdapter(Activity activity, List<File> dataset) {
+			mActivity = activity;
+			mDataset = dataset;
+		}
+
+		public void clear() {
+			mDataset.clear();
+		}
+
+		public void add(File item) {
+			mDataset.add(item);
+		}
+
+		public void insert(File item, int index) {
+			mDataset.add(index, item);
+		}
+
+		public void sort(Comparator<File> comparator) {
+			Collections.sort(mDataset, comparator);
+		}
+
+		public void setData(List<File> data) {
+			mDataset.clear();
+			mDataset.addAll(data);
+			notifyDataSetChanged();
+		}
+
+		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			mContext = parent.getContext();
+			final View v = LayoutInflater.from(mContext)
+					.inflate(R.layout.list_item_file, parent, false);
+			// set the view's size, margins, paddings and layout parameters
+			final ViewHolder holder = new ViewHolder(v);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				holder.mFileFab.setVisibility(View.VISIBLE);
+				holder.mFileImageView.setVisibility(View.GONE);
+			} else {
+				holder.mFileFab.setVisibility(View.GONE);
+				holder.mFileImageView.setVisibility(View.VISIBLE);
+			}
+			return holder;
+		}
+
+		@Override
+		public void onBindViewHolder(ViewHolder holder, final int position) {
+			holder.mItemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					final File file = mDataset.get(position);
+					if (position == 0) {
+						String p = file.getParent();
+						if (p == null)
+							p = File.pathSeparator;
+						refreshFilesList(p);
+					} else if (file.isDirectory()) {
+						refreshFilesList(file.getPath());
+					} else {
+						Helper.UiHelper.textViewActivity(getContext(), file.getName(),
+								Helper.FileHelper.readFileString(file.getPath()));
+					}
+				}
+			});
+			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					if (position == 0)
+						return false;
+
+					final File file = mDataset.get(position);
+					String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
+					String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
+					String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
+							fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(actionName)
+							.setMessage(msg)
+							.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									show("삭제가 취소 되었습니다");
+
+								}
+							})
+							.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									try {
+										new Helper.AsyncTaskFileDialog(getContext(),
+												snackbarView, "삭제", looperHandler)
+												.execute(file);
+									} catch (Exception e) {
+										e.printStackTrace();
+										show("삭제할 수 없습니다");
+									}
+								}
+							});
+					builder.create().show();
+
+					return true;
+				}
+			});
+
+			String fileTime = null;
+			String fileName;
+			int fileImageResourceId;
+			final File file = mDataset.get(position);
 			if (position == 0) {
 				String p = file.getParent();
 				if (p == null) {
-					viewHolder.update(null, ".", R.drawable.ic_android);
+					fileName = ".";
+					fileImageResourceId = R.drawable.ic_android;
 				} else {
-					viewHolder.update(null, file.getParentFile().getName() + "/..", R.drawable.ic_file_upload);
+					fileName = file.getParentFile().getName() + "/..";
+					fileImageResourceId = R.drawable.ic_file_upload;
 				}
 			} else {
-				viewHolder.update(Helper.TimeHelper.getLasModified(file), file.getName(), file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open);
+				fileTime = Helper.TimeHelper.getLasModified(file);
+				fileName = file.getName();
+				fileImageResourceId = file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open;
 			}
 
-			return row;
+			if (fileTime == null) {
+				holder.mFileTimeTextView.setText("");
+				holder.mFileTimeTextView.setVisibility(View.GONE);
+			} else {
+				holder.mFileTimeTextView.setText(fileTime);
+				holder.mFileTimeTextView.setVisibility(View.VISIBLE);
+			}
+			holder.mFileNameTextView.setText(fileName);
+			holder.mFileImageView.setImageResource(fileImageResourceId);
+			holder.mFileFab.setImageResource(fileImageResourceId);
 		}
 
-		public class ViewHolder {
-			private TextView TimeTextView;
-			private android.widget.TextView TextView;
-			private android.widget.ImageView ImageView;
-			private FloatingActionButton Fab;
+		@Override
+		public int getItemCount() {
+			return mDataset.size();
+		}
 
-			public ViewHolder(TextView timeTextView, TextView textView, ImageView imageView, FloatingActionButton fab) {
-				TimeTextView = timeTextView;
-				TextView = textView;
-				ImageView = imageView;
-				Fab = fab;
-			}
+		public class ViewHolder extends RecyclerView.ViewHolder {
+			public View mItemView;
+			public TextView mFileTimeTextView;
+			public TextView mFileNameTextView;
+			public ImageView mFileImageView;
+			public FloatingActionButton mFileFab;
 
-			public void update(String fileTime, String fileName, int fileImageResourceId) {
-				if (fileTime == null) {
-					TimeTextView.setText("");
-					TimeTextView.setVisibility(View.GONE);
-				} else {
-					TimeTextView.setText(fileTime);
-					TimeTextView.setVisibility(View.VISIBLE);
-				}
-				TextView.setText(fileName);
-				ImageView.setImageResource(fileImageResourceId);
-				Fab.setImageResource(fileImageResourceId);
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					Fab.setVisibility(View.VISIBLE);
-					ImageView.setVisibility(View.GONE);
-				} else {
-					Fab.setVisibility(View.GONE);
-					ImageView.setVisibility(View.VISIBLE);
-				}
+			public ViewHolder(View itemView) {
+				super(itemView);
+				mItemView = itemView;
+				mFileTimeTextView = (TextView) itemView.findViewById(R.id.file_time);
+				mFileNameTextView = (TextView) itemView.findViewById(R.id.file_text);
+				mFileImageView = (ImageView) itemView.findViewById(R.id.file_image);
+				mFileFab = (FloatingActionButton) itemView.findViewById(R.id.file_fab);
 			}
 		}
 	}

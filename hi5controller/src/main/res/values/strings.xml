@@ -79,6 +79,13 @@
 	<string name="banner_ad_unit_id">@string/banner_ad_unit_id_debug</string>
 	<string name="setup_work_path">작업 경로를 설정 하십시오</string>
 	<string name="changyoung_robot">Changyoung robot</string>
+	<string name="file_name">file name</string>
+	<string name="file_time">file time</string>
+	<string name="file_icon_image">File Icon Image</string>
+	<string name="preview">Preview</string>
+	<string name="file_size">FileSize</string>
+	<string name="job_count">JobCount</string>
+	<string name="cn_strings">CN: 1 2 3 4 5 6 7 8 9 10</string>
 
 	<string-array name="dialog_items">
 		<item>계열 수정</item>
