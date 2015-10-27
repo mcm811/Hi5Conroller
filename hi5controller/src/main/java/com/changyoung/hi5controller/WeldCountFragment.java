@@ -1016,7 +1016,7 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	public static class WeldCountAdapter extends RecyclerView.Adapter<WeldCountAdapter.ViewHolder> {
+	public class WeldCountAdapter extends RecyclerView.Adapter<WeldCountAdapter.ViewHolder> {
 		private List<WeldCountFile> mDataset;
 		private Context mContext;
 		private Activity mActivity;
@@ -1191,7 +1191,8 @@ public class WeldCountFragment extends Fragment
 				return;
 			}
 
-			@SuppressLint("InflateParams") View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_weld_count, null);
+			@SuppressLint("InflateParams") View dialogView = LayoutInflater.from(mContext)
+					.inflate(R.layout.dialog_weld_count, null);
 			AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
 			dialog.setView(dialogView);
 
@@ -1206,11 +1207,13 @@ public class WeldCountFragment extends Fragment
 			AdRequest adRequest = new AdRequest.Builder()
 					.setRequestAgent("android_studio:ad_template").build();
 			adView.loadAd(adRequest);
-			LinearLayout linearLayoutWeldCount = (LinearLayout) dialogView.findViewById(R.id.linearLayout_WeldCount);
+			LinearLayout linearLayoutWeldCount = (LinearLayout)
+					dialogView.findViewById(R.id.linearLayout_WeldCount);
 			linearLayoutWeldCount.addView(adView, 2);
 
 			TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-			statusText.setText(String.format("계열 수정 (CN: %d개)", weldCountFile.getJobInfo().getTotal()));
+			statusText.setText(String.format("계열 수정 (CN: %d개)",
+					weldCountFile.getJobInfo().getTotal()));
 
 			LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
 			final EditText etBeginNumber = (EditText) dialogView.findViewById(R.id.etBeginNumber);
@@ -1220,7 +1223,9 @@ public class WeldCountFragment extends Fragment
 			for (int i = 0; i < weldCountFile.size(); i++) {
 				if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.JOB_SPOT) {
 					final TextInputLayout til = new TextInputLayout(mContext);
-					til.setHint("[줄번호:" + String.format("%03d", weldCountFile.get(i).getRowNumber()) + "] CN = " + weldCountFile.get(i).getCN());
+					til.setHint("[줄번호:" + String.format("%03d",
+							weldCountFile.get(i).getRowNumber()) + "] CN = "
+							+ weldCountFile.get(i).getCN());
 					final EditText etCN = new EditText(mContext);
 					etCN.setTag(weldCountFile.get(i));
 					etCN.setSingleLine();
