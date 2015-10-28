@@ -36,6 +36,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -76,6 +77,7 @@ public class WeldConditionFragment extends Fragment
 
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldConditionFragment";
+	private static final int[] valueMax = { 2000, 100, 350, 500, 500, 500, 500, 1000, 1000 };
 
 	private View mView;
 	private RecyclerView mRecyclerView;
@@ -157,7 +159,7 @@ public class WeldConditionFragment extends Fragment
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialog_show(0);
+				showDialog(0);
 			}
 		});
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
@@ -282,7 +284,114 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
-	private void dialog_show(int position) {
+	private void showSqueezeForceDialog() {
+		if (snackbar != null) {
+			snackbar.dismiss();
+			snackbar = null;
+		}
+
+		if (mAdapter.getItemCount() == 0) {
+			refresh(false);
+			if (mAdapter.getItemCount() == 0)
+				show("항목이 없습니다");
+			return;
+		}
+
+		View dialogView = LayoutInflater.from(getContext())
+				.inflate(R.layout.dialog_weld_condition_squeeze_force, null);
+		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+		dialog.setView(dialogView);
+
+		/*
+		AdView adView = new AdView(getContext());
+		adView.setAdSize(AdSize.BANNER);
+		adView.setScaleX(0.85f);
+		adView.setScaleY(0.85f);
+		if (BuildConfig.DEBUG)
+			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_debug));
+		else
+			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_release));
+		AdRequest adRequest = new AdRequest.Builder()
+				.setRequestAgent("android_studio:ad_template").build();
+		adView.loadAd(adRequest);
+		LinearLayout sfLinearLayout = (LinearLayout)
+				dialogView.findViewById(R.id.linearLayout_WeldCondition_SqueezeForce);
+		sfLinearLayout.addView(adView, sfLinearLayout.getChildCount());
+		*/
+
+		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
+		statusText.setText(String.format("가압력 수정 (용접 조건: %d개)", mAdapter.getItemCount()));
+
+		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
+
+		final List<EditText> etList = new ArrayList<>();
+		for (int i = 0; i < mAdapter.getItemCount(); i++) {
+			final WeldConditionItem item = mAdapter.getItem(i);
+			final TextInputLayout textInputLayout = new TextInputLayout(getContext());
+			textInputLayout.setHint("[출력번호:" + String.format("%03d",
+					Integer.parseInt(item.get(WeldConditionItem.OUTPUT_DATA)))
+					+ "] 가압력 = " + item.get(WeldConditionItem.SQUEEZE_FORCE));
+			final EditText editText = new EditText(getContext());
+			editText.setTag(item);
+			editText.setSingleLine();
+			editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+			editText.setGravity(Gravity.CENTER_HORIZONTAL);
+			editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+			editText.setSelectAllOnFocus(true);
+			editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
+			editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					try {
+						Integer squeezeForce = Integer.parseInt(editText.getText().toString());
+						if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE]) {
+							squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
+							editText.setText(String.valueOf(squeezeForce));
+						}
+					} catch (NumberFormatException e) {
+						Log.d(TAG, e.getLocalizedMessage());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			editText.setOnKeyListener(new View.OnKeyListener() {
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+//							Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+					return false;
+				}
+			});
+			textInputLayout.addView(editText);
+			linearLayout.addView(textInputLayout);
+			etList.add(editText);
+		}
+
+		dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+
+		dialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				for (EditText et : etList) {
+					final WeldConditionItem item = (WeldConditionItem) et.getTag();
+					item.set(WeldConditionItem.SQUEEZE_FORCE, et.getText().toString());
+				}
+				if (mAdapter.getItemCount() > 0) {
+					mAdapter.update(onGetWorkPath());
+					mAdapter.notifyDataSetChanged();
+					show("저장 완료: " + onGetWorkPath());
+				}
+			}
+		});
+
+		dialog.show();
+	}
+
+	private void showDialog(int position) {
 		final String dialog_title1 = getContext()
 				.getString(R.string.weld_condition_dialog_title1) + " ";
 		final String dialog_title2 = getContext()
@@ -303,8 +412,11 @@ public class WeldConditionFragment extends Fragment
 		final List<Integer> checkedPositions = mAdapter.getSelectedItems();
 		if (checkedPositions == null)
 			return;
-		if (checkedPositions.size() == 0)
-			lastPosition = position;
+		if (checkedPositions.size() == 0) {
+//			lastPosition = position;
+			showSqueezeForceDialog();
+			return;
+		}
 
 		@SuppressLint("InflateParams") final View dialogView = LayoutInflater.from(getContext())
 				.inflate(R.layout.dialog_weld_condition, null);
@@ -326,9 +438,9 @@ public class WeldConditionFragment extends Fragment
 		adView.setScaleX(0.95f);
 		adView.setScaleY(0.95f);
 		if (BuildConfig.DEBUG)
-			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_debug));
+			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_debug));
 		else
-			adView.setAdUnitId(getActivity().getString(R.string.banner_ad_unit_id_release));
+			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_release));
 		AdRequest adRequest = new AdRequest.Builder()
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
@@ -344,8 +456,6 @@ public class WeldConditionFragment extends Fragment
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout6));
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout7));
 
-		// 임계치
-		final int[] valueMax = {2000, 100, 350, 500, 500, 500, 500, 1000, 1000};
 		for (int index = 0; index < tilList.size(); index++) {
 			final TextInputLayout til = tilList.get(index);
 			final EditText et = til.getEditText();
@@ -1258,6 +1368,10 @@ public class WeldConditionFragment extends Fragment
 			}
 		}
 
+		public List<WeldConditionItem> getData() {
+			return mDataset;
+		}
+
 		public WeldConditionItem getItem(int index) {
 			return mDataset.get(index);
 		}
@@ -1340,7 +1454,7 @@ public class WeldConditionFragment extends Fragment
 				@Override
 				public boolean onLongClick(View v) {
 					lastPosition = position;
-					dialog_show(position);
+					showDialog(position);
 					return true;
 				}
 			});

@@ -4,8 +4,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:minHeight="25px"
-	android:minWidth="25px"
 	android:padding="2dp">
 
 	<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
@@ -16,16 +14,6 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"
 		android:orientation="vertical">
-
-		<!--<com.google.android.gms.ads.AdView-->
-		<!--android:id="@+id/adView"-->
-		<!--android:layout_width="wrap_content"-->
-		<!--android:layout_height="wrap_content"-->
-		<!--android:layout_gravity="center_horizontal"-->
-		<!--android:scaleX="1"-->
-		<!--android:scaleY="1"-->
-		<!--ads:adSize="BANNER"-->
-		<!--ads:adUnitId="@string/banner_ad_unit_id"/>-->
 
 		<TextView
 			android:id="@+id/statusText"

@@ -1267,7 +1267,7 @@ public class WeldCountFragment extends Fragment
 					etCN.setOnKeyListener(new View.OnKeyListener() {
 						@Override
 						public boolean onKey(View v, int keyCode, KeyEvent event) {
-							Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);
+//							Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);
 							return false;
 						}
 					});

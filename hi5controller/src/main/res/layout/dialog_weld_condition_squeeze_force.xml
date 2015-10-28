@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
+<LinearLayout
+	android:id="@+id/linearLayout_WeldCondition_SqueezeForce"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:focusable="true"
+	android:focusableInTouchMode="true"
+	android:orientation="vertical"
+	android:padding="2dp">
+
+	<TextView
+		android:id="@+id/statusText"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="2dp"
+		android:gravity="center"
+		android:paddingBottom="4dp"
+		android:textStyle="bold"/>
+
+	<ScrollView
+		android:id="@+id/scrollView1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingEnd="30dp"
+		android:paddingStart="30dp"
+		android:paddingTop="10dp">
+
+		<LinearLayout
+			android:id="@+id/linearLayout1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"/>
+	</ScrollView>
+</LinearLayout>
