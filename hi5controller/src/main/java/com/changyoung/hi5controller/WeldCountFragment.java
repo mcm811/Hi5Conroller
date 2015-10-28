@@ -1100,36 +1100,31 @@ public class WeldCountFragment extends Fragment
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
 					.inflate(R.layout.list_item_weld_count, parent, false);
-			// set the view's size, margins, paddings and layout parameters
-			return new ViewHolder(v);
-		}
-
-		@Override
-		public void onBindViewHolder(ViewHolder holder, final int position) {
+			ViewHolder holder =  new ViewHolder(v);
 			holder.mItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final WeldCountFile weldCountFile = mDataset.get(position);
+					final WeldCountFile weldCountFile = mDataset.get((int) v.getTag());
 					if (weldCountFile.getJobInfo().getTotal() == 0) {
 						Helper.UiHelper.textViewActivity(mContext, weldCountFile.getName(),
 								weldCountFile.getRowText());
 					} else {
-						showDialog(position);
+						showDialog((int) v.getTag());
 					}
 				}
 			});
 			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
-				public boolean onLongClick(View v) {
+				public boolean onLongClick(final View v) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 					builder.setItems(R.array.dialog_items, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							//String[] items = getResources().getStringArray(R.array.dialog_items);
 							if (which == 0) {
-								showDialog(position);
+								showDialog((int) v.getTag());
 							} else if (which == 1) {
-								final WeldCountFile weldCountFile = mDataset.get(position);
+								final WeldCountFile weldCountFile = mDataset.get((int) v.getTag());
 								Helper.UiHelper.textViewActivity(mContext, weldCountFile.getName(),
 										weldCountFile.getRowText());
 							}
@@ -1139,7 +1134,11 @@ public class WeldCountFragment extends Fragment
 					return true;
 				}
 			});
+			return holder;
+		}
 
+		@Override
+		public void onBindViewHolder(ViewHolder holder, final int position) {
 			final WeldCountFile jobFile = mDataset.get(position);
 			holder.tvFileName.setText(jobFile.getName());
 			holder.tvTime.setText(Helper.TimeHelper.getLasModified(jobFile));
@@ -1166,6 +1165,7 @@ public class WeldCountFragment extends Fragment
 				holder.tvCN.setVisibility(View.VISIBLE);
 				holder.tvCN.setText(CNString);
 			}
+			holder.mItemView.setTag(position);
 		}
 
 		@Override
@@ -1237,25 +1237,26 @@ public class WeldCountFragment extends Fragment
 			for (int i = 0; i < weldCountFile.size(); i++) {
 				if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.JOB_SPOT) {
 					final TextInputLayout til = new TextInputLayout(mContext);
-					til.setHint("[줄번호:" + String.format("%03d",
-							weldCountFile.get(i).getRowNumber()) + "] CN = "
-							+ weldCountFile.get(i).getCN());
-					final EditText etCN = new EditText(mContext);
-					etCN.setTag(weldCountFile.get(i));
-					etCN.setSingleLine();
-					etCN.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-					etCN.setGravity(Gravity.CENTER_HORIZONTAL);
-					etCN.setInputType(etBeginNumber.getInputType());
-					etCN.setSelectAllOnFocus(true);
-					etCN.setText(weldCountFile.get(i).getCN());
-					etCN.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+					til.setHint(String.format("[줄번호:%03d] CN = %s",
+							weldCountFile.get(i).getRowNumber(),
+							weldCountFile.get(i).getCN()));
+					final EditText editText = new EditText(mContext);
+					editText.setTag(weldCountFile.get(i));
+					editText.setSingleLine();
+					editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+					editText.setGravity(Gravity.CENTER_HORIZONTAL);
+					editText.setInputType(etBeginNumber.getInputType());
+//					editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+					editText.setSelectAllOnFocus(true);
+					editText.setText(weldCountFile.get(i).getCN());
+					editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 						@Override
 						public void onFocusChange(View v, boolean hasFocus) {
 							try {
-								Integer beginNumber = Integer.parseInt(etCN.getText().toString());
+								Integer beginNumber = Integer.parseInt(editText.getText().toString());
 								if (beginNumber > 255) {
 									beginNumber = 255;
-									etCN.setText(String.valueOf(beginNumber));
+									editText.setText(String.valueOf(beginNumber));
 								}
 							} catch (NumberFormatException e) {
 								Log.d(TAG, e.getLocalizedMessage());
@@ -1264,16 +1265,18 @@ public class WeldCountFragment extends Fragment
 							}
 						}
 					});
-					etCN.setOnKeyListener(new View.OnKeyListener() {
+					editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 						@Override
-						public boolean onKey(View v, int keyCode, KeyEvent event) {
-//							Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);
+						public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+							if (actionId == 6)
+								Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+//							Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
 							return false;
 						}
 					});
-					til.addView(etCN);
+					til.addView(editText);
 					linearLayout.addView(til);
-					etList.add(etCN);
+					etList.add(editText);
 				}
 			}
 
@@ -1368,6 +1371,7 @@ public class WeldCountFragment extends Fragment
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
 			} else {
+				//noinspection deprecation
 				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
 			}
 

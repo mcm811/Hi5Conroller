@@ -69,12 +69,11 @@
 						android:id="@+id/etOutputType"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_OutputType"
 						android:inputType="number"
-						android:numeric="integer"
 						android:selectAllOnFocus="true"
-						android:textSize="14dp"/>
+						android:textSize="14sp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -87,13 +86,12 @@
 						android:id="@+id/etSqueezeForce"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_SqueezeForce"
 						android:inputType="number"
-						android:numeric="integer"
 						android:selectAllOnFocus="true"
 						android:textColor="@color/pink_A200"
-						android:textSize="14dp"
+						android:textSize="14sp"
 						android:textStyle="bold"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
@@ -109,12 +107,11 @@
 						android:id="@+id/etMoveTipClearance"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_MoveTipClearance"
 						android:inputType="numberDecimal"
-						android:numeric="decimal"
 						android:selectAllOnFocus="true"
-						android:textSize="12dp"/>
+						android:textSize="12sp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -126,12 +123,11 @@
 						android:id="@+id/etFixedTipClearance"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_FixedTipClearance"
 						android:inputType="numberDecimal"
-						android:numeric="decimal"
 						android:selectAllOnFocus="true"
-						android:textSize="12dp"/>
+						android:textSize="12sp"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
 
@@ -146,12 +142,11 @@
 						android:id="@+id/etPanelThickness"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_PanelThickness"
 						android:inputType="numberDecimal"
-						android:numeric="decimal"
 						android:selectAllOnFocus="true"
-						android:textSize="12dp"/>
+						android:textSize="12sp"/>
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -163,12 +158,11 @@
 						android:id="@+id/etCommandOffset"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:gravity="left"
+						android:gravity="start"
 						android:hint="@string/Editor_CommandOffset"
 						android:inputType="numberDecimal"
-						android:numeric="decimal"
 						android:selectAllOnFocus="true"
-						android:textSize="12dp"/>
+						android:textSize="12sp"/>
 				</android.support.design.widget.TextInputLayout>
 			</TableRow>
 		</TableLayout>

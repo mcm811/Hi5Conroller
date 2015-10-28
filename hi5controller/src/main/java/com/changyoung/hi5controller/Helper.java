@@ -323,6 +323,22 @@ public class Helper {
 				}
 			}
 		}
+
+		public static void showSoftKeyboard(Activity activity, View view) {
+			InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			if (view == null)
+				view = activity.getCurrentFocus();
+			try {
+				if (view != null) {
+					Log.d("showSoftKeyboard", "imm.showSoftInput");
+					imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+				}
+			} catch (NullPointerException e) {
+				Log.d("showSoftKeyboard", e.getLocalizedMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static class AsyncTaskFileDialog extends AsyncTask<File, String, String> {

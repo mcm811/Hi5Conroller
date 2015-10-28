@@ -36,7 +36,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -45,6 +44,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -83,6 +84,8 @@ public class WeldConditionFragment extends Fragment
 	private RecyclerView mRecyclerView;
 	private WeldConditionAdapter mAdapter;
 	private Snackbar snackbar;
+	@SuppressWarnings("FieldCanBeLocal")
+	private RecyclerView mSqueezeForceRecyclerView;
 
 	private LooperHandler looperHandler;
 	private WeldConditionObserver observer;
@@ -173,8 +176,8 @@ public class WeldConditionFragment extends Fragment
 
 		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
 		mRecyclerView.setHasFixedSize(true);
-		RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+		mRecyclerView.setLayoutManager(layoutManager);
 		mAdapter = new WeldConditionAdapter(getActivity(),
 				mView.findViewById(R.id.coordinator_layout), new ArrayList<WeldConditionItem>());
 		mAdapter.onLoadInstanceState(savedInstanceState);
@@ -297,12 +300,20 @@ public class WeldConditionFragment extends Fragment
 			return;
 		}
 
+		@SuppressLint("InflateParams")
 		View dialogView = LayoutInflater.from(getContext())
 				.inflate(R.layout.dialog_weld_condition_squeeze_force, null);
 		AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 		dialog.setView(dialogView);
 
-		/*
+		mSqueezeForceRecyclerView = (RecyclerView) dialogView.findViewById(R.id.recycler_view);
+		mSqueezeForceRecyclerView.setHasFixedSize(true);
+		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+		mSqueezeForceRecyclerView.setLayoutManager(layoutManager);
+		final WeldConditionSqueezeForceAdapter adapter = new WeldConditionSqueezeForceAdapter(getActivity(),
+				mView.findViewById(R.id.coordinator_layout), mAdapter.getData());
+		mSqueezeForceRecyclerView.setAdapter(adapter);
+
 		AdView adView = new AdView(getContext());
 		adView.setAdSize(AdSize.BANNER);
 		adView.setScaleX(0.85f);
@@ -317,55 +328,9 @@ public class WeldConditionFragment extends Fragment
 		LinearLayout sfLinearLayout = (LinearLayout)
 				dialogView.findViewById(R.id.linearLayout_WeldCondition_SqueezeForce);
 		sfLinearLayout.addView(adView, sfLinearLayout.getChildCount());
-		*/
 
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText(String.format("가압력 수정 (용접 조건: %d개)", mAdapter.getItemCount()));
-
-		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
-
-		final List<EditText> etList = new ArrayList<>();
-		for (int i = 0; i < mAdapter.getItemCount(); i++) {
-			final WeldConditionItem item = mAdapter.getItem(i);
-			final TextInputLayout textInputLayout = new TextInputLayout(getContext());
-			textInputLayout.setHint("[출력번호:" + String.format("%03d",
-					Integer.parseInt(item.get(WeldConditionItem.OUTPUT_DATA)))
-					+ "] 가압력 = " + item.get(WeldConditionItem.SQUEEZE_FORCE));
-			final EditText editText = new EditText(getContext());
-			editText.setTag(item);
-			editText.setSingleLine();
-			editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-			editText.setGravity(Gravity.CENTER_HORIZONTAL);
-			editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-			editText.setSelectAllOnFocus(true);
-			editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
-			editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					try {
-						Integer squeezeForce = Integer.parseInt(editText.getText().toString());
-						if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE]) {
-							squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
-							editText.setText(String.valueOf(squeezeForce));
-						}
-					} catch (NumberFormatException e) {
-						Log.d(TAG, e.getLocalizedMessage());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			editText.setOnKeyListener(new View.OnKeyListener() {
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-//							Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
-					return false;
-				}
-			});
-			textInputLayout.addView(editText);
-			linearLayout.addView(textInputLayout);
-			etList.add(editText);
-		}
 
 		dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
 			@Override
@@ -376,21 +341,18 @@ public class WeldConditionFragment extends Fragment
 		dialog.setPositiveButton("저장", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				for (EditText et : etList) {
-					final WeldConditionItem item = (WeldConditionItem) et.getTag();
-					item.set(WeldConditionItem.SQUEEZE_FORCE, et.getText().toString());
-				}
-				if (mAdapter.getItemCount() > 0) {
-					mAdapter.update(onGetWorkPath());
+				if (adapter.getItemCount() > 0) {
+					adapter.update(onGetWorkPath());
 					mAdapter.notifyDataSetChanged();
 					show("저장 완료: " + onGetWorkPath());
 				}
 			}
 		});
 
-		dialog.show();
+		dialog.show().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void showDialog(int position) {
 		final String dialog_title1 = getContext()
 				.getString(R.string.weld_condition_dialog_title1) + " ";
@@ -457,18 +419,20 @@ public class WeldConditionFragment extends Fragment
 		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout7));
 
 		for (int index = 0; index < tilList.size(); index++) {
-			final TextInputLayout til = tilList.get(index);
-			final EditText et = til.getEditText();
-			if (et != null) {
-				if (index == 0) {                                           // outputData
-					et.setText(mAdapter.getItem(lastPosition).get(index));  // 기본선택된 자료값 가져오기
+			final TextInputLayout textInputLayout = tilList.get(index);
+			final EditText editText = textInputLayout.getEditText();
+			if (editText != null) {
+				if (index == 0) {
+					editText.setText(mAdapter.getItem(lastPosition).get(index));
 				} else {
-					et.setGravity(Gravity.CENTER);
-					et.setSelectAllOnFocus(true);
-					et.setSingleLine();
+					editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+					editText.setGravity(Gravity.CENTER);
+					editText.setSelectAllOnFocus(true);
+					editText.setSingleLine();
 					try {
-						til.setTag(til.getHint());
-						til.setHint(til.getTag() + "(" + mAdapter.getItem(lastPosition).get(index) + ")");
+						textInputLayout.setTag(textInputLayout.getHint());
+						textInputLayout.setHint(textInputLayout.getTag()
+								+ "(" + mAdapter.getItem(lastPosition).get(index) + ")");
 					} catch (NullPointerException e) {
 						logD(e.getLocalizedMessage());
 					} catch (Exception e) {
@@ -476,28 +440,28 @@ public class WeldConditionFragment extends Fragment
 					}
 				}
 				final int finalIndex = index;
-				et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 					@Override
 					public void onFocusChange(View v, boolean hasFocus) {
 						if (hasFocus) {
 							final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
-							if (et.getText().length() == 0) {
-								et.setText(mAdapter.getItem(sampleSeekBar.getProgress()).get(finalIndex));
-								et.selectAll();
+							if (editText.getText().length() == 0) {
+								editText.setText(mAdapter.getItem(sampleSeekBar.getProgress()).get(finalIndex));
+								editText.selectAll();
 							}
 						} else {
 							try {
 								// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
 								if (finalIndex < 3) {
-									Integer etNumber = Integer.parseInt(et.getText().toString());
+									Integer etNumber = Integer.parseInt(editText.getText().toString());
 									if (etNumber > valueMax[finalIndex])
 										etNumber = valueMax[finalIndex];
-									et.setText(String.valueOf(etNumber));
+									editText.setText(String.valueOf(etNumber));
 								} else {
-									Float etNumber = Float.parseFloat(et.getText().toString());
+									Float etNumber = Float.parseFloat(editText.getText().toString());
 									if (etNumber > (float) valueMax[finalIndex])
 										etNumber = (float) valueMax[finalIndex];
-									et.setText(String.format("%.1f", etNumber));
+									editText.setText(String.format("%.1f", etNumber));
 								}
 							} catch (NumberFormatException e) {
 								logD(e.getLocalizedMessage());
@@ -507,14 +471,23 @@ public class WeldConditionFragment extends Fragment
 						}
 					}
 				});
-				et.setOnKeyListener(new View.OnKeyListener() {
+				editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 					@Override
-					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
-						//Log.d(TAG, "KeyCode: " + String.valueOf(keyCode));
+					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+						if (actionId == 6)
+							Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+//						Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
 						return false;
 					}
 				});
+//				editText.setOnKeyListener(new View.OnKeyListener() {
+//					@Override
+//					public boolean onKey(View v, int keyCode, KeyEvent event) {
+//						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+//						Log.d("onKey", "KeyCode: " + String.valueOf(keyCode));
+//						return false;
+//					}
+//				});
 			}
 		}
 
@@ -720,6 +693,7 @@ public class WeldConditionFragment extends Fragment
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
 		} else {
+			//noinspection deprecation
 			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
 		}
 
@@ -1291,13 +1265,12 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	@SuppressWarnings("unused")
-	public class WeldConditionAdapter
-			extends RecyclerView.Adapter<WeldConditionAdapter.ViewHolder> {
-		private List<WeldConditionItem> mDataset;
-		private Context mContext;
-		private Activity mActivity;
-		private View mSnackbarView;
-		private SparseBooleanArray selectedItems;
+	public class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected List<WeldConditionItem> mDataset;
+		protected Context mContext;
+		protected Activity mActivity;
+		protected View mSnackbarView;
+		protected SparseBooleanArray selectedItems;
 
 		public WeldConditionAdapter(Activity activity, View snackbarView,
 		                            List<WeldConditionItem> dataSet) {
@@ -1433,19 +1406,15 @@ public class WeldConditionFragment extends Fragment
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
 					.inflate(R.layout.list_item_weld_condition, parent, false);
-			return new ViewHolder(v);
-		}
-
-		@Override
-		public void onBindViewHolder(final ViewHolder holder, final int position) {
+			ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					toggleSelection(position);
+					toggleSelection((int) v.getTag());
 					fab_setImage();
 					snackbar_setCheckedItem();
 				}
@@ -1453,12 +1422,17 @@ public class WeldConditionFragment extends Fragment
 			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					lastPosition = position;
-					showDialog(position);
+					lastPosition = (int) v.getTag();
+					showDialog(lastPosition);
 					return true;
 				}
 			});
+			return holder;
+		}
 
+		@Override
+		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
+			final ViewHolder holder = (ViewHolder) rh;
 			WeldConditionItem item = mDataset.get(position);
 			holder.mItemView.setBackgroundColor(selectedItems.get(position, false)
 					? ContextCompat.getColor(mContext,
@@ -1466,6 +1440,7 @@ public class WeldConditionFragment extends Fragment
 			for (int i = 0; i < holder.tvList.size(); i++) {
 				holder.tvList.get(i).setText(item.get(i));
 			}
+			holder.mItemView.setTag(position);
 		}
 
 		@Override
@@ -1473,7 +1448,7 @@ public class WeldConditionFragment extends Fragment
 			return mDataset.size();
 		}
 
-		public class ViewHolder extends RecyclerView.ViewHolder {
+		private class ViewHolder extends RecyclerView.ViewHolder {
 			public View mItemView;
 			public List<TextView> tvList;
 
@@ -1488,6 +1463,85 @@ public class WeldConditionFragment extends Fragment
 				tvList.add((TextView) mItemView.findViewById(R.id.tvFixedTipClearance));
 				tvList.add((TextView) mItemView.findViewById(R.id.tvPanelThickness));
 				tvList.add((TextView) mItemView.findViewById(R.id.tvCommandOffset));
+			}
+		}
+	}
+
+	public class WeldConditionSqueezeForceAdapter extends WeldConditionAdapter {
+		public WeldConditionSqueezeForceAdapter(Activity activity, View snackbarView,
+		                                        List<WeldConditionItem> dataSet) {
+			super(activity, snackbarView, dataSet);
+		}
+
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			mContext = parent.getContext();
+			final View v = LayoutInflater.from(mContext)
+					.inflate(R.layout.view_holder_item_weld_condition_squeeze_force, parent, false);
+			final ViewHolder holder = new ViewHolder(v);
+			holder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					EditText editText = (EditText) v;
+					WeldConditionItem item = (WeldConditionItem) v.getTag();
+					try {
+						Integer squeezeForce = Integer.parseInt(editText.getText().toString());
+						if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE]) {
+							squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
+							editText.setText(String.valueOf(squeezeForce));
+						}
+						item.set(WeldConditionItem.SQUEEZE_FORCE, String.valueOf(squeezeForce));
+					} catch (NumberFormatException e) {
+						Log.d(TAG, e.getLocalizedMessage());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+//			holder.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//				@Override
+//				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//					final RecyclerView recyclerView = mSqueezeForceRecyclerView;
+//					if (recyclerView != null) {
+//						int position = holder.getLayoutPosition();
+//						RecyclerView.ViewHolder viewHolder =
+//								recyclerView.findViewHolderForLayoutPosition(position + 1);
+//						if (viewHolder == null) {
+//							recyclerView.smoothScrollToPosition(position + 1);
+//							return false;
+//						}
+//					}
+//					return false;
+//				}
+//			});
+			return holder;
+		}
+
+		@Override
+		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
+			final ViewHolder holder = (ViewHolder) rh;
+			final WeldConditionItem item = mDataset.get(position);
+			holder.textInputLayout.setHint(String.format("출력 번호: %03d",
+					Integer.parseInt(item.get(WeldConditionItem.OUTPUT_DATA))));
+			holder.editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
+			holder.editText.setTag(item);
+		}
+
+		@Override
+		public int getItemCount() {
+			return mDataset.size();
+		}
+
+		private class ViewHolder extends RecyclerView.ViewHolder {
+			public View mItemView;
+			public TextInputLayout textInputLayout;
+			public EditText editText;
+
+			public ViewHolder(View itemView) {
+				super(itemView);
+				mItemView = itemView;
+				textInputLayout = (TextInputLayout) mItemView.findViewById(R.id.textInputLayout);
+				editText = (EditText) mItemView.findViewById(R.id.editText);
 			}
 		}
 	}
