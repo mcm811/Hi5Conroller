@@ -335,6 +335,7 @@ public class WeldConditionFragment extends Fragment
 		dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				refresh(true);
 			}
 		});
 
@@ -375,7 +376,6 @@ public class WeldConditionFragment extends Fragment
 		if (checkedPositions == null)
 			return;
 		if (checkedPositions.size() == 0) {
-//			lastPosition = position;
 			showSqueezeForceDialog();
 			return;
 		}
@@ -456,7 +456,7 @@ public class WeldConditionFragment extends Fragment
 									Integer etNumber = Integer.parseInt(editText.getText().toString());
 									if (etNumber > valueMax[finalIndex])
 										etNumber = valueMax[finalIndex];
-									editText.setText(String.valueOf(etNumber));
+									editText.setText(String.format("%d", etNumber));
 								} else {
 									Float etNumber = Float.parseFloat(editText.getText().toString());
 									if (etNumber > (float) valueMax[finalIndex])
@@ -975,9 +975,9 @@ public class WeldConditionFragment extends Fragment
 			return rowList.set(index, object);
 		}
 
-//		public Integer size() {
-//			return rowList.size();
-//		}
+		public Integer size() {
+			return rowList.size();
+		}
 
 		public String getString() {
 			if (rowList == null)
@@ -1020,9 +1020,9 @@ public class WeldConditionFragment extends Fragment
 			}
 		}
 
-//		public String getRowString() {
-//			return rowString;
-//		}
+		public String getRowString() {
+			return rowString;
+		}
 
 		public void setRowString(String rowString) {
 			this.rowString = rowString;
@@ -1482,15 +1482,18 @@ public class WeldConditionFragment extends Fragment
 			holder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
 				public void onFocusChange(View v, boolean hasFocus) {
-					EditText editText = (EditText) v;
-					WeldConditionItem item = (WeldConditionItem) v.getTag();
 					try {
-						Integer squeezeForce = Integer.parseInt(editText.getText().toString());
-						if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE]) {
-							squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
-							editText.setText(String.valueOf(squeezeForce));
+						if (!hasFocus) {
+							EditText editText = (EditText) v;
+							WeldConditionItem item = (WeldConditionItem) v.getTag(R.string.tag_item);
+							Integer squeezeForce = Integer.parseInt(editText.getText().toString());
+							if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE])
+								squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
+							final String squeezeForceString = String.format("%d", squeezeForce);
+							editText.setText(squeezeForceString);
+							item.set(WeldConditionItem.SQUEEZE_FORCE, squeezeForceString);
+							mAdapter.notifyItemChanged((int) v.getTag(R.string.tag_position));
 						}
-						item.set(WeldConditionItem.SQUEEZE_FORCE, String.valueOf(squeezeForce));
 					} catch (NumberFormatException e) {
 						Log.d(TAG, e.getLocalizedMessage());
 					} catch (Exception e) {
@@ -1498,22 +1501,6 @@ public class WeldConditionFragment extends Fragment
 					}
 				}
 			});
-//			holder.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//				@Override
-//				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//					final RecyclerView recyclerView = mSqueezeForceRecyclerView;
-//					if (recyclerView != null) {
-//						int position = holder.getLayoutPosition();
-//						RecyclerView.ViewHolder viewHolder =
-//								recyclerView.findViewHolderForLayoutPosition(position + 1);
-//						if (viewHolder == null) {
-//							recyclerView.smoothScrollToPosition(position + 1);
-//							return false;
-//						}
-//					}
-//					return false;
-//				}
-//			});
 			return holder;
 		}
 
@@ -1524,7 +1511,8 @@ public class WeldConditionFragment extends Fragment
 			holder.textInputLayout.setHint(String.format("출력 번호: %03d",
 					Integer.parseInt(item.get(WeldConditionItem.OUTPUT_DATA))));
 			holder.editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
-			holder.editText.setTag(item);
+			holder.editText.setTag(R.string.tag_position, position);
+			holder.editText.setTag(R.string.tag_item, item);
 		}
 
 		@Override

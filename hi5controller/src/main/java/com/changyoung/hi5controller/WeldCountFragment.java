@@ -1100,7 +1100,7 @@ public class WeldCountFragment extends Fragment
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
 					.inflate(R.layout.list_item_weld_count, parent, false);
-			ViewHolder holder =  new ViewHolder(v);
+			ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -1237,7 +1237,7 @@ public class WeldCountFragment extends Fragment
 			for (int i = 0; i < weldCountFile.size(); i++) {
 				if (weldCountFile.get(i).getRowType() == WeldCountFile.Job.JOB_SPOT) {
 					final TextInputLayout til = new TextInputLayout(mContext);
-					til.setHint(String.format("[줄번호:%03d] CN = %s",
+					til.setHint(String.format("줄 번호: %03d (CN = %s)",
 							weldCountFile.get(i).getRowNumber(),
 							weldCountFile.get(i).getCN()));
 					final EditText editText = new EditText(mContext);
@@ -1253,9 +1253,10 @@ public class WeldCountFragment extends Fragment
 						@Override
 						public void onFocusChange(View v, boolean hasFocus) {
 							try {
-								Integer beginNumber = Integer.parseInt(editText.getText().toString());
-								if (beginNumber > 255) {
-									beginNumber = 255;
+								if (!hasFocus) {
+									Integer beginNumber = Integer.parseInt(editText.getText().toString());
+									if (beginNumber > 255)
+										beginNumber = 255;
 									editText.setText(String.valueOf(beginNumber));
 								}
 							} catch (NumberFormatException e) {
@@ -1284,17 +1285,17 @@ public class WeldCountFragment extends Fragment
 				@Override
 				public void onFocusChange(View v, boolean hasFocus) {
 					try {
-						Integer beginNumber = Integer.parseInt(etBeginNumber.getText().toString());
-						if (beginNumber > 255) {
-							beginNumber = 255;
-							etBeginNumber.setText(String.valueOf(beginNumber));
-						}
-						sbBeginNumber.setProgress(beginNumber - 1);
-
-						for (EditText et : etList) {
-							et.setText(String.valueOf(beginNumber++));
+						if (!hasFocus) {
+							Integer beginNumber = Integer.parseInt(etBeginNumber.getText().toString());
 							if (beginNumber > 255)
 								beginNumber = 255;
+							etBeginNumber.setText(String.valueOf(beginNumber));
+							sbBeginNumber.setProgress(beginNumber - 1);
+							for (EditText et : etList) {
+								et.setText(String.valueOf(beginNumber++));
+								if (beginNumber > 255)
+									beginNumber = 255;
+							}
 						}
 					} catch (NumberFormatException e) {
 						Log.d(TAG, e.getLocalizedMessage());
