@@ -19,6 +19,10 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -80,6 +84,7 @@ public class WeldConditionFragment extends Fragment
 
 	private LooperHandler looperHandler;
 	private WeldConditionObserver observer;
+	private TextToSpeech mTts;
 
 	//	private String mWorkPath;
 	private int lastPosition = 0;
@@ -170,6 +175,7 @@ public class WeldConditionFragment extends Fragment
 		mRecyclerView.setLayoutManager(mLayoutManager);
 		mAdapter = new WeldConditionAdapter(getActivity(),
 				mView.findViewById(R.id.coordinator_layout), new ArrayList<WeldConditionItem>());
+		mAdapter.onLoadInstanceState(savedInstanceState);
 		mRecyclerView.setAdapter(mAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
 				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
@@ -179,8 +185,21 @@ public class WeldConditionFragment extends Fragment
 		looperHandler = new LooperHandler(Looper.getMainLooper());
 		observer = new WeldConditionObserver(onGetWorkPath(), looperHandler);
 		observer.startWatching();
+		mTts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+
+			}
+		});
+//		mTts.setLanguage(Locale.KOREAN);
 
 		return mView;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		mAdapter.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -586,6 +605,84 @@ public class WeldConditionFragment extends Fragment
 		});
 
 		dialogBuilder.show();
+
+		final String ttsMsg = getContext().getString(R.string.tts_squeeze_force_value);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
+		} else {
+			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
+		}
+
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+				intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
+				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+
+				SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
+				mRecognizer.setRecognitionListener(new RecognitionListener() {
+					@Override
+					public void onReadyForSpeech(Bundle params) {
+
+					}
+
+					@Override
+					public void onBeginningOfSpeech() {
+
+					}
+
+					@Override
+					public void onRmsChanged(float rmsdB) {
+
+					}
+
+					@Override
+					public void onBufferReceived(byte[] buffer) {
+
+					}
+
+					@Override
+					public void onEndOfSpeech() {
+
+					}
+
+					@Override
+					public void onError(int error) {
+
+					}
+
+					@Override
+					public void onResults(Bundle results) {
+						String key = SpeechRecognizer.RESULTS_RECOGNITION;
+						ArrayList<String> list = results.getStringArrayList(key);
+						if (list != null) {
+							for (String item : list) {
+								try {
+									//noinspection ConstantConditions
+									tilList.get(2).getEditText()
+											.setText(String.valueOf(Integer.parseInt(item)));
+									break;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+
+					@Override
+					public void onPartialResults(Bundle partialResults) {
+
+					}
+
+					@Override
+					public void onEvent(int eventType, Bundle params) {
+
+					}
+				});
+				mRecognizer.startListening(intent);
+			}
+		}, 2000);
 	}
 
 	private void snackbar_setCheckedItem() {
@@ -1118,8 +1215,8 @@ public class WeldConditionFragment extends Fragment
 			return selectedItems.size();
 		}
 
-		public List<Integer> getSelectedItems() {
-			List<Integer> items = null;
+		public ArrayList<Integer> getSelectedItems() {
+			ArrayList<Integer> items = null;
 			try {
 				items = new ArrayList<>(selectedItems.size());
 				for (int i = 0; i < selectedItems.size(); i++) {
@@ -1131,6 +1228,24 @@ public class WeldConditionFragment extends Fragment
 				e.printStackTrace();
 			}
 			return items;
+		}
+
+		public void onLoadInstanceState(Bundle savedInstanceState) {
+			try {
+				ArrayList<Integer> items =
+						savedInstanceState.getIntegerArrayList("weld_condition_selected_items");
+				if (items != null) {
+					for (Integer item : items) {
+						selectedItems.put(item, true);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		public void onSaveInstanceState(Bundle outState) {
+			outState.putIntegerArrayList("weld_condition_selected_items", getSelectedItems());
 		}
 
 		public void setData(List<WeldConditionItem> data) {

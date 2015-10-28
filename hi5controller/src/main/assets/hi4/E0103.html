@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0103 (○축)엔코더이상 : 통신처리 시간 초과</TITLE>
+	<LINK rel="stylesheet" href="../default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">9.1. </SPAN><SPAN style="font-family:굴림">개요</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">서보보드에서 절대치 엔코더 데이터를 수신하지 못하였습니다<SPAN lang="EN-US">. </SPAN>절대치 엔코더 데이터는 제어기 전원<SPAN lang="EN-US"> On </SPAN>시에 수신하고<SPAN lang="EN-US">, </SPAN>최초 모터<SPAN lang="EN-US"> On </SPAN>시에 수신하여 총<SPAN lang="EN-US"> 2</SPAN>회 수신합니다<SPAN lang="EN-US">. </SPAN>따라서<SPAN lang="EN-US"> E0103 </SPAN>에러는 전원<SPAN lang="EN-US"> On </SPAN>초기화시와 최초 모터<SPAN lang="EN-US"> On</SPAN>시에만 검지하는 에러입니다<SPAN lang="EN-US">. </SPAN>단<SPAN lang="EN-US">, </SPAN>제어기전원과 무관하게 다른 문제로 인해<SPAN lang="EN-US"> CPU</SPAN>보드가 리부팅되면서 초기화를 진행하면서 새로 에러를 검지하는 경우도 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">9.2. </SPAN><SPAN style="font-family:굴림">원인</SPAN> <SPAN style="font-family:굴림">및</SPAN> <SPAN style="font-family:굴림">점검방법</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</SPAN></P>
+
+   <P style="margin-left:10pt">
+        <table cellpadding="6" style="font:10.0pt;font-weight:bold;border: solid windowtext 1.0p; background: #FFFFFF;">
+            <tr><td>
+		1. 엔코더 공급전압을 확인하십시오 <br>
+		2. 모터 브레이크가 해제되는지 점검하십시오<br>
+		3. 서보보드를 교체 시험하십시오<br>
+		4. 배선을 점검하십시오<br>
+		5. 모터를 교체 시험하십시오
+	   	  </td></tr>
+        </table>
+    </P>
+    
+
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:40.0pt"><B><SPAN lang="EN-US">1. </SPAN>엔코더 공급전압을 확인하십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed" style="margin-left:40.0pt">엔코더에 공급하는 전원전압은 엔코더측 커넥터 공급 전압이<SPAN lang="EN-US"> 5V</SPAN>±<SPAN lang="EN-US">5%</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">(4.75V ~ 5.25V)</SPAN>범위 내에 있어야 합니다<SPAN lang="EN-US">. </SPAN>엔코더측 커넥터 전압이<SPAN lang="EN-US"> 4.75V</SPAN>이하로</P>
+	<P class="unnamed" style="margin-left:40.0pt">떨어질 경우<SPAN lang="EN-US">, </SPAN>엔코더가 정상 동작하지 않아<SPAN lang="EN-US">, </SPAN>상기 에러 발생 가능성이 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:40.0pt">엔코더측 커넥터<SPAN lang="EN-US"> pin(G-S)</SPAN>의 전압을 측정해 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<TABLE class="unnamed" border="1" cellspacing="0" cellpadding="0" align="left" style="border-collapse:collapse;border:none;margin-left:4.85pt;margin-right:4.85pt">
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">Pin No.</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border:solid black 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">Function</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border:solid black 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">Pin No.</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border:solid black 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">Function</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">A</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">A</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">K</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">Z</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">B</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">/A</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">L</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">/Z</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">C</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">B</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">M</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">NC</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">D</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">/B</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">N</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">NC</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">E</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">RX</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">P</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">NC</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">F</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">/RX</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">R</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">RST</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">G</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US" style="color:red">GND</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">S</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">GND</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">H</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">VCC</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">T</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">VB</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:11.35pt">
+			<TD width="66" style="width:49.65pt;border:solid black 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">J</SPAN></P>
+			</TD>
+			<TD width="76" style="width:2.0cm;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">CASE GND</SPAN></P>
+			</TD>
+			<TD width="64" style="width:47.9pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+			</TD>
+			<TD width="85" style="width:63.8pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.35pt">
+				<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+			</TD>
+		</TR>
+	</TABLE>
+	<P class="unnamed"><SPAN lang="EN-US"><IMG width="504" height="342" src="images/image111.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108566">그림 </A><SPAN lang="EN-US">5.21 </SPAN>엔코더 입력 전원 측정 방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt">측정된 전압이 기준전압보다 낮을 경우 엔코더 전원공급장치의<SPAN lang="EN-US"> +5V ADJ(E) </SPAN>전압조정 단자를 돌려 엔코더측 커넥터 전압이 기준전압 이내가 되도록 조정하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="441" height="222" src="images/image112.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108567">그림 </A><SPAN lang="EN-US">5.22 </SPAN>엔코더 전원 조정 방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">2.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>모터 브레이크가 해제되는지 점검하십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">모터<SPAN lang="EN-US"> Off </SPAN>상태에서<SPAN lang="EN-US"> BD461 </SPAN>시퀀스보드의 브레이크 스위치를 동작시켜 모터 브레이크가 해제되는지 점검하십시오<SPAN lang="EN-US">. </SPAN>단<SPAN lang="EN-US">, </SPAN>브레이크 해제시 로봇 축이 낙하하므로 충분한 안전조치를 취하고 브레이크 스위치를 재빨리 눌렀다 떼서 로봇축 낙하량을 최소화해야 합니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="350" height="383" src="images/image113.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108568">그림 </A><SPAN lang="EN-US">5.23 BD461 </SPAN>보드 외관</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; TSW03 : </SPAN>주축<SPAN lang="EN-US">(1,2,3</SPAN>축<SPAN lang="EN-US">) </SPAN>브레이크 해제 전원 강제 출력</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; TSW04 : </SPAN>수축<SPAN lang="EN-US">(4,5,6</SPAN>축<SPAN lang="EN-US">) </SPAN>브레이크 해제 전원 강제 출력</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; TSW05 : </SPAN>부가축<SPAN lang="EN-US">(7</SPAN>축<SPAN lang="EN-US">) </SPAN>브레이크 해제 전원 강제 출력</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; TSW06 : </SPAN>부가축<SPAN lang="EN-US">(8</SPAN>축<SPAN lang="EN-US">) </SPAN>브레이크 해제 전원 강제 출력</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">3.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>서보보드를 교체 시험하십시오<SPAN lang="EN-US">. </SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">서보 보드를 교체한 후 에러가 발생하지 않으면 서보보드의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 보드를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="368" height="323" src="images/image114.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108569">그림 </A><SPAN lang="EN-US">5.24 BD540 </SPAN>서보보드 교체 방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">4.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>모터를 교체 시험하십시오<SPAN lang="EN-US">. </SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">서보 모터를 교체한 후 에러가 발생하지 않으면 서보모터의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 모터를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">. </SPAN>아래 그림은<SPAN lang="EN-US"> HX165 </SPAN>로봇의 각 축 모터의 위치를 나타내고 있으며<SPAN lang="EN-US">, </SPAN>다른 로봇은 해당 기구 보수설명서를 참고하여 교체하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="318" height="496" src="images/image115.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108570">그림 </A><SPAN lang="EN-US">5.25 HX165 </SPAN>로봇의 각 축 모터 위치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">5.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:20.0pt">엔코더의 배선점검 순서는 다음과 같습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:20.0pt"><SPAN lang="EN-US">1</SPAN>차<SPAN lang="EN-US"> : </SPAN>엔코더 배선에 관련된 커넥터들의 접촉 불량여부를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="text-indent:20.0pt"><SPAN lang="EN-US">2</SPAN>차<SPAN lang="EN-US"> : </SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt">엔코더 배선의 단락 유무를 점검하십시오<SPAN lang="EN-US">. </SPAN>멀티미터<SPAN lang="EN-US">(</SPAN>테스터기<SPAN lang="EN-US">)</SPAN>와 같은 장비를 이용하여 각 상의 배선을 <SPAN lang="EN-US">1:1</SPAN>로 체크하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="text-indent:20.0pt"><SPAN lang="EN-US">3</SPAN>차<SPAN lang="EN-US"> : </SPAN>엔코더 배선을 교체시험 하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">엔코더 배선이 단선되지 않고 쉴드선의 접촉불량<SPAN lang="EN-US">, </SPAN>엔코더 신호선과 타 전력선 또는<SPAN lang="EN-US"> </SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">로봇 본체 금속부위와의 접촉 등의 현상이 있을 경우에는 단락유무 검사로는 검사할 수 없으므로 배선교체 시험을 하여주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">1) </SPAN>제어기 내부 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">■<SPAN lang="EN-US"> CNEC1,2(BD540)</SPAN>커넥터와<SPAN lang="EN-US"> SMPS(P5E,M5E)</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">■<SPAN lang="EN-US"> CNEC1,2(BD540)</SPAN>커넥터와<SPAN lang="EN-US"> CNR4</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="423" height="324" src="images/image116.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108571">그림 </A><SPAN lang="EN-US">5.26 </SPAN>제어기 내부 엔코더 배선</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">2) </SPAN>제어기와 로봇간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">■<SPAN lang="EN-US"> CNR4</SPAN>와<SPAN lang="EN-US"> CNR04</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="449" height="321" src="images/image118.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108572">그림 </A><SPAN lang="EN-US">5.27 </SPAN>로봇과 제어기간 기본 설치 구성도</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="430" height="237" src="images/image119.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108573"></A><A name="_Toc220487537"></A><A name="_Toc257719520">그림 </A><SPAN lang="EN-US">5.28 </SPAN>로봇 본체와 제어기의 접속</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">3) </SPAN>본체내부의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">■<SPAN lang="EN-US"> CER1</SPAN>과<SPAN lang="EN-US"> CNE1~6(</SPAN>엔코더측 커넥터<SPAN lang="EN-US">)</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:20.0pt">배선점검은 로봇 보수설명서의 배선 접속도를 참고하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="177" height="248" src="images/image120.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108574">그림 </A><SPAN lang="EN-US">5.29 </SPAN>로봇 기내 배선</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0122 서보ON 제한시간 초과</TITLE>
+	<LINK rel="stylesheet" href="default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="smalltitle">개 요</P>
+	<P class="para">메인에서 서보에 모터<SPAN lang="EN-US"> ON </SPAN>지령을 보냈는데도 서보가 모터<SPAN lang="EN-US"> ON </SPAN>되지 않는 경우에 발생합니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="para">메인과 서보간의 통신에 문제가 있을 경우에 발생할 수 있습니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="para">메인에서 서보에 모터<SPAN lang="EN-US"> ON</SPAN>을 보내기 직전에 서보에러 <SPAN lang="EN-US">clear </SPAN>지령을 보내고 서보에러가<SPAN lang="EN-US"> clear</SPAN>되면 모터<SPAN lang="EN-US"> ON </SPAN>지령을 보냅니다<SPAN lang="EN-US">. </SPAN>서보에러가<SPAN lang="EN-US"> clear</SPAN>되지 않으면 해당 서보에러가 다시 나타나기 때문에 모터<SPAN lang="EN-US"> ON </SPAN>지령이 출력되지 않습니다<SPAN lang="EN-US">. </SPAN>따라서 메인과 서보간 통신 문제만 아니라면 정상적인 모터<SPAN lang="EN-US"> ON</SPAN>이 되거나 다른 서보 에러가 발생됩니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed" style="margin-left:100.0pt;text-indent:9.0pt;word-break:keep-all"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:100.0pt;text-indent:9.0pt;word-break:keep-all"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="smalltitle">원인 및 점검방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<TABLE class="unnamed" border="1" cellspacing="0" cellpadding="0" style="margin-left:47.95pt;border-collapse:collapse;border:none">
+		<TR>
+			<TD width="491" valign="top" style="width:13.0cm;border:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt">
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">1. </SPAN>메인보드와 서보보드가 올바로 설치되어 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title3"><SPAN lang="EN-US">1) </SPAN>보드가 올바르게 설치되어 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title3"><SPAN lang="EN-US">2) </SPAN>보드 이상여부를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+			</TD>
+		</TR>
+	</TABLE>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="left" style="text-align:left;text-autospace:ideograph-numeric ideograph-other;word-break:keep-all"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">1. </SPAN>메인보드와 서보보드가 올바르게 설치되어 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>메인보드와 서보보드가 랙에 올바로 설치되어 있지 않거나 보드에 문제가 있으면 통신에 문제가 되어 에러가 발생할 수 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="544" height="91" src="images/image132.gif"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; USB </SPAN>메모리에 메인보드 파일을 백업하는 방법은 다음과 같습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="426" height="159" src="images/image166.jpg"></SPAN></P>
+	<P class="pic">그림<SPAN lang="EN-US"> 1. TP</SPAN>에<SPAN lang="EN-US"> USB </SPAN>삽입하는 방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; USB</SPAN>가<SPAN lang="EN-US"> TP</SPAN>에서 인식되면 화면 위에 다음과 같은 아이콘으로 표시됩니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="428" height="261" src="images/image167.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>파일을 백업하기 위해서<SPAN lang="EN-US">,</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">1) </SPAN>서비스</P>
+	<P class="para"><SPAN lang="EN-US">2) 5. </SPAN>파일관리</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>로 들어가면 윈도우에서 탐색기와 같은 화면이 보여집니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="428" height="261" src="images/image168.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>여기서<SPAN lang="EN-US"> M/B</SPAN>에 보여지는 파일을 복사하여<SPAN lang="EN-US"> USB</SPAN>에 넣으시면 됩니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="527" height="358" src="images/image169.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="527" height="358" src="images/image170.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">
+		<TABLE cellpadding="0" cellspacing="0" align="left">
+			<TR>
+				<TD width="229" height="234"></TD>
+				<TD width="34"></TD>
+				<TD width="6"></TD>
+				<TD width="34"></TD>
+			</TR>
+			<TR>
+				<TD height="1"></TD>
+				<TD rowspan="2" align="left" valign="top"><IMG width="34" height="42" src="images/image171.gif" alt="텍스트 상자: 1"></TD>
+			</TR>
+			<TR>
+				<TD height="41"></TD>
+				<TD></TD>
+				<TD align="left" valign="top"><IMG width="34" height="41" src="images/image172.gif" alt="텍스트 상자: 2"></TD>
+			</TR>
+		</TABLE>
+		<SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<BR clear="ALL">
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; USB</SPAN>에 윈도우 탐색기와 같이 새 폴더를 만들 수도 있으며<SPAN lang="EN-US">, </SPAN>소프트키보드를 사용하여 폴더 이름을 변경할 수 도 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="527" height="332" src="images/image173.jpg"></SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="543" height="325" src="images/image174.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">1) </SPAN>보드가 올바르게 설치되어 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>메인보드와 서보보드를 랙에서 제거한 후 다시 설치하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="459" height="281" src="images/image175.jpg"></SPAN></P>
+	<P class="pic">그림<SPAN lang="EN-US"> 2. </SPAN>제어기 내부 랙 위치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">2) </SPAN>보드 이상여부를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>보드 이상 여부를 판단하기 위해서 보드 교체를 하시기 바랍니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed" style="margin-left:100.0pt;word-break:keep-all"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

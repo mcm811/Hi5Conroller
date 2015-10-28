@@ -7,11 +7,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -76,6 +81,7 @@ public class WeldCountFragment extends Fragment
 
 	private LooperHandler looperHandler;
 	private WeldCountObserver observer;
+	private TextToSpeech mTts;
 
 	private int orderType = ORDER_TYPE_ASCEND;
 
@@ -159,9 +165,9 @@ public class WeldCountFragment extends Fragment
 				if (mLayoutManager instanceof GridLayoutManager)
 					mLayoutManager = new StaggeredGridLayoutManager(2,
 							StaggeredGridLayoutManager.VERTICAL);
-				else if (mLayoutManager instanceof  StaggeredGridLayoutManager)
+				else if (mLayoutManager instanceof StaggeredGridLayoutManager)
 					mLayoutManager = new LinearLayoutManager(getContext());
-				else if (mLayoutManager instanceof  LinearLayoutManager)
+				else if (mLayoutManager instanceof LinearLayoutManager)
 					mLayoutManager = new GridLayoutManager(getContext(), 2);
 				mRecyclerView.setLayoutManager(mLayoutManager);
 				return true;
@@ -178,6 +184,14 @@ public class WeldCountFragment extends Fragment
 		looperHandler = new LooperHandler(Looper.getMainLooper());
 		observer = new WeldCountObserver(onGetWorkPath(), looperHandler);
 		observer.startWatching();
+
+		mTts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+
+			}
+		});
+//		mTts.setLanguage(Locale.KOREAN);
 
 		return mView;
 	}
@@ -1349,6 +1363,82 @@ public class WeldCountFragment extends Fragment
 			});
 
 			dialog.show();
+
+			final String ttsMsg = mContext.getString(R.string.tts_begin_number);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
+			} else {
+				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
+			}
+
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+					intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
+					intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+
+					SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
+					mRecognizer.setRecognitionListener(new RecognitionListener() {
+						@Override
+						public void onReadyForSpeech(Bundle params) {
+
+						}
+
+						@Override
+						public void onBeginningOfSpeech() {
+
+						}
+
+						@Override
+						public void onRmsChanged(float rmsdB) {
+
+						}
+
+						@Override
+						public void onBufferReceived(byte[] buffer) {
+
+						}
+
+						@Override
+						public void onEndOfSpeech() {
+
+						}
+
+						@Override
+						public void onError(int error) {
+
+						}
+
+						@Override
+						public void onResults(Bundle results) {
+							String key = SpeechRecognizer.RESULTS_RECOGNITION;
+							ArrayList<String> list = results.getStringArrayList(key);
+							if (list != null) {
+								for (String item : list) {
+									try {
+										sbBeginNumber.setProgress(Integer.parseInt(item) - 1);
+										break;
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+
+						@Override
+						public void onPartialResults(Bundle partialResults) {
+
+						}
+
+						@Override
+						public void onEvent(int eventType, Bundle params) {
+
+						}
+					});
+					mRecognizer.startListening(intent);
+				}
+			}, 2000);
 		}
 	}
 

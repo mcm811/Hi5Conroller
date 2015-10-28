@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0119 (○축)과부하 발생</TITLE>
+	<LINK rel="stylesheet" href="default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="smalltitle">개 요</P>
+	<P class="para">모터 또는 구동장치가 무리하게 동작되고 있습니다<SPAN lang="EN-US">. </SPAN>모터 또는 구동장치가 설정치 보다 무리하게 동작하게 되면<SPAN lang="EN-US">, </SPAN>서보보드는 에러를 감지하고 로봇을 정지시킵니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="smalltitle">원인 및 점검방법</P>
+	<P class="smalltitle"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<TABLE class="unnamed" border="1" cellspacing="0" cellpadding="0" style="margin-left:47.95pt;border-collapse:collapse;border:none">
+		<TR>
+			<TD width="491" valign="top" style="width:13.0cm;border:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt">
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">1. </SPAN>부하가 로봇의 정격 이하로 설치되어 있는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">2. </SPAN>로봇 동작 중 충돌요소가 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">3. </SPAN>축 브레이크가 정상적으로 작동하는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">4. </SPAN>서보보드를 교체하여 이상여부를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">5. </SPAN>구동부가 정상적으로 작동하는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+			</TD>
+		</TR>
+	</TABLE>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="left" style="text-align:left;text-autospace:ideograph-numeric ideograph-other;word-break:keep-all"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">1. </SPAN>부하가 로봇의 정격 이하로 설치되어 있는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>로봇 최대 사양 이하의 부하가 설치되어 있는지 확인하십시오<SPAN lang="EN-US">. </SPAN>사양을 초과할 경우 에러가 발생할 수 있습니다<SPAN lang="EN-US">. (</SPAN>여기서 부하란<SPAN lang="EN-US">, </SPAN>로봇 끝단에 설치되는 툴뿐만 아니라 로봇 기구에 부착되는 케이블 및 다른 모든 부분이 포함됩니다<SPAN lang="EN-US">.)</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>부하를 확인하는 방법에는 계측기를 사용하는 방법이 가장 정확하지만 여의치 않을 경우에는 제어기 기능 중 부하추정 기능을 사용하여 확인할 수 있습니다<SPAN lang="EN-US">. </SPAN>부하추정 기능은 로봇 끝단에 설치되어 있는 툴에 대한 부분만 추정 가능합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>부하 추정 방법은 다음과 같습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">1) </SPAN>부하추정 기능으로 들어갑니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">시스템 <SPAN lang="EN-US" style="font-family:Wingdings">&#224;</SPAN><SPAN lang="EN-US"> 6. </SPAN>자동정수 설정 <SPAN lang="EN-US" style="font-family:Wingdings">&#224;</SPAN><SPAN lang="EN-US"> 4. </SPAN>부하추정 기능</P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image152.jpg"></SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image153.jpg"></SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image154.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">2) </SPAN>부하추정 기능에서 툴 번호<SPAN lang="EN-US">, </SPAN>추정방법 및 이너셔 추정여부를 선택합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image155.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para" style="text-indent:10.0pt"><SPAN style="font-family:나눔고딕">■</SPAN> 부하추정 후 저장할 툴 번호</P>
+	<P class="para" style="text-indent:10.0pt"><SPAN style="font-family:나눔고딕">■</SPAN> 추정 방법<SPAN lang="EN-US"> : </SPAN>부하추정<SPAN lang="EN-US"> 2</SPAN></P>
+	<P class="para" style="text-indent:10.0pt"><SPAN style="font-family:나눔고딕">■</SPAN> 이너셔 추정<SPAN lang="EN-US"> : </SPAN>유효</P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image156.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">3) </SPAN>정상 운전을 클릭하여 수행합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">모터 온 스위치를 누르고 데드맨을 잡은 후 정상운전을 클릭합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="264" src="images/image157.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">4) </SPAN>부하 추정 결과를 등록할지 결정합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">부하 추정 운전이 완료되면 추정 결과가 화면에 보여집니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="425" height="297" src="images/image158.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">여기서 종료 버튼을 누르면 결과를 반영할 것인지 확인 창이 나타나고 <SPAN lang="EN-US">‘</SPAN>예<SPAN lang="EN-US">’ </SPAN>를 누르면 저장이 됩니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">2. </SPAN>로봇 동작 중 충돌요소가 있는지 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">로봇 작업 영역에 로봇과 간섭 또는 충돌하는 부분이 있는지 확인하십시오<SPAN lang="EN-US">. </SPAN>로봇이 다른 기구물과 간섭이 발생할 경우 에러가 발생할 수 있습니다<SPAN lang="EN-US">. </SPAN>이 경우<SPAN lang="EN-US">, </SPAN>작업 프로그램을 수정하여 간섭이 발생하지 않도록 합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><B><SPAN lang="EN-US">&nbsp;</SPAN></B></P>
+	<P class="title2"><SPAN lang="EN-US">3. </SPAN>축 브레이크가 정상적으로 작동하는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">해당 축 브레이크의 해제기능에 문제가 있거나 브레이크 해제전압의 이상일 수 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">1) </SPAN>개별 축 브레이크 해제 이상 점검</P>
+	<P class="para">모터전원을 제거한 후<SPAN lang="EN-US">(</SPAN>모터<SPAN lang="EN-US">OFF) </SPAN>브레이크 수동스위치를 사용하여 해당 축의 브레이크가 해제되는지 확인하십시오<SPAN lang="EN-US">. </SPAN>브레이크 해제시 모터에서 나는 소리로 확인할 수 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="text-indent:27.0pt"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="unnamed" style="text-indent:27.0pt"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="544" height="73" src="images/image143.gif"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="601" height="278" src="images/image159.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">1. </SPAN>브레이크 수동해제 스위치의 위치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">해당 축의 브레이크가 해제되지 않는다면 시스템보드의 브레이크 해제전압 출력상태를 확인해야 합니다<SPAN lang="EN-US">. </SPAN>브레이크 배선<SPAN lang="EN-US">(CNB2, CNB7, CNB8 </SPAN>커넥터<SPAN lang="EN-US">)</SPAN>을 제거하고 수동브레이크 스위치를 사용하여 브레이크전압을 출력하십시오<SPAN lang="EN-US">. CNB2 </SPAN>또는<SPAN lang="EN-US"> CNB7, CNB8</SPAN>커넥터에서 해당 축의 브레이크 전압이<SPAN lang="EN-US"> 20V</SPAN>이상으로 출력되는지 측정하십시오<SPAN lang="EN-US">. 20V</SPAN>이하의 전압으로 출력되는 축이 있다면 시스템보드<SPAN lang="EN-US">(BD530)</SPAN>의 고장이므로 교체하십시오<SPAN lang="EN-US">. </SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="463" height="306" src="images/image160.jpg"><IMG width="460" height="347" src="images/image161.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">2. CNB2, CNB7 </SPAN>커넥터의 핀배치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">2) </SPAN>브레이크용 전원이상 점검</P>
+	<P class="para"><SPAN lang="EN-US">“E0012 </SPAN>브레이크 전원이상<SPAN lang="EN-US">”</SPAN>이라는 메시지가 같이 발생하였다면 브레이크 전원장치에 이상이 있는 것입니다<SPAN lang="EN-US">. TP</SPAN>에서 <SPAN lang="EN-US">“</SPAN>시스템 <SPAN lang="EN-US" style="font-family:Wingdings">&#224;</SPAN><SPAN lang="EN-US"> </SPAN>모니터링 <SPAN lang="EN-US" style="font-family:Wingdings">&#224;</SPAN><SPAN lang="EN-US"> 2.</SPAN>입출력 신호 <SPAN lang="EN-US" style="font-family:Wingdings">&#224;</SPAN><SPAN lang="EN-US"> 1.</SPAN>전용 입력신호<SPAN lang="EN-US">” </SPAN>창을 열어보면 <SPAN lang="EN-US">“</SPAN>과부하<SPAN lang="EN-US">(Brake</SPAN>전원<SPAN lang="EN-US">)” </SPAN>항목이 있습니다<SPAN lang="EN-US">. </SPAN>이것이 노란색으로 표시되어 있다면 전장모듈의 브레이크 전원용 퓨즈가 끊어진 것입니다<SPAN lang="EN-US">. </SPAN>해당 퓨즈를 교체하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="391" height="252" src="images/image162.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">3. </SPAN>전장모듈</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">퓨즈도 정상이라고면 시스템보드에서 브레이크 전원<SPAN lang="EN-US">(DC24V)</SPAN>을 측정하십시오<SPAN lang="EN-US">. </SPAN>보드의 중앙부근에<SPAN lang="EN-US"> 3</SPAN>개의 테스트핀이 배치되어 있습니다<SPAN lang="EN-US">. </SPAN>이 중<SPAN lang="EN-US"> TMB</SPAN>를 기준단자로 하여<SPAN lang="EN-US"> TPPB</SPAN>단자의 값이<SPAN lang="EN-US"> DC20V</SPAN>이상이 되어야 정상입니다<SPAN lang="EN-US">. </SPAN>만약<SPAN lang="EN-US"> 20V</SPAN>미만이라면 브레이크 전원을 생성하는 전원장치의 이상입니다<SPAN lang="EN-US">. </SPAN>전장모듈을 교체하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="468" height="156" src="images/image163.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">4. </SPAN>브레이크 전원 테스트핀</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">4. </SPAN>서보보드를 교체하여 이상여부를 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">서보보드에 이상이 있을 경우 에러가 발생할 수 있습니다<SPAN lang="EN-US">. </SPAN>보드를 교체하여 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="314" height="309" src="images/image164.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">5. </SPAN>구동부가 정상적으로 작동하는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN lang="EN-US">&nbsp;&nbsp; </SPAN>해당축의 구동부<SPAN lang="EN-US">(</SPAN>모터<SPAN lang="EN-US">, </SPAN>감속기<SPAN lang="EN-US">)</SPAN>가 정상적으로 작동하는지 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="233" height="236" src="images/image165.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

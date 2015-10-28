@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0127 MSHP 동작이상</TITLE>
+	<LINK rel="stylesheet" href="../default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">21.1. </SPAN><SPAN style="font-family:굴림">개요</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">모터용 전원은 전자접촉기<SPAN lang="EN-US">(magnetic contactor) MSHP1, MSHP2</SPAN>의 개폐에 따라 앰프<SPAN lang="EN-US">(AMP)</SPAN>에 공급됩니다<SPAN lang="EN-US">. MSHP1,2</SPAN>의 상태는 메인<SPAN lang="EN-US">(MAIN)</SPAN>에 의해 조건에 따라 감시되고 있으며 비정상적인 동작을 할 경우에<SPAN lang="EN-US"> E127(MSHP</SPAN>동작이상<SPAN lang="EN-US">)</SPAN>이 발생합니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">MSHP1, 2</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되기 위해서는 여러 가지 조건이 만족되어야 하며<SPAN lang="EN-US">, </SPAN>이미<SPAN lang="EN-US"> ON</SPAN>이 되었다고 해도 여러 가지 원인에 의해<SPAN lang="EN-US"> OFF</SPAN>될 수 있습니다<SPAN lang="EN-US">. </SPAN>안전신호와 같이 감시기능이 제공되는 경우에는 전자접촉기의 동작이상에 대한 원인을 메인<SPAN lang="EN-US">(MAIN)</SPAN>이 판단할 수 있으며<SPAN lang="EN-US">, </SPAN>적절한 에러메시지를 표시할 수 있습니다<SPAN lang="EN-US">. </SPAN>그러나 메인이 전자접촉기의 동작이상에 대한 원인을 판단하지 못할 경우에는 여러 가지 점검이 필요합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">21.2. </SPAN><SPAN style="font-family:굴림">원인</SPAN> <SPAN style="font-family:굴림">및</SPAN> <SPAN style="font-family:굴림">점검방법</SPAN></P>
+	  
+   <P style="margin-left:10pt">
+        <table cellpadding="6" style="font:10.0pt;font-weight:bold;border: solid windowtext 1.0p; background: #FFFFFF;">
+            <tr><td>
+		1. 시퀀스보드를 교체하십시오.<br>
+		2. IO보드를 교체하십시오.<br>
+		3. MSHP1, 2를 교체하십시오.
+	    </td></tr>
+        </table>
+    </P>	   
+
+	<P class="unnamed">“<SPAN lang="EN-US">MSHP </SPAN>동작이상”의 발생원인을 파악하기 위해서는 우선 기본적인 모터전원 투입 계통을 이해해야 합니다<SPAN lang="EN-US">. </SPAN>모터용 전원을 앰프<SPAN lang="EN-US">(Drive Unit)</SPAN>에 공급하는 기본개념은 다음 그림과 같습니다<SPAN lang="EN-US">. </SPAN>“모터<SPAN lang="EN-US"> ON </SPAN>시퀀스”에 따라 메인은<SPAN lang="EN-US"> MSHP</SPAN>작동명령을 주고<SPAN lang="EN-US"> MSHP1,2</SPAN>가 작동될 때까지 보조접점을 감시하면서 대기합니다<SPAN lang="EN-US">. </SPAN>이때 만약 일정시간까지도<SPAN lang="EN-US"> MSHP1,2</SPAN>가 작동되지 않으면<SPAN lang="EN-US">&nbsp; E0127(MSHP</SPAN>동작이상<SPAN lang="EN-US">)</SPAN>이 발생됩니다<SPAN lang="EN-US">. </SPAN>이렇게 메인<SPAN lang="EN-US">(MAIN)</SPAN>의 명령에 따라 전자접촉기<SPAN lang="EN-US"> MSHP1,2</SPAN>가<SPAN lang="EN-US"> ON</SPAN>이 되면 앰프에<SPAN lang="EN-US"> AC220V</SPAN>의<SPAN lang="EN-US"> R, S, T 3</SPAN>상 전원이 공급됩니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><A name="_Toc215579032"></A><A name="_Ref215579260"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <IMG width="418" height="246" src="images/image226.png"></SPAN></A></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108609"></A><A name="_Toc215982719">그림 </A><SPAN lang="EN-US">5.64 </SPAN>모터전원 개폐에 대한 안전회로 개념도</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">1.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>명령계통에 따른 보드 교체</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">1) </SPAN>시퀀스보드를 교체하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">2) IO</SPAN>보드를 교체하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">3) MSHP1, 2</SPAN>를 교체하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="465" height="416" src="images/image227.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

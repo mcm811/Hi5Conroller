@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0108 (○축)엔코더이상 : 엔코더 리셋 필요</TITLE>
+	<LINK rel="stylesheet" href="../default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">12.1. </SPAN><SPAN style="font-family:굴림">개요</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">제어기 전원<SPAN lang="EN-US"> On</SPAN>시에 엔코더에서 받아온 절대치 엔코더 데이터가 엔코더 사용범위 한계를 초과하였습니다<SPAN lang="EN-US">. </SPAN>모터를 새로 장착한 경우에 발생할 수 있는데 로봇을 기준위치에 두고 엔코더 리셋을 실행해야 정상적인 엔코더 사용영역에서 사용할 수 있습니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">12.2. </SPAN><SPAN style="font-family:굴림">원인</SPAN> <SPAN style="font-family:굴림">및</SPAN> <SPAN style="font-family:굴림">점검방법</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+
+   <P style="margin-left:10pt">
+        <table cellpadding="6" style="font:10.0pt;font-weight:bold;border: solid windowtext 1.0p; background: #FFFFFF;">
+            <tr><td>
+		1. 엔코더 리셋을 실시합니다.<br>
+		2. 엔코더 옵셋 설정을 다시 실행하십시오.
+	    </td></tr>
+        </table>
+    </P>
+    
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">1.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>엔코더 리셋을 실시합니다<SPAN lang="EN-US">. </SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">엔코더 리셋은 제어기 전원<SPAN lang="EN-US"> On </SPAN>상태에서 각축 엔코더의<SPAN lang="EN-US"> RST </SPAN>단자와<SPAN lang="EN-US"> P5E </SPAN>단자를<SPAN lang="EN-US"> 3</SPAN>분간 접속시켜서 실시합니다<SPAN lang="EN-US">. </SPAN>로봇 본체 뒤의<SPAN lang="EN-US"> cover</SPAN>를 열면 엔코더 리셋용 커넥터와 리셋 전용 커넥터가 준비되어 있습니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="252" height="215" src="images/image122.png" alt="f6_4.wmf"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108592">그림 </A><SPAN lang="EN-US">5.47 </SPAN>엔코더 리셋용 커넥터</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">2.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>엔코더 옵셋 설정을 다시 실행하십시오</B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">엔코더 리셋을 실행시키면 축의 위치를 잃어버리게 됩니다<SPAN lang="EN-US">. </SPAN>로봇을 기준위치로 보내고 엔코더 옵셋 설정을 다시 실행해야 합니다<SPAN lang="EN-US">. </SPAN>로봇 기준위치에서 엔코더 옵셋 설정 직전에 엔코더 리셋을 한번 더 실행해 주는 것이 좋습니다<SPAN lang="EN-US">. </SPAN>로봇에는 축간에 간섭계수가 존재하기 때문에 전축을 기준위치로 보내고 해당축에 대한 옵셋 설정을 해야 합니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">엔코더 옵셋 설정은 수동모드에서 시스템<SPAN lang="EN-US">&gt; 3: </SPAN>로봇 파라미터<SPAN lang="EN-US">&gt; 5: </SPAN>엔코더 옵셋 설정<SPAN lang="EN-US">&gt; </SPAN>엔코더 보정<SPAN lang="EN-US">(</SPAN>위치기록<SPAN lang="EN-US">) </SPAN>을 선택하여 실시합니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">ALL</SPAN>보정 키를 누르면 한번에 모든 축에 대해 엔코더 옵셋 보정이 실행되므로 주의하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="290" height="237" src="images/image126.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

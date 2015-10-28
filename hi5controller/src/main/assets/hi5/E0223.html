@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0223 (○축)엔코더 단선 혹은 통신 실패</TITLE>
+	<LINK rel="stylesheet" href="default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="smalltitle">개 요</P>
+	<P class="para">서보보드에서는 모터의 서보제어를 수행하기 위해 엔코더와 시리얼통신을 하여 주기적으로 엔코더 데이터를 수신하는데<SPAN lang="EN-US">, </SPAN>엔코더로부터 수신된 데이터가 정해진 통신규정에 어긋나는 경우 발생하는 에러입니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">엔코더 데이터를 송수신하는 부품들의 고장이거나 배선 또는 엔코더 쉴드 라인의 처리 문제로 상기의 에러가 발생할 수 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="smalltitle">원인 및 점검방법</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<TABLE class="unnamed" border="1" cellspacing="0" cellpadding="0" style="margin-left:47.95pt;border-collapse:collapse;border:none">
+		<TR>
+			<TD width="491" valign="top" style="width:13.0cm;border:solid black 1.0pt;padding:0cm 5.4pt 0cm 5.4pt">
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+				<P class="title2"><SPAN lang="EN-US">1. </SPAN>엔코더 공급전압을 확인하십시오 </P>
+				<P class="title2"><SPAN lang="EN-US">2. </SPAN>서보보드를 교체 시험하십시오</P>
+				<P class="title2"><SPAN lang="EN-US">3. </SPAN>모터를 교체 시험하십시오</P>
+				<P class="title2"><SPAN lang="EN-US">4. </SPAN>배선을 점검하십시오</P>
+				<P class="title2"><SPAN lang="EN-US">5. </SPAN>조치 완료후 배선의 통신상태를 점검하십시오</P>
+				<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+			</TD>
+		</TR>
+	</TABLE>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="left" style="text-align:left;text-autospace:ideograph-numeric ideograph-other;word-break:keep-all"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">1. </SPAN>엔코더 공급전압을 확인하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">엔코더에 공급하는 전원전압은 엔코더측 커넥터 공급 전압이 <SPAN lang="EN-US">5V</SPAN>±<SPAN lang="EN-US">5%(4.75V ~ 5.25V)</SPAN>범위 내에 있어야 합니다<SPAN lang="EN-US">. </SPAN>엔코더측 커넥터 전압이<SPAN lang="EN-US"> 4.75V</SPAN>이하로 떨어질 경우<SPAN lang="EN-US">, </SPAN>엔코더가 정상 동작하지 않아<SPAN lang="EN-US">, </SPAN>상기 에러 발생 가능성이 있습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">엔코더측 커넥터<SPAN lang="EN-US"> pin(3-4)</SPAN>의 전압을 측정해 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="546" height="362" src="images/image217.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">측정된 전압이 기준전압보다 낮을 경우 엔코더 전원공급장치의 <SPAN lang="EN-US">+5V ADJ(E) </SPAN>전압조정 단자를 돌려 엔코더측 커넥터 전압이 기준전압 이내가 되도록 조정하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="421" height="251" src="images/image218.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">2. </SPAN>서보보드를 교체 시험하십시오<SPAN lang="EN-US">. </SPAN></P>
+	<P class="para">서보 보드를 교체한 후 에러가 발생하지 않으면 서보보드의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 보드를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="390" height="281" src="images/image219.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">3. </SPAN>모터를 교체 시험하십시오<SPAN lang="EN-US">. </SPAN></P>
+	<P class="para">서보 모터를 교체한 후 에러가 발생하지 않으면 서보모터의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 모터를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">. </SPAN>아래 그림은<SPAN lang="EN-US"> HS165 </SPAN>로봇의 각 축 모터의 위치를 나타내고 있으며<SPAN lang="EN-US">, </SPAN>다른 로봇은 해당 기구 보수설명서를 참고하여 교체하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="264" height="403" src="images/image220.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">1. HS165 </SPAN>로봇의 각 축 모터 위치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp; </SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">4. </SPAN>배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para">엔코더의 배선점검 순서는 다음과 같습니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para"><SPAN style="font-family:나눔고딕">■</SPAN><SPAN lang="EN-US"> 1</SPAN>차<SPAN lang="EN-US"> : </SPAN>엔코더 배선에 관련된 커넥터들의 접촉 불량여부를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN style="font-family:나눔고딕">■</SPAN><SPAN lang="EN-US"> 2</SPAN>차<SPAN lang="EN-US"> : </SPAN>엔코더 배선의 단락 유무를 점검하십시오<SPAN lang="EN-US">. </SPAN>멀티미터<SPAN lang="EN-US">(</SPAN>테스터기<SPAN lang="EN-US">)</SPAN>와 같은 장비를 이용하여 각 상의 배선을<SPAN lang="EN-US"> 1:1</SPAN>로 체크하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN style="font-family:나눔고딕">■</SPAN> <SPAN lang="EN-US">3</SPAN>차<SPAN lang="EN-US"> : </SPAN>엔코더 배선을 교체시험 하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">엔코더 배선이 단선되지 않고 쉴드선의 접촉불량<SPAN lang="EN-US">, </SPAN>엔코더 신호선과 타 전력선 또는 로봇 본체 금속부위와의 접촉 등의 현상이 있을 경우에는 단락유무 검사로는 검사할 수 없으므로 배선교체 시험을 하여주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="word-break:keep-all"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">1) </SPAN>제어기 내부 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">■ <SPAN lang="EN-US">CNEC1,2(BD542)</SPAN>커넥터와 <SPAN lang="EN-US">SMPS(P5E,M5E)</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para"><SPAN style="font-family:&quot;바탕체&quot;,&quot;serif&quot;">■</SPAN> <SPAN lang="EN-US">CNEC1,2(BD542)</SPAN>커넥터와 <SPAN lang="EN-US">CEC1</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="426" height="307" src="images/image221.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">2) </SPAN>제어기와 로봇간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">■<SPAN lang="EN-US"> CNEC1</SPAN>와<SPAN lang="EN-US"> CER1</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="349" height="251" src="images/image222.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">2. </SPAN>로봇과 제어기간 기본 설치 구성도</P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="470" height="323" src="images/image223.jpg"></SPAN></P>
+	<P class="pic"><A name="_Toc257719520"></A><A name="_Toc220487537"><SPAN lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>그림 <SPAN lang="EN-US">3 </SPAN>로봇 본체와 제어기의 접속</A></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title3"><SPAN lang="EN-US">3) </SPAN>본체내부의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">■<SPAN lang="EN-US"> CER1</SPAN>과<SPAN lang="EN-US"> CNE1~6(</SPAN>엔코더측 커넥터<SPAN lang="EN-US">)</SPAN>간의 배선을 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="para" style="text-indent:10.0pt">배선점검은 로봇 보수설명서의 배선 접속도를 참고하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="308" height="254" src="images/image224.jpg"></SPAN></P>
+	<P class="pic">그림 <SPAN lang="EN-US">4. </SPAN>로봇 기내 배선</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="title2"><SPAN lang="EN-US">5. </SPAN>조치 완료후 배선의 통신상태를 점검하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="para">문제부분의 조치가 완료된후 <B>『엔코더 통신실패 횟수 표시 기능 메뉴얼』</B>을 참고하여 통신상태를 점검 하십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="pic"><SPAN lang="EN-US"><IMG width="452" height="273" src="images/image225.jpg"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<TABLE class="unnamed" border="1" cellspacing="0" cellpadding="0" width="491" style="width:368.0pt;margin-left:42.55pt;border-collapse:collapse;border:none">
+		<TR style="height:21.65pt">
+			<TD width="130" style="width:97.35pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">통신 실패 횟수</P>
+			</TD>
+			<TD width="106" style="width:79.3pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">엔코더 상태</P>
+			</TD>
+			<TD width="255" style="width:191.35pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">내용</P>
+			</TD>
+		</TR>
+		<TR style="height:21.65pt">
+			<TD width="130" style="width:97.35pt;border:solid windowtext 1.0pt;border-top:none;background:white;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed"><SPAN lang="EN-US">0~2</SPAN></P>
+			</TD>
+			<TD width="106" style="width:79.3pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:white;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">정상</P>
+			</TD>
+			<TD width="255" style="width:191.35pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:white;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">정상상태<SPAN lang="EN-US">.</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:21.65pt">
+			<TD width="130" style="width:97.35pt;border:solid windowtext 1.0pt;border-top:none;background:yellow;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed"><SPAN lang="EN-US">3~5</SPAN></P>
+			</TD>
+			<TD width="106" style="width:79.3pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:yellow;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">점검</P>
+			</TD>
+			<TD width="255" style="width:191.35pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:yellow;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed">배선<SPAN lang="EN-US">, </SPAN>엔코더 또는 보드 점검 필요<SPAN lang="EN-US">.</SPAN></P>
+			</TD>
+		</TR>
+		<TR style="height:21.65pt">
+			<TD width="130" style="width:97.35pt;border:solid windowtext 1.0pt;border-top:none;background:red;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed"><SPAN lang="EN-US" style="color:white">6~8</SPAN></P>
+			</TD>
+			<TD width="106" style="width:79.3pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:red;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed"><SPAN style="color:white">경고</SPAN></P>
+			</TD>
+			<TD width="255" style="width:191.35pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:red;padding:0cm 5.4pt 0cm 5.4pt;height:21.65pt">
+				<P class="unnamed"><SPAN style="color:white">심각한 상태<SPAN lang="EN-US">, </SPAN>로봇이 정지할 수 있음<SPAN lang="EN-US">.</SPAN></SPAN></P>
+			</TD>
+		</TR>
+	</TABLE>
+	<P class="unnamed" style="margin-left:100.0pt;word-break:keep-all"><SPAN lang="EN-US" style="font-size:9.0pt">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>

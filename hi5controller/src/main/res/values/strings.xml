@@ -86,6 +86,8 @@
 	<string name="file_size">FileSize</string>
 	<string name="job_count">JobCount</string>
 	<string name="cn_strings">CN: 1 2 3 4 5 6 7 8 9 10</string>
+	<string name="tts_begin_number">시작 번호를 말씀하세요</string>
+	<string name="tts_squeeze_force_value">가압력 값을 말씀하세요</string>
 
 	<string-array name="dialog_items">
 		<item>계열 수정</item>

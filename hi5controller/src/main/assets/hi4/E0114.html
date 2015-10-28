@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML lang="ko-KR">
+<HEAD>
+	<META http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
+	<META name="Generator" content="MGTEK Help Producer - www.helpproducer.com">
+	<TITLE>E0114 구동장치 제어전압 저하</TITLE>
+	<LINK rel="stylesheet" href="../default.css" type="text/css">
+</HEAD>
+<BODY>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">15.1. </SPAN><SPAN style="font-family:굴림">개요</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed">서보 구동장치에 공급되는 제어전원인<SPAN lang="EN-US"> +15V</SPAN>가 저하되었습니다<SPAN lang="EN-US">. </SPAN>해당 에러는 서보 구동장치에서 검지하여<SPAN lang="EN-US"> CNBS </SPAN>케이블을 통해 서보 보드로 전달됩니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P style="margin-left:10.0pt;text-indent:0cm" class="2"><SPAN lang="EN-US" style="font-size:14.0pt;font-family:굴림체">15.2. </SPAN><SPAN style="font-family:굴림">원인</SPAN> <SPAN style="font-family:굴림">및</SPAN> <SPAN style="font-family:굴림">점검방법</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	
+   <P style="margin-left:10pt">
+        <table cellpadding="6" style="font:10.0pt;font-weight:bold;border: solid windowtext 1.0p; background: #FFFFFF;">
+            <tr><td>
+			1.	전원 표시 LED를 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;A.	서보 구동장치의 ‘VE’ LED를 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;B.	제어전원 공급장치인 SR1의 ‘+15V’ LED를 확인하여 주십시오.<br>
+			<br>
+			&lt;2개 모듈의 LED가 모두 OFF된 경우&gt;<br>
+			2.	제어전원 공급장치(SR1)의 출력을 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;A.	CNBS 케이블을 분리한 후 LED를 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;B.	서보 보드를 Rack에서 분리한 후 LED를 확인하여 주십시오.<br>
+			<br>
+			3.	제어전원 공급장치(SR1)를 점검하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;A.	SR1에 입력되는 전압을 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;B.	SR1을 교체한 후 LED를 확인하여 주십시오.<br>
+			<br>
+			&lt;서보 구동장치의 ‘VE’ LED만 OFF된 경우&gt;<br>
+			4.	관련 부품을 교체하여 전원 표시 LED를 확인하십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;A.	CNBS 케이블을 교체한 후 LED를 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;B.	서보 보드를 교체한 후 LED를 확인하여 주십시오.<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;C.	서보 구동장치를 교체한 LED를 확인하여 주십시오.
+	    </td></tr>
+        </table>
+    </P>
+    
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">1.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>전원 표시<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">구동장치 제어전압 저하 에러는 제어용<SPAN lang="EN-US"> +15V</SPAN>의 저하로 인해 서보 구동장치에서 검지하고<SPAN lang="EN-US">, CNBS1,2,3 </SPAN>케이블을 통하여 서보 보드<SPAN lang="EN-US">(BD540/BD541)</SPAN>에서 처리합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG src="images/image187.png"></SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108601">그림 </A><SPAN lang="EN-US">5.56 Hi4a-0000 </SPAN>제어기의 구동장치 제어전압 저하 관련 부품 배치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG src="images/image196.png"></SPAN></P>
+	<BR clear="ALL">
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108602">그림 </A><SPAN lang="EN-US">5.57 Hi4a-0010/0012 </SPAN>제어기의 구동장치 제어전압 저하 관련 부품 배치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">1)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED </SPAN>점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">구동장치 제어전압 에러를 검지하는 모듈인 중형용<SPAN lang="EN-US"> HSXY6</SPAN>와 소형용<SPAN lang="EN-US"> HDAD6</SPAN>의 ‘<SPAN lang="EN-US">VE</SPAN>’를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>정상적으로 전원이 공급되는 경우에는 해당<SPAN lang="EN-US"> LED</SPAN>가 항상<SPAN lang="EN-US"> ON(</SPAN>점등<SPAN lang="EN-US">)</SPAN>되어 있어야 합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">중형 로봇용 서보 구동장치<SPAN lang="EN-US"> : HSXY6</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">소형 로봇용 서보 구동장치<SPAN lang="EN-US"> : HDAD6</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">2)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>SR1</SPAN>의 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED </SPAN>점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> OFF</SPAN>되어 있으면<SPAN lang="EN-US"> SR1</SPAN>의<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. SR1</SPAN>과 서보 구동장치의<SPAN lang="EN-US"> LED</SPAN>가 동시에<SPAN lang="EN-US"> OFF</SPAN>되어 있는 지 확인하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG src="images/image201.png"></SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108603">그림 </A><SPAN lang="EN-US">5.58 SR1</SPAN>의 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED </SPAN>관련 부품 배치</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">2.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>SR1</SPAN>의 출력을 확인하여 주십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt"><SPAN lang="EN-US">SR1 </SPAN>자체 출력을 확인하기 위해 서보 구동장치에 연결되는 배선과 부품을 분리하여 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 점검합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">1)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>CNBS </SPAN>케이블을 분리한 후<SPAN lang="EN-US"> LED</SPAN>를 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">서보 구동 장치와 서보 보드를 연결하는<SPAN lang="EN-US"> CNBS1, CNBS2, CNBS3</SPAN>을 분리한 후<SPAN lang="EN-US"> SR1</SPAN>의<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>케이블을 분리한 후에<SPAN lang="EN-US"> SR1</SPAN>의 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되는 경우에는 서보 구동장치의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 구동장치를 정상품과 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="294" height="170" src="images/image204.png"></SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108604">그림 </A><SPAN lang="EN-US">5.59 CNBS </SPAN>케이블의 분리</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">2)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>서보 보드<SPAN lang="EN-US">(BD540/BD541)</SPAN>를 분리한 후<SPAN lang="EN-US"> LED</SPAN>를 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt"><SPAN lang="EN-US">Rack </SPAN>에서 서보 보드를 분리한 후<SPAN lang="EN-US"> SR1</SPAN>의<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>서보 보드를 분리한 후<SPAN lang="EN-US"> SR1</SPAN>의 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되는 경우에는 서보 보드 불량입니다<SPAN lang="EN-US">. </SPAN>서보 보드를 정상품과 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><SPAN lang="EN-US"><IMG width="331" height="186" src="images/image205.png"></SPAN></P>
+	<P class="unnamed" align="center" style="text-align:center"><A name="_Toc390108605">그림 </A><SPAN lang="EN-US">5.60 Rack</SPAN>에서 서보 보드의 분리</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">3.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>제어전원 공급장치<SPAN lang="EN-US">(SR1)</SPAN>를 점검하여 주십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">제어전원 공급장치는<SPAN lang="EN-US"> AC 48V</SPAN>를 입력 받아 내부회로에서 각 보드에 필요한 제어전원을 출력합니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">1)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>SR1</SPAN>의 입력 전압의 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">SR1</SPAN>에 입력되는 전압이 사양을 벗어나는 경우 제어용 전원의 출력에 이상이 발생 할 수 있습니다<SPAN lang="EN-US">. </SPAN>입력전압이 허용 범위를 초과하는 경우에는 제어기 입력전압 점검 절차와 제어기 내부 단상 전압 점검 절차를 참고하시기 바랍니다<SPAN lang="EN-US">. </SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt"><SPAN lang="EN-US">SR1 </SPAN>입력 전압 사양<SPAN lang="EN-US"> : </SPAN>단상<SPAN lang="EN-US"> AC 48V</SPAN></P>
+	<P class="unnamed" style="margin-left:40.0pt">허용 범위<SPAN lang="EN-US"> : 44V ~ 52V</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">2)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>SR1</SPAN>의 교체 후<SPAN lang="EN-US"> LED </SPAN>확인</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt"><SPAN lang="EN-US">SR1</SPAN>을 정상품으로 교체 한 후 ‘<SPAN lang="EN-US">+15V</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>정상품으로 교체 후<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되면<SPAN lang="EN-US"> SR1 </SPAN>불량입니다<SPAN lang="EN-US">. </SPAN>정상품으로 교체하여 사용하시기 바랍니다<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><B><SPAN lang="EN-US">4.<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>관련 부품을 교체하여 전원 표시<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">.</SPAN></B></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:20.0pt">서보 구동장치<SPAN lang="EN-US">, </SPAN>서보 보드 및<SPAN lang="EN-US"> CNBS </SPAN>케이블을 교체한 후 서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">1)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>CNBS </SPAN>케이블을 교체한 후 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">서보 구동장치와 서보 보드를 연결하는<SPAN lang="EN-US"> CNBS1, CNBS2, CNBS3</SPAN>을 교체한 후<SPAN lang="EN-US">&nbsp; </SPAN>서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>케이블을 교체한 후에 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되는 경우에는 케이블의 불량입니다<SPAN lang="EN-US">. CNBS </SPAN>케이블을 정상품으로 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">2)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>서보 보드를 교체한 후 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">서보 보드를 교체한 후 서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>서보 보드를 교체한 후에 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되는 경우에는 서보 보드의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 보드를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">.</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:38.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;text-autospace:ideograph-numeric ideograph-other"><SPAN lang="EN-US">3)<SPAN style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN></SPAN>서보 구동장치를 교체한 후 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 점검</P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">서보 구동장치를 교체한 후 서보 구동장치의 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>를 확인하여 주십시오<SPAN lang="EN-US">. </SPAN>케이블을 교체한 후에 ‘<SPAN lang="EN-US">VE</SPAN>’<SPAN lang="EN-US"> LED</SPAN>가<SPAN lang="EN-US"> ON</SPAN>되는 경우에는 서보 구동장치의 불량입니다<SPAN lang="EN-US">. </SPAN>서보 구동장치를 정상품으로 교체하여 주십시오<SPAN lang="EN-US">..</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">중형 로봇용 서보 구동장치<SPAN lang="EN-US"> : HSXY6</SPAN></P>
+	<P class="unnamed" style="margin-left:38.0pt">소형 로봇용 서보 구동장치<SPAN lang="EN-US"> : HDAD6</SPAN></P>
+	<P class="unnamed"><SPAN lang="EN-US">&nbsp;</SPAN></P>
+</BODY>
+</HTML>
