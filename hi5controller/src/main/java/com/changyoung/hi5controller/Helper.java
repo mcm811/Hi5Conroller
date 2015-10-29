@@ -306,6 +306,12 @@ public class Helper {
 			builder.show();
 		}
 
+		public static void clearFocus(Activity activity) {
+			View view = activity.getCurrentFocus();
+			if (view != null)
+				view.clearFocus();
+		}
+
 		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
 			if (event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
 				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);

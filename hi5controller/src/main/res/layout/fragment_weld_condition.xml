@@ -32,7 +32,7 @@
 
 		<include
 			android:id="@+id/list_title"
-			layout="@layout/list_title_weld_condition"
+			layout="@layout/view_holder_title_weld_condition"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
 

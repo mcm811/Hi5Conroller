@@ -1,186 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-	android:id="@+id/scrollView1"
+<LinearLayout
+	android:id="@+id/linearLayout1"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:padding="2dp">
+	android:layout_height="match_parent"
+	android:layout_weight="1"
+	android:focusable="true"
+	android:focusableInTouchMode="true"
+	android:orientation="vertical"
+	android:fitsSystemWindows="true"
+	android:showDividers="middle|beginning|end">
 
-	<!--소프트키보드를 안보이게 하기 위한 포커스 작업(focusable, focusableInTouchMode)-->
-	<LinearLayout
-		android:id="@+id/linearLayout1"
+	<TextView
+		android:id="@+id/statusText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:focusable="true"
-		android:focusableInTouchMode="true"
-		android:orientation="vertical">
+		android:singleLine="true"
+		android:text="@string/title_selected_item"
+		android:textColor="@color/indigo_500"
+		android:textStyle="bold"
+		android:layout_margin="20dp"/>
 
-		<TextView
-			android:id="@+id/statusText"
+	<android.support.design.widget.TextInputLayout
+		android:id="@+id/textInputLayout1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="20dp"
+		android:layout_marginEnd="20dp">
+
+		<android.support.v7.widget.AppCompatEditText
+			android:id="@+id/etOutputData"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginBottom="20dp"
-			android:layout_marginTop="20dp"
-			android:autoText="false"
-			android:paddingStart="4dp"
-			android:singleLine="true"
-			android:text="선택 항목: "
-			android:textColor="@color/green_500"
-			android:textStyle="bold"/>
+			android:focusable="false"
+			android:focusableInTouchMode="false"
+			android:gravity="center"
+			android:hint="@string/Editor_OutputData"
+			android:inputType="none"
+			android:selectAllOnFocus="true"
+			android:textStyle="bold"
+			android:visibility="visible"/>
+	</android.support.design.widget.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
-			android:id="@+id/textInputLayout1"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+	<SeekBar
+		android:id="@+id/sampleSeekBar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="20dp"
+		android:layout_marginEnd="20dp"/>
 
-			<android.support.v7.widget.AppCompatEditText
-				android:id="@+id/etOutputData"
+	<TableLayout
+		android:layout_width="wrap_content"
+		android:layout_height="0dp"
+		android:stretchColumns="*"
+		android:layout_weight="1">
+
+		<TableRow android:layout_marginStart="20dp"
+		          android:layout_marginEnd="20dp">
+
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout2"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:focusable="false"
-				android:focusableInTouchMode="false"
-				android:gravity="center"
-				android:hint="@string/Editor_OutputData"
-				android:inputType="none"
-				android:selectAllOnFocus="true"
-				android:textStyle="bold"
-				android:visibility="visible"/>
-		</android.support.design.widget.TextInputLayout>
+				>
 
-		<SeekBar
-			android:id="@+id/sampleSeekBar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			/>
-
-		<TableLayout
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:stretchColumns="*">
-
-			<TableRow>
-
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout2"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etOutputType"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_OutputType"
-						android:inputType="number"
-						android:selectAllOnFocus="true"
-						android:textSize="14sp"/>
-				</android.support.design.widget.TextInputLayout>
-
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout3"
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etOutputType"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					>
+					android:gravity="start"
+					android:hint="@string/Editor_OutputType"
+					android:inputType="number"
+					android:selectAllOnFocus="true"
+					android:textSize="14sp"/>
+			</android.support.design.widget.TextInputLayout>
 
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etSqueezeForce"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_SqueezeForce"
-						android:inputType="number"
-						android:selectAllOnFocus="true"
-						android:textColor="@color/pink_A200"
-						android:textSize="14sp"
-						android:textStyle="bold"/>
-				</android.support.design.widget.TextInputLayout>
-			</TableRow>
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				>
 
-			<TableRow>
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etSqueezeForce"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="start"
+					android:hint="@string/Editor_SqueezeForce"
+					android:inputType="number"
+					android:selectAllOnFocus="true"
+					android:textColor="@color/pink_A200"
+					android:textSize="14sp"
+					android:textStyle="bold"/>
+			</android.support.design.widget.TextInputLayout>
+		</TableRow>
 
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout4"
+		<TableRow android:layout_marginStart="20dp"
+		          android:layout_marginEnd="20dp">
+
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout4"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etMoveTipClearance"
 					android:layout_width="fill_parent"
-					android:layout_height="wrap_content">
+					android:layout_height="wrap_content"
+					android:gravity="start"
+					android:hint="@string/Editor_MoveTipClearance"
+					android:inputType="numberDecimal"
+					android:selectAllOnFocus="true"
+					android:textSize="12sp"/>
+			</android.support.design.widget.TextInputLayout>
 
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etMoveTipClearance"
-						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_MoveTipClearance"
-						android:inputType="numberDecimal"
-						android:selectAllOnFocus="true"
-						android:textSize="12sp"/>
-				</android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout5"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout5"
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etFixedTipClearance"
 					android:layout_width="fill_parent"
-					android:layout_height="wrap_content">
+					android:layout_height="wrap_content"
+					android:gravity="start"
+					android:hint="@string/Editor_FixedTipClearance"
+					android:inputType="numberDecimal"
+					android:selectAllOnFocus="true"
+					android:textSize="12sp"/>
+			</android.support.design.widget.TextInputLayout>
+		</TableRow>
 
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etFixedTipClearance"
-						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_FixedTipClearance"
-						android:inputType="numberDecimal"
-						android:selectAllOnFocus="true"
-						android:textSize="12sp"/>
-				</android.support.design.widget.TextInputLayout>
-			</TableRow>
+		<TableRow android:layout_marginStart="20dp"
+		          android:layout_marginEnd="20dp">
 
-			<TableRow>
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout6"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout6"
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etPanelThickness"
 					android:layout_width="fill_parent"
-					android:layout_height="wrap_content">
+					android:layout_height="wrap_content"
+					android:gravity="start"
+					android:hint="@string/Editor_PanelThickness"
+					android:inputType="numberDecimal"
+					android:selectAllOnFocus="true"
+					android:textSize="12sp"/>
+			</android.support.design.widget.TextInputLayout>
 
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etPanelThickness"
-						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_PanelThickness"
-						android:inputType="numberDecimal"
-						android:selectAllOnFocus="true"
-						android:textSize="12sp"/>
-				</android.support.design.widget.TextInputLayout>
+			<android.support.design.widget.TextInputLayout
+				android:id="@+id/textInputLayout7"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputLayout
-					android:id="@+id/textInputLayout7"
+				<android.support.v7.widget.AppCompatEditText
+					android:id="@+id/etCommandOffset"
 					android:layout_width="fill_parent"
-					android:layout_height="wrap_content">
+					android:layout_height="wrap_content"
+					android:gravity="start"
+					android:hint="@string/Editor_CommandOffset"
+					android:inputType="numberDecimal"
+					android:selectAllOnFocus="true"
+					android:textSize="12sp"/>
+			</android.support.design.widget.TextInputLayout>
+		</TableRow>
+	</TableLayout>
 
-					<android.support.v7.widget.AppCompatEditText
-						android:id="@+id/etCommandOffset"
-						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
-						android:gravity="start"
-						android:hint="@string/Editor_CommandOffset"
-						android:inputType="numberDecimal"
-						android:selectAllOnFocus="true"
-						android:textSize="12sp"/>
-				</android.support.design.widget.TextInputLayout>
-			</TableRow>
-		</TableLayout>
+	<SeekBar
+		android:id="@+id/sbBegin"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="20dp"
+		android:layout_marginEnd="20dp"/>
 
-		<SeekBar
-			android:id="@+id/sbBegin"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_column="0"
-			/>
+	<SeekBar
+		android:id="@+id/sbEnd"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:rotation="180"
+		android:layout_marginStart="20dp"
+		android:layout_marginEnd="20dp"/>
 
-		<SeekBar
-			android:id="@+id/sbEnd"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_column="0"
-			android:rotation="180"
-			/>
-
-	</LinearLayout>
-</ScrollView>
+</LinearLayout>

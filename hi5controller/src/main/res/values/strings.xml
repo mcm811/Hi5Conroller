@@ -90,6 +90,7 @@
 	<string name="tts_squeeze_force_value">가압력 값을 말씀하세요</string>
 	<string name="tag_item">item</string>
 	<string name="tag_position">position</string>
+	<string name="title_selected_item">선택 항목:</string>
 
 	<string-array name="dialog_items">
 		<item>계열 수정</item>

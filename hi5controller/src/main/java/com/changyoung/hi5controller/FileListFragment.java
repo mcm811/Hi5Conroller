@@ -394,11 +394,11 @@ public class FileListFragment extends Fragment {
 		}
 	}
 
-	public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.ViewHolder> {
-		private List<File> mDataset;
-		private Context mContext;
+	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+		protected List<File> mDataset;
+		protected Context mContext;
 		@SuppressWarnings("unused")
-		private Activity mActivity;
+		protected Activity mActivity;
 
 		public FileListAdapter(Activity activity, List<File> dataset) {
 			mActivity = activity;
@@ -428,10 +428,10 @@ public class FileListFragment extends Fragment {
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.list_item_file, parent, false);
+					.inflate(R.layout.view_holder_item_file, parent, false);
 			// set the view's size, margins, paddings and layout parameters
 			final ViewHolder holder = new ViewHolder(v);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -441,14 +441,10 @@ public class FileListFragment extends Fragment {
 				holder.mFileFab.setVisibility(View.GONE);
 				holder.mFileImageView.setVisibility(View.VISIBLE);
 			}
-			return holder;
-		}
-
-		@Override
-		public void onBindViewHolder(ViewHolder holder, final int position) {
 			holder.mItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					final int position = (int) v.getTag();
 					final File file = mDataset.get(position);
 					if (position == 0) {
 						String p = file.getParent();
@@ -466,6 +462,7 @@ public class FileListFragment extends Fragment {
 			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
+					final int position = (int) v.getTag();
 					if (position == 0)
 						return false;
 
@@ -503,7 +500,12 @@ public class FileListFragment extends Fragment {
 					return true;
 				}
 			});
+			return holder;
+		}
 
+		@Override
+		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
+			final ViewHolder holder = (ViewHolder) rh;
 			String fileTime = null;
 			String fileName;
 			int fileImageResourceId;
@@ -533,6 +535,7 @@ public class FileListFragment extends Fragment {
 			holder.mFileNameTextView.setText(fileName);
 			holder.mFileImageView.setImageResource(fileImageResourceId);
 			holder.mFileFab.setImageResource(fileImageResourceId);
+			holder.mItemView.setTag(position);
 		}
 
 		@Override
