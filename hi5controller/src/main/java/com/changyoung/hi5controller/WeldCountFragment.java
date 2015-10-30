@@ -81,7 +81,7 @@ public class WeldCountFragment extends Fragment
 
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mFileRecyclerView;
-	private WeldCountFileAdapter mFileAdapter;
+	private WeldCountFileEditorAdapter mFileAdapter;
 
 	private LooperHandler looperHandler;
 	private WeldCountObserver observer;
@@ -1106,7 +1106,7 @@ public class WeldCountFragment extends Fragment
 			notifyDataSetChanged();
 		}
 
-		private void showWeldCountFileDialog(final int position) {
+		private void showFileEditorDialog(final int position) {
 			final WeldCountFile weldCountFile = mAdapter.getItem(position);
 			if (weldCountFile.getJobInfo().getTotal() == 0) {
 				show("CN 항목이 없습니다");
@@ -1115,7 +1115,7 @@ public class WeldCountFragment extends Fragment
 
 			@SuppressLint("InflateParams")
 			View dialogView = LayoutInflater.from(mContext)
-					.inflate(R.layout.dialog_weld_count, null);
+					.inflate(R.layout.dialog_weld_count_file_editor, null);
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
 			dialogBuilder.setView(dialogView);
 
@@ -1124,7 +1124,7 @@ public class WeldCountFragment extends Fragment
 			RecyclerView.LayoutManager layoutManager =
 					new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
 			mFileRecyclerView.setLayoutManager(layoutManager);
-			mFileAdapter = new WeldCountFileAdapter(getActivity(),
+			mFileAdapter = new WeldCountFileEditorAdapter(getActivity(),
 					mSnackbarView, weldCountFile);
 			mFileRecyclerView.setAdapter(mFileAdapter);
 
@@ -1322,7 +1322,7 @@ public class WeldCountFragment extends Fragment
 								weldCountFile.getName(),
 								weldCountFile.getRowText());
 					} else {
-						showWeldCountFileDialog(position);
+						showFileEditorDialog(position);
 					}
 				}
 			});
@@ -1335,7 +1335,7 @@ public class WeldCountFragment extends Fragment
 						public void onClick(DialogInterface dialog, int which) {
 							//String[] items = getResources().getStringArray(R.array.dialog_items);
 							if (which == 0) {
-								showWeldCountFileDialog((int) v.getTag());
+								showFileEditorDialog((int) v.getTag());
 							} else if (which == 1) {
 								final WeldCountFile weldCountFile = mDataset.get((int) v.getTag());
 								Helper.UiHelper.textViewActivity(mContext, weldCountFile.getName(),
@@ -1413,15 +1413,15 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	public class WeldCountFileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	public class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected WeldCountFile mFile;
 		protected List<WeldCountFile.Job> mDataset;
 		protected Context mContext;
 		protected Activity mActivity;
 		protected View mSnackbarView;
 
-		public WeldCountFileAdapter(Activity activity, View snackbarView,
-		                            WeldCountFile weldCountFile) {
+		public WeldCountFileEditorAdapter(Activity activity, View snackbarView,
+		                                  WeldCountFile weldCountFile) {
 			mFile = weldCountFile;
 			mDataset = new ArrayList<>();
 			for (int i = 0; i < mFile.size(); i++) {
@@ -1458,7 +1458,7 @@ public class WeldCountFragment extends Fragment
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.view_holder_item_weld_count_file, parent, false);
+					.inflate(R.layout.view_holder_item_weld_count_file_editor, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 				@Override
