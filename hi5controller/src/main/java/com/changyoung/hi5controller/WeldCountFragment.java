@@ -74,6 +74,10 @@ public class WeldCountFragment extends Fragment
 	private static final int ORDER_TYPE_ASCEND = 0;
 	private static final int ORDER_TYPE_DESCEND = 1;
 
+	private static final int LAYOUT_TYPE_LINEAR = 0;
+	private static final int LAYOUT_TYPE_GRID = 1;
+	private static final int LAYOUT_TYPE_STAGGERRED = 2;
+
 	private View mView;
 	private RecyclerView mRecyclerView;
 	private RecyclerView.LayoutManager mLayoutManager;
@@ -87,7 +91,8 @@ public class WeldCountFragment extends Fragment
 	private WeldCountObserver observer;
 	private TextToSpeech mTts;
 
-	private int orderType = ORDER_TYPE_ASCEND;
+	private int mOrderType = ORDER_TYPE_ASCEND;
+	private int mLayoutType = LAYOUT_TYPE_GRID;
 
 	//	private String mWorkPath;
 
@@ -136,6 +141,8 @@ public class WeldCountFragment extends Fragment
 //		} else {
 //			mWorkPath = onGetWorkPath();
 //		}
+		mOrderType = Helper.Pref.getInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
+		mLayoutType = Helper.Pref.getInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, LAYOUT_TYPE_GRID);
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -158,29 +165,40 @@ public class WeldCountFragment extends Fragment
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				orderType = orderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
-				mAdapter.sortName(orderType);
+				mOrderType = mOrderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+				mAdapter.sortName(mOrderType);
 				fab.setScaleY(fab.getScaleY() * -1);
+				Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
 			}
 		});
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				if (mLayoutManager instanceof GridLayoutManager)
+				if (mLayoutManager instanceof GridLayoutManager) {
+					mLayoutType = LAYOUT_TYPE_STAGGERRED;
 					mLayoutManager = new StaggeredGridLayoutManager(2,
 							StaggeredGridLayoutManager.VERTICAL);
-				else if (mLayoutManager instanceof StaggeredGridLayoutManager)
+				} else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+					mLayoutType = LAYOUT_TYPE_LINEAR;
 					mLayoutManager = new LinearLayoutManager(getContext());
-				else if (mLayoutManager instanceof LinearLayoutManager)
+				} else if (mLayoutManager instanceof LinearLayoutManager) {
+					mLayoutType = LAYOUT_TYPE_GRID;
 					mLayoutManager = new GridLayoutManager(getContext(), 2);
+				}
 				mRecyclerView.setLayoutManager(mLayoutManager);
+				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
 				return true;
 			}
 		});
 
 		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
 		mRecyclerView.setHasFixedSize(true);
-		mLayoutManager = new GridLayoutManager(getContext(), 2);
+		if (mLayoutType == LAYOUT_TYPE_LINEAR)
+			mLayoutManager = new LinearLayoutManager(getContext());
+		else if (mLayoutType == LAYOUT_TYPE_GRID)
+			mLayoutManager = new GridLayoutManager(getContext(), 2);
+		else if (mLayoutType == LAYOUT_TYPE_STAGGERRED)
+			mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 		mRecyclerView.setLayoutManager(mLayoutManager);
 		mAdapter = new WeldCountAdapter(getActivity(), fab, new ArrayList<WeldCountFile>());
 		mRecyclerView.setAdapter(mAdapter);
@@ -295,7 +313,7 @@ public class WeldCountFragment extends Fragment
 	@Override
 	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
 		Log.d(TAG, String.format("id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
-		mAdapter.setData(data, orderType);
+		mAdapter.setData(data, mOrderType);
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
 		if (mView != null) {
@@ -1256,7 +1274,7 @@ public class WeldCountFragment extends Fragment
 						}
 
 						@Override
-						public void onRmsChanged(float rmsdB) {
+						public void onRmsChanged(float rmsDB) {
 
 						}
 

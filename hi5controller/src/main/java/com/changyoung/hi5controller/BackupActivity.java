@@ -156,8 +156,12 @@ public class BackupActivity extends AppCompatActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 
-		if (id == R.id.action_backup) {
-			backup();
+//		if (id == R.id.action_backup) {
+//			backup();
+//			return true;
+//		}
+		if (id == R.id.action_done) {
+			finish();
 			return true;
 		}
 
@@ -202,8 +206,8 @@ public class BackupActivity extends AppCompatActivity
 				if (!refresh(Helper.Pref.getBackupPath(getContext())))
 					show("백업 폴더가 없습니다");
 				break;
-			case R.id.toolbar_backup_path_menu_done:
-				finish();
+			case R.id.toolbar_backup_path_menu_backup:
+				backup();
 				break;
 		}
 

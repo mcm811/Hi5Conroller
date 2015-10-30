@@ -108,17 +108,17 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					ret = "경로 이동 실패: " + onGetWorkPath();
 				break;
 			case R.id.nav_storage:
-			case R.id.toolbar_work_path_menu_storage:
+//			case R.id.toolbar_work_path_menu_storage:
 				if (!refresh(Helper.Pref.STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
-			case R.id.toolbar_work_path_menu_sdcard:
+//			case R.id.toolbar_work_path_menu_sdcard:
 				if (!refresh(Helper.Pref.EXTERNAL_STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
-			case R.id.toolbar_work_path_menu_extsdcard:
+//			case R.id.toolbar_work_path_menu_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
 					File dir = new File(Helper.Pref.STORAGE_PATH);

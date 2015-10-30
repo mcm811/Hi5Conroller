@@ -95,7 +95,7 @@ public class WeldConditionFragment extends Fragment
 	private WeldConditionObserver observer;
 	private TextToSpeech mTts;
 
-	private int lastPosition = 0;
+	private int mLastPosition = 0;
 	private boolean mSaveFlag;
 
 	private OnWorkPathListener mListener;
@@ -171,9 +171,9 @@ public class WeldConditionFragment extends Fragment
 					mAdapter.update(onGetWorkPath());
 					show("저장 완료: " + onGetWorkPath());
 				} else if (mAdapter.getSelectedItemCount() == 0) {
-					mSqueezeForceAdapter.showSqueezeForceDialog();
+					mSqueezeForceAdapter.showSqueezeForceEditorDialog();
 				} else {
-					showDialog(0);
+					mAdapter.showEditorDialog(0);
 				}
 			}
 		});
@@ -299,427 +299,6 @@ public class WeldConditionFragment extends Fragment
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@SuppressWarnings("UnusedParameters")
-	private void showDialog(int position) {
-		final String dialog_title1 = getContext()
-				.getString(R.string.weld_condition_dialog_title1) + " ";
-		final String dialog_title2 = getContext()
-				.getString(R.string.weld_condition_dialog_title2) + " ";
-
-		if (snackbar != null) {
-			snackbar.dismiss();
-			snackbar = null;
-		}
-
-		if (mAdapter.getItemCount() == 0) {
-			refresh(false);
-			if (mAdapter.getItemCount() == 0)
-				show("항목이 없습니다");
-			return;
-		}
-
-		final List<Integer> checkedPositions = mAdapter.getSelectedItems();
-		if (checkedPositions == null)
-			return;
-		if (checkedPositions.size() == 0) {
-			lastPosition = position;
-		}
-
-		@SuppressLint("InflateParams")
-		final View dialogView = LayoutInflater.from(getContext())
-				.inflate(R.layout.dialog_weld_condition, null);
-		final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-		dialogBuilder.setView(dialogView);
-
-		// Custom Title
-		TextView textViewTitle = new TextView(getContext());
-		textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-		textViewTitle.setTypeface(Typeface.DEFAULT_BOLD);
-		textViewTitle.setPadding(20, 10, 20, 10);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-			textViewTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-		textViewTitle.setText("용접 조건 수정");
-		dialogBuilder.setCustomTitle(textViewTitle);
-
-		AdView adView = new AdView(getContext());
-		adView.setAdSize(AdSize.BANNER);
-		adView.setScaleX(0.95f);
-		adView.setScaleY(0.95f);
-		if (BuildConfig.DEBUG)
-			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_debug));
-		else
-			adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_release));
-		AdRequest adRequest = new AdRequest.Builder()
-				.setRequestAgent("android_studio:ad_template").build();
-		adView.loadAd(adRequest);
-		LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
-		linearLayout.addView(adView, linearLayout.getChildCount());
-
-		final List<TextInputLayout> tilList = new ArrayList<>();
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout2));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout3));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout4));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout5));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout6));
-		tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout7));
-
-		for (int index = 0; index < tilList.size(); index++) {
-			final TextInputLayout textInputLayout = tilList.get(index);
-			final EditText editText = textInputLayout.getEditText();
-			if (editText != null) {
-				if (index == 0) {
-					editText.setText(mAdapter.getItem(lastPosition).get(index));
-				} else {
-					editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-					editText.setGravity(Gravity.CENTER);
-					editText.setSelectAllOnFocus(true);
-					editText.setSingleLine();
-					try {
-						textInputLayout.setTag(textInputLayout.getHint());
-						textInputLayout.setHint(textInputLayout.getTag()
-								+ "(" + mAdapter.getItem(lastPosition).get(index) + ")");
-					} catch (NullPointerException e) {
-						logD(e.getLocalizedMessage());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				final int finalIndex = index;
-				editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						if (hasFocus) {
-							final SeekBar sampleSeekBar =
-									(SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
-							if (editText.getText().length() == 0) {
-								editText.setText(mAdapter
-										.getItem(sampleSeekBar.getProgress()).get(finalIndex));
-								editText.selectAll();
-							}
-						} else {
-							try {
-								// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
-								if (finalIndex < 3) {
-									Integer etNumber =
-											Integer.parseInt(editText.getText().toString());
-									if (etNumber > valueMax[finalIndex])
-										etNumber = valueMax[finalIndex];
-									editText.setText(String.format("%d", etNumber));
-								} else {
-									Float etNumber =
-											Float.parseFloat(editText.getText().toString());
-									if (etNumber > (float) valueMax[finalIndex])
-										etNumber = (float) valueMax[finalIndex];
-									editText.setText(String.format("%.1f", etNumber));
-								}
-							} catch (NumberFormatException e) {
-								logD(e.getLocalizedMessage());
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				});
-				editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-						if (actionId == 6)
-							Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
-						Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
-						return false;
-					}
-				});
-			}
-		}
-
-		final TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-		statusText.setText(mAdapter.getItem(lastPosition).get(0));
-		if (checkedPositions.size() > 0) {
-			StringBuilder sb = new StringBuilder();
-			for (Integer pos : checkedPositions) {
-				sb.append(String.valueOf(pos + 1));
-				sb.append(" ");
-			}
-			sb.insert(0, dialog_title1);
-			statusText.setText(sb.toString().trim());
-		} else {
-			String buf = dialog_title1 + String.valueOf(lastPosition + 1);
-			statusText.setText(buf);
-		}
-
-		final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
-		sampleSeekBar.setMax(mAdapter.getItemCount() - 1);
-		sampleSeekBar.setProgress(Integer.parseInt(mAdapter.getItem(lastPosition).get(0)) - 1);
-		sampleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				if (fromUser) {
-					try {
-						EditText editText0 = tilList.get(0).getEditText();
-						if (editText0 != null)
-							editText0.setText(mAdapter.getItem(progress).get(0));
-					} catch (NullPointerException e) {
-						logD(e.getLocalizedMessage());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					for (int index = 1; index < tilList.size(); index++) {
-						try {
-							// 샘플바를 움직이면 힌트에 기존 값을 보여주도록 세팅한다
-							tilList.get(index).setHint(tilList.get(index).getTag()
-									+ "(" + mAdapter.getItem(progress).get(index) + ")");
-						} catch (NullPointerException e) {
-							logD(e.getLocalizedMessage());
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					if (checkedPositions.size() == 0) {
-						lastPosition = progress;
-						statusText.setText(String.format("%s %d", dialog_title1, lastPosition + 1));
-					}
-				}
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-
-			}
-		});
-
-		// 선택 시작
-		final SeekBar beginSeekBar = (SeekBar) dialogView.findViewById(R.id.sbBegin);
-		beginSeekBar.setMax(mAdapter.getItemCount() - 1);
-		beginSeekBar.setProgress(0);
-
-		// 선택 끝
-		final SeekBar endSeekBar = (SeekBar) dialogView.findViewById(R.id.sbEnd);
-		endSeekBar.setMax(mAdapter.getItemCount() - 1);
-		endSeekBar.setProgress(endSeekBar.getMax());
-
-		beginSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				if (fromUser) {
-					int sb1Progress = beginSeekBar.getProgress();
-					int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
-					if (sb1Progress > sb2Progress) {
-						sb2Progress = sb1Progress;
-						endSeekBar.setProgress(endSeekBar.getMax() - sb1Progress);
-					}
-					if (sb1Progress == 0 && sb2Progress == 0
-							|| sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
-						if (checkedPositions.size() > 0) {
-							StringBuilder sb = new StringBuilder();
-							for (int pos : checkedPositions) {
-								sb.append(String.valueOf(pos + 1));
-								sb.append(" ");
-							}
-							sb.insert(0, dialog_title1);
-							statusText.setText(sb.toString().trim());
-						} else {
-							String buf = dialog_title1 + String.valueOf(lastPosition + 1);
-							statusText.setText(buf);
-						}
-					} else {
-						String buf = dialog_title2 + String.valueOf(sb1Progress + 1)
-								+ " ~ " + String.valueOf(sb2Progress + 1);
-						statusText.setText(buf);
-					}
-				}
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-
-			}
-		});
-
-		endSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				if (fromUser) {
-					int sb1Progress = beginSeekBar.getProgress();
-					int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
-					if (sb2Progress < sb1Progress) {
-						sb1Progress = sb2Progress;
-						beginSeekBar.setProgress(sb2Progress);
-					}
-					if (sb1Progress == 0 && sb2Progress == 0
-							|| sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
-						if (checkedPositions.size() > 0) {
-							StringBuilder sb = new StringBuilder();
-							for (int pos : checkedPositions) {
-								sb.append(String.valueOf(pos + 1));
-								sb.append(" ");
-							}
-							sb.insert(0, dialog_title1);
-							statusText.setText(sb.toString().trim());
-						} else {
-							String buf = dialog_title1 + String.valueOf(lastPosition + 1);
-							statusText.setText(buf);
-						}
-					} else {
-						String buf = dialog_title2 + String.valueOf(sb1Progress + 1)
-								+ " ~ " + String.valueOf(sb2Progress + 1);
-						statusText.setText(buf);
-					}
-				}
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-
-			}
-		});
-
-		dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				setCheckedItem(true);
-			}
-		});
-
-		dialogBuilder.setPositiveButton("저장", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				int seekBegin = beginSeekBar.getProgress() + 1;
-				int seekEnd = endSeekBar.getMax() - endSeekBar.getProgress() + 1;
-				boolean isSeek = !((seekBegin == 1 && seekEnd == 1)
-						|| (seekBegin == beginSeekBar.getMax() + 1 && seekEnd == endSeekBar.getMax() + 1));
-				boolean isUpdate = false;
-
-				if (checkedPositions.size() == 0)
-					checkedPositions.add(lastPosition);
-				if (isSeek) {
-					checkedPositions.clear();
-					for (int rowNum = seekBegin - 1; rowNum < seekEnd; rowNum++) {
-						checkedPositions.add(rowNum);
-					}
-				}
-				for (int rowNum : checkedPositions) {
-					for (int colNum = 1; colNum < tilList.size(); colNum++) {
-						try {
-							EditText editText = tilList.get(colNum).getEditText();
-							if (editText != null && editText.getText().toString().length() > 0) {
-								mAdapter.getItem(rowNum).set(colNum, editText.getText().toString());
-								isUpdate = true;
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				if (isUpdate) {
-					mAdapter.update(onGetWorkPath());
-					mAdapter.notifyDataSetChanged();
-					fab_setImage();
-				}
-				setCheckedItem(true);
-			}
-		});
-
-		AlertDialog alertDialog = dialogBuilder.show();
-		alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-				| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-		alertDialog.setCanceledOnTouchOutside(false);
-
-		final String ttsMsg = getContext().getString(R.string.tts_squeeze_force_value);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
-		} else {
-			//noinspection deprecation
-			mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
-		}
-
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-				intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
-				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-
-				SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
-				mRecognizer.setRecognitionListener(new RecognitionListener() {
-					@Override
-					public void onReadyForSpeech(Bundle params) {
-
-					}
-
-					@Override
-					public void onBeginningOfSpeech() {
-
-					}
-
-					@Override
-					public void onRmsChanged(float rmsdB) {
-
-					}
-
-					@Override
-					public void onBufferReceived(byte[] buffer) {
-
-					}
-
-					@Override
-					public void onEndOfSpeech() {
-
-					}
-
-					@Override
-					public void onError(int error) {
-
-					}
-
-					@Override
-					public void onResults(Bundle results) {
-						String key = SpeechRecognizer.RESULTS_RECOGNITION;
-						ArrayList<String> list = results.getStringArrayList(key);
-						if (list != null) {
-							for (String item : list) {
-								try {
-									//noinspection ConstantConditions
-									tilList.get(2).getEditText()
-											.setText(String.valueOf(Integer.parseInt(item)));
-									break;
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-
-					@Override
-					public void onPartialResults(Bundle partialResults) {
-
-					}
-
-					@Override
-					public void onEvent(int eventType, Bundle params) {
-
-					}
-				});
-				mRecognizer.startListening(intent);
-			}
-		}, 2500);
 	}
 
 	private void snackbar_setCheckedItem() {
@@ -1237,12 +816,13 @@ public class WeldConditionFragment extends Fragment
 			selectedItems = new SparseBooleanArray();
 		}
 
-		public void toggleSelection(int position) {
+		public boolean toggleSelection(int position) {
 			if (selectedItems.get(position, false)) {
 				selectedItems.delete(position);
-			} else {
-				selectedItems.put(position, true);
+				return false;
 			}
+			selectedItems.put(position, true);
+			return true;
 		}
 
 		public void clearSelections() {
@@ -1362,6 +942,426 @@ public class WeldConditionFragment extends Fragment
 			return ret;
 		}
 
+		@SuppressWarnings("UnusedParameters")
+		private void showEditorDialog(int position) {
+			final String dialog_title1 = getContext()
+					.getString(R.string.weld_condition_dialog_title1) + " ";
+			final String dialog_title2 = getContext()
+					.getString(R.string.weld_condition_dialog_title2) + " ";
+
+			if (snackbar != null) {
+				snackbar.dismiss();
+				snackbar = null;
+			}
+
+			if (mAdapter.getItemCount() == 0) {
+				refresh(false);
+				if (mAdapter.getItemCount() == 0)
+					show("항목이 없습니다");
+				return;
+			}
+
+			final List<Integer> checkedPositions = mAdapter.getSelectedItems();
+			if (checkedPositions == null)
+				return;
+			if (checkedPositions.size() == 0)
+				mLastPosition = position;
+
+			@SuppressLint("InflateParams")
+			final View dialogView = LayoutInflater.from(getContext())
+					.inflate(R.layout.dialog_weld_condition_editor, null);
+			final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+			dialogBuilder.setView(dialogView);
+
+			// Custom Title
+			TextView textViewTitle = new TextView(getContext());
+			textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+			textViewTitle.setTypeface(Typeface.DEFAULT_BOLD);
+			textViewTitle.setPadding(20, 10, 20, 10);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+				textViewTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+			textViewTitle.setText("용접 조건 수정");
+			dialogBuilder.setCustomTitle(textViewTitle);
+
+			AdView adView = new AdView(getContext());
+			adView.setAdSize(AdSize.BANNER);
+			adView.setScaleX(0.95f);
+			adView.setScaleY(0.95f);
+			if (BuildConfig.DEBUG)
+				adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_debug));
+			else
+				adView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_release));
+			AdRequest adRequest = new AdRequest.Builder()
+					.setRequestAgent("android_studio:ad_template").build();
+			adView.loadAd(adRequest);
+			LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
+			linearLayout.addView(adView, linearLayout.getChildCount());
+
+			final List<TextInputLayout> tilList = new ArrayList<>();
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout2));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout3));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout4));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout5));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout6));
+			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout7));
+
+			for (int index = 0; index < tilList.size(); index++) {
+				final TextInputLayout textInputLayout = tilList.get(index);
+				final EditText editText = textInputLayout.getEditText();
+				if (editText != null) {
+					if (index == 0) {
+						editText.setText(mAdapter.getItem(mLastPosition).get(index));
+					} else {
+						editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+						editText.setGravity(Gravity.CENTER);
+						editText.setSelectAllOnFocus(true);
+						editText.setSingleLine();
+						try {
+							textInputLayout.setTag(textInputLayout.getHint());
+							textInputLayout.setHint(textInputLayout.getTag()
+									+ "(" + mAdapter.getItem(mLastPosition).get(index) + ")");
+						} catch (NullPointerException e) {
+							logD(e.getLocalizedMessage());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					final int finalIndex = index;
+					editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+						@Override
+						public void onFocusChange(View v, boolean hasFocus) {
+							if (hasFocus) {
+								final SeekBar sampleSeekBar =
+										(SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
+								if (editText.getText().length() == 0) {
+									editText.setText(mAdapter
+											.getItem(sampleSeekBar.getProgress()).get(finalIndex));
+									editText.selectAll();
+								}
+							} else {
+								try {
+									// 임계치 처리 (1, 2번 정수, 3번부터 부동소수)
+									if (finalIndex < 3) {
+										Integer etNumber =
+												Integer.parseInt(editText.getText().toString());
+										if (etNumber > valueMax[finalIndex])
+											etNumber = valueMax[finalIndex];
+										editText.setText(String.format("%d", etNumber));
+									} else {
+										Float etNumber =
+												Float.parseFloat(editText.getText().toString());
+										if (etNumber > (float) valueMax[finalIndex])
+											etNumber = (float) valueMax[finalIndex];
+										editText.setText(String.format("%.1f", etNumber));
+									}
+								} catch (NumberFormatException e) {
+									logD(e.getLocalizedMessage());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+							if (actionId == 6)
+								Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+							Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
+							return false;
+						}
+					});
+				}
+			}
+
+			final TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
+			statusText.setText(mAdapter.getItem(mLastPosition).get(0));
+			if (checkedPositions.size() > 0) {
+				StringBuilder sb = new StringBuilder();
+				for (Integer pos : checkedPositions) {
+					sb.append(String.valueOf(pos + 1));
+					sb.append(" ");
+				}
+				sb.insert(0, dialog_title1);
+				statusText.setText(sb.toString().trim());
+			} else {
+				String buf = dialog_title1 + String.valueOf(mLastPosition + 1);
+				statusText.setText(buf);
+			}
+
+			final SeekBar sampleSeekBar = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
+			sampleSeekBar.setMax(mAdapter.getItemCount() - 1);
+			sampleSeekBar.setProgress(Integer.parseInt(mAdapter.getItem(mLastPosition).get(0)) - 1);
+			sampleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+					if (fromUser) {
+						try {
+							EditText editText0 = tilList.get(0).getEditText();
+							if (editText0 != null)
+								editText0.setText(mAdapter.getItem(progress).get(0));
+						} catch (NullPointerException e) {
+							logD(e.getLocalizedMessage());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						for (int index = 1; index < tilList.size(); index++) {
+							try {
+								// 샘플바를 움직이면 힌트에 기존 값을 보여주도록 세팅한다
+								tilList.get(index).setHint(tilList.get(index).getTag()
+										+ "(" + mAdapter.getItem(progress).get(index) + ")");
+							} catch (NullPointerException e) {
+								logD(e.getLocalizedMessage());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if (checkedPositions.size() == 0) {
+							mLastPosition = progress;
+							statusText.setText(String.format("%s %d", dialog_title1, mLastPosition + 1));
+						}
+					}
+				}
+
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+
+				}
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+
+				}
+			});
+
+			// 선택 시작
+			final SeekBar beginSeekBar = (SeekBar) dialogView.findViewById(R.id.sbBegin);
+			beginSeekBar.setMax(mAdapter.getItemCount() - 1);
+			beginSeekBar.setProgress(0);
+
+			// 선택 끝
+			final SeekBar endSeekBar = (SeekBar) dialogView.findViewById(R.id.sbEnd);
+			endSeekBar.setMax(mAdapter.getItemCount() - 1);
+			endSeekBar.setProgress(endSeekBar.getMax());
+
+			beginSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+					if (fromUser) {
+						int sb1Progress = beginSeekBar.getProgress();
+						int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
+						if (sb1Progress > sb2Progress) {
+							sb2Progress = sb1Progress;
+							endSeekBar.setProgress(endSeekBar.getMax() - sb1Progress);
+						}
+						if (sb1Progress == 0 && sb2Progress == 0
+								|| sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
+							if (checkedPositions.size() > 0) {
+								StringBuilder sb = new StringBuilder();
+								for (int pos : checkedPositions) {
+									sb.append(String.valueOf(pos + 1));
+									sb.append(" ");
+								}
+								sb.insert(0, dialog_title1);
+								statusText.setText(sb.toString().trim());
+							} else {
+								String buf = dialog_title1 + String.valueOf(mLastPosition + 1);
+								statusText.setText(buf);
+							}
+						} else {
+							String buf = dialog_title2 + String.valueOf(sb1Progress + 1)
+									+ " ~ " + String.valueOf(sb2Progress + 1);
+							statusText.setText(buf);
+						}
+					}
+				}
+
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+
+				}
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+
+				}
+			});
+
+			endSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+					if (fromUser) {
+						int sb1Progress = beginSeekBar.getProgress();
+						int sb2Progress = endSeekBar.getMax() - endSeekBar.getProgress();
+						if (sb2Progress < sb1Progress) {
+							sb1Progress = sb2Progress;
+							beginSeekBar.setProgress(sb2Progress);
+						}
+						if (sb1Progress == 0 && sb2Progress == 0
+								|| sb1Progress == beginSeekBar.getMax() && sb2Progress == endSeekBar.getMax()) {
+							if (checkedPositions.size() > 0) {
+								StringBuilder sb = new StringBuilder();
+								for (int pos : checkedPositions) {
+									sb.append(String.valueOf(pos + 1));
+									sb.append(" ");
+								}
+								sb.insert(0, dialog_title1);
+								statusText.setText(sb.toString().trim());
+							} else {
+								String buf = dialog_title1 + String.valueOf(mLastPosition + 1);
+								statusText.setText(buf);
+							}
+						} else {
+							String buf = dialog_title2 + String.valueOf(sb1Progress + 1)
+									+ " ~ " + String.valueOf(sb2Progress + 1);
+							statusText.setText(buf);
+						}
+					}
+				}
+
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+
+				}
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+
+				}
+			});
+
+			dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					setCheckedItem(true);
+				}
+			});
+
+			dialogBuilder.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					int seekBegin = beginSeekBar.getProgress() + 1;
+					int seekEnd = endSeekBar.getMax() - endSeekBar.getProgress() + 1;
+					boolean isSeek = !((seekBegin == 1 && seekEnd == 1)
+							|| (seekBegin == beginSeekBar.getMax() + 1 && seekEnd == endSeekBar.getMax() + 1));
+					boolean isUpdate = false;
+
+					if (checkedPositions.size() == 0)
+						checkedPositions.add(mLastPosition);
+					if (isSeek) {
+						checkedPositions.clear();
+						for (int rowNum = seekBegin - 1; rowNum < seekEnd; rowNum++) {
+							checkedPositions.add(rowNum);
+						}
+					}
+					for (int rowNum : checkedPositions) {
+						for (int colNum = 1; colNum < tilList.size(); colNum++) {
+							try {
+								EditText editText = tilList.get(colNum).getEditText();
+								if (editText != null && editText.getText().toString().length() > 0) {
+									mAdapter.getItem(rowNum).set(colNum, editText.getText().toString());
+									isUpdate = true;
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					if (isUpdate) {
+						mAdapter.update(onGetWorkPath());
+						mAdapter.notifyDataSetChanged();
+						fab_setImage();
+					}
+					setCheckedItem(true);
+				}
+			});
+
+			AlertDialog alertDialog = dialogBuilder.show();
+			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+			alertDialog.setCanceledOnTouchOutside(false);
+
+			final String ttsMsg = getContext().getString(R.string.tts_squeeze_force_value);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
+			} else {
+				//noinspection deprecation
+				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
+			}
+
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+					intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
+					intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+
+					SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
+					mRecognizer.setRecognitionListener(new RecognitionListener() {
+						@Override
+						public void onReadyForSpeech(Bundle params) {
+
+						}
+
+						@Override
+						public void onBeginningOfSpeech() {
+
+						}
+
+						@Override
+						public void onRmsChanged(float rmsdB) {
+
+						}
+
+						@Override
+						public void onBufferReceived(byte[] buffer) {
+
+						}
+
+						@Override
+						public void onEndOfSpeech() {
+
+						}
+
+						@Override
+						public void onError(int error) {
+
+						}
+
+						@Override
+						public void onResults(Bundle results) {
+							String key = SpeechRecognizer.RESULTS_RECOGNITION;
+							ArrayList<String> list = results.getStringArrayList(key);
+							if (list != null) {
+								for (String item : list) {
+									try {
+										//noinspection ConstantConditions
+										tilList.get(2).getEditText()
+												.setText(String.valueOf(Integer.parseInt(item)));
+										break;
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+
+						@Override
+						public void onPartialResults(Bundle partialResults) {
+
+						}
+
+						@Override
+						public void onEvent(int eventType, Bundle params) {
+
+						}
+					});
+					mRecognizer.startListening(intent);
+				}
+			}, 2500);
+		}
+
 		@Override
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
@@ -1372,7 +1372,8 @@ public class WeldConditionFragment extends Fragment
 				@Override
 				public void onClick(View v) {
 					final int position = (int) v.getTag();
-					toggleSelection(position);
+					if (toggleSelection(position))
+						mLastPosition = position;
 					holder.mItemView.setBackgroundColor(selectedItems.get(position, false)
 							? ContextCompat.getColor(mContext, R.color.tab3_textview_background)
 							: Color.TRANSPARENT);
@@ -1383,8 +1384,8 @@ public class WeldConditionFragment extends Fragment
 			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					lastPosition = (int) v.getTag();
-					showDialog(lastPosition);
+					mLastPosition = (int) v.getTag();
+					showEditorDialog(mLastPosition);
 					return true;
 				}
 			});
@@ -1543,7 +1544,7 @@ public class WeldConditionFragment extends Fragment
 			return mDataset.size();
 		}
 
-		private void showSqueezeForceDialog() {
+		private void showSqueezeForceEditorDialog() {
 			if (snackbar != null) {
 				snackbar.dismiss();
 				snackbar = null;
@@ -1558,7 +1559,7 @@ public class WeldConditionFragment extends Fragment
 
 			@SuppressLint("InflateParams")
 			View dialogView = LayoutInflater.from(getContext())
-					.inflate(R.layout.dialog_weld_condition_squeeze_force, null);
+					.inflate(R.layout.dialog_weld_condition_squeeze_force_editor, null);
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 			dialogBuilder.setView(dialogView);
 

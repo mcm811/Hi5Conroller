@@ -263,12 +263,15 @@ public class MainActivity extends AppCompatActivity
 			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 			show(getResources().getString(R.string.action_settings));
 			return true;
-		} else if (id == R.id.action_backup) {
+		}
+		if (id == R.id.action_backup) {
 			startActivity(new Intent(MainActivity.this, BackupActivity.class));
 			return true;
-		} else if (id == R.id.action_exit) {
-			finish();
 		}
+//		if (id == R.id.action_exit) {
+//			finish();
+//			return true;
+//		}
 
 		return super.onOptionsItemSelected(item);
 	}

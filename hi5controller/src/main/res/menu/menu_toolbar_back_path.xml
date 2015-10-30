@@ -3,15 +3,17 @@
       xmlns:local="http://schemas.android.com/apk/res-auto">
 
 	<item
-		android:id="@+id/toolbar_backup_path_menu_home"
-		android:icon="@drawable/ic_home_white"
-		android:title="@string/nav_home"
+		android:id="@+id/toolbar_backup_path_menu_backup"
+		android:icon="@drawable/ic_archive_white"
+		android:orderInCategory="100"
+		android:title="@string/action_backup"
 		local:showAsAction="always"/>
 
 	<item
-		android:id="@+id/toolbar_backup_path_menu_done"
-		android:icon="@drawable/ic_done_white"
-		android:title="@string/nav_done"
+		android:id="@+id/toolbar_backup_path_menu_home"
+		android:icon="@drawable/ic_home_white"
+		android:orderInCategory="101"
+		android:title="@string/nav_home"
 		local:showAsAction="always"/>
 
 </menu>

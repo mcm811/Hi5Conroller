@@ -51,6 +51,8 @@ public class Helper {
 		public final static String PACKAGE_NAME = "com.changyoung.hi5controller";
 		public final static String WORK_PATH_KEY = "work_path";
 		public final static String BACKUP_PATH_KEY = "backup_path";
+		public final static String ORDER_TYPE_KEY = "order_type";
+		public final static String LAYOUT_TYPE_KEY = "layout_type";
 
 		public static String getWorkPath(Context context) {
 			return getPath(context, WORK_PATH_KEY);
@@ -69,21 +71,52 @@ public class Helper {
 		}
 
 		public static String getPath(Context context, String key) {
-			try {
-				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
-				return prefs.getString(key, EXTERNAL_STORAGE_PATH);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return EXTERNAL_STORAGE_PATH;
-			}
+			return getString(context, key, EXTERNAL_STORAGE_PATH);
 		}
 
 		public static void setPath(Context context, String key, String value) {
+			putString(context, key, value);
+		}
+
+		public static String getString(Context context, String key, String defValue) {
+			try {
+				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
+				return prefs.getString(key, defValue);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return defValue;
+			}
+		}
+
+		public static void putString(Context context, String key, String value) {
 			try {
 				if (key != null && value != null) {
 					SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 					SharedPreferences.Editor prefEditor = prefs.edit();
 					prefEditor.putString(key, value);
+					prefEditor.apply();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		public static int getInt(Context context, String key, int defValue) {
+			try {
+				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
+				return prefs.getInt(key, defValue);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return defValue;
+			}
+		}
+
+		public static void putInt(Context context, String key, int value) {
+			try {
+				if (key != null) {
+					SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
+					SharedPreferences.Editor prefEditor = prefs.edit();
+					prefEditor.putInt(key, value);
 					prefEditor.apply();
 				}
 			} catch (Exception e) {
