@@ -15,8 +15,8 @@ android {
 		applicationId "com.changyoung.hi5controller"
 		minSdkVersion 19
 		targetSdkVersion 23
-		versionCode 9
-		versionName '1.0.6'
+		versionCode 12
+		versionName '1.0.7'
 	}
 	buildTypes {
 		release {

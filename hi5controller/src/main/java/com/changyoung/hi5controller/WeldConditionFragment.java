@@ -1310,7 +1310,7 @@ public class WeldConditionFragment extends Fragment
 						}
 
 						@Override
-						public void onRmsChanged(float rmsdB) {
+						public void onRmsChanged(float rmsDB) {
 
 						}
 

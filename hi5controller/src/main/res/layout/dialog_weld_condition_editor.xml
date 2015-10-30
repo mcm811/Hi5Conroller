@@ -117,7 +117,7 @@
 					android:hint="@string/Editor_MoveTipClearance"
 					android:inputType="numberDecimal"
 					android:selectAllOnFocus="true"
-					android:textSize="14sp"/>
+					android:textSize="12sp"/>
 			</android.support.design.widget.TextInputLayout>
 
 			<android.support.design.widget.TextInputLayout
@@ -134,7 +134,7 @@
 					android:hint="@string/Editor_FixedTipClearance"
 					android:inputType="numberDecimal"
 					android:selectAllOnFocus="true"
-					android:textSize="14sp"/>
+					android:textSize="12sp"/>
 			</android.support.design.widget.TextInputLayout>
 		</TableRow>
 
