@@ -5,28 +5,29 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_weight="1"
+	android:fitsSystemWindows="true"
 	android:focusable="true"
 	android:focusableInTouchMode="true"
-	android:orientation="vertical"
-	android:fitsSystemWindows="true"
-	android:showDividers="middle|beginning|end">
+	android:orientation="vertical">
 
 	<TextView
 		android:id="@+id/statusText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:singleLine="true"
+		android:layout_marginEnd="22dp"
+		android:layout_marginStart="22dp"
 		android:text="@string/title_selected_item"
-		android:textColor="@color/indigo_500"
+		android:textColor="@color/blue_500"
 		android:textStyle="bold"
-		android:layout_margin="20dp"/>
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"/>
 
 	<android.support.design.widget.TextInputLayout
 		android:id="@+id/textInputLayout1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="20dp"
-		android:layout_marginEnd="20dp">
+		android:layout_marginEnd="20dp"
+		android:layout_marginStart="20dp">
 
 		<android.support.v7.widget.AppCompatEditText
 			android:id="@+id/etOutputData"
@@ -46,17 +47,19 @@
 		android:id="@+id/sampleSeekBar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="20dp"
-		android:layout_marginEnd="20dp"/>
+		android:layout_marginEnd="20dp"
+		android:layout_marginStart="20dp"/>
 
 	<TableLayout
 		android:layout_width="wrap_content"
 		android:layout_height="0dp"
-		android:stretchColumns="*"
-		android:layout_weight="1">
+		android:layout_marginEnd="20dp"
+		android:layout_marginStart="20dp"
+		android:layout_weight="1"
+		android:stretchColumns="*">
 
-		<TableRow android:layout_marginStart="20dp"
-		          android:layout_marginEnd="20dp">
+		<TableRow
+			>
 
 			<android.support.design.widget.TextInputLayout
 				android:id="@+id/textInputLayout2"
@@ -95,8 +98,8 @@
 			</android.support.design.widget.TextInputLayout>
 		</TableRow>
 
-		<TableRow android:layout_marginStart="20dp"
-		          android:layout_marginEnd="20dp">
+		<TableRow
+			>
 
 			<android.support.design.widget.TextInputLayout
 				android:id="@+id/textInputLayout4"
@@ -131,8 +134,8 @@
 			</android.support.design.widget.TextInputLayout>
 		</TableRow>
 
-		<TableRow android:layout_marginStart="20dp"
-		          android:layout_marginEnd="20dp">
+		<TableRow
+			>
 
 			<android.support.design.widget.TextInputLayout
 				android:id="@+id/textInputLayout6"
@@ -172,15 +175,15 @@
 		android:id="@+id/sbBegin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="20dp"
-		android:layout_marginEnd="20dp"/>
+		android:layout_marginEnd="20dp"
+		android:layout_marginStart="20dp"/>
 
 	<SeekBar
 		android:id="@+id/sbEnd"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:rotation="180"
+		android:layout_marginEnd="20dp"
 		android:layout_marginStart="20dp"
-		android:layout_marginEnd="20dp"/>
+		android:rotation="180"/>
 
 </LinearLayout>
