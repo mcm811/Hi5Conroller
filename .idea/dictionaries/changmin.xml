@@ -7,6 +7,7 @@
       <w>dataset</w>
       <w>iter</w>
       <w>paddings</w>
+      <w>staggerred</w>
     </words>
   </dictionary>
 </component>

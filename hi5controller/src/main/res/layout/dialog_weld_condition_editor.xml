@@ -29,7 +29,7 @@
 		android:layout_marginEnd="20dp"
 		android:layout_marginStart="20dp">
 
-		<android.support.v7.widget.AppCompatEditText
+		<com.changyoung.hi5controller.EditText
 			android:id="@+id/etOutputData"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginEnd="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etOutputType"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginStart="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etSqueezeForce"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginEnd="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etMoveTipClearance"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginStart="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etFixedTipClearance"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginEnd="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etPanelThickness"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginStart="10dp">
 
-				<android.support.v7.widget.AppCompatEditText
+				<com.changyoung.hi5controller.EditText
 					android:id="@+id/etCommandOffset"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"

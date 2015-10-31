@@ -85,6 +85,7 @@ public class WeldConditionFragment extends Fragment
 	private View mView;
 	private RecyclerView mRecyclerView;
 	private WeldConditionAdapter mAdapter;
+	private RecyclerView.LayoutManager mLayoutManager;
 	private Snackbar snackbar;
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mSqueezeForceRecyclerView;
@@ -188,8 +189,8 @@ public class WeldConditionFragment extends Fragment
 
 		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
 		mRecyclerView.setHasFixedSize(true);
-		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-		mRecyclerView.setLayoutManager(layoutManager);
+		mLayoutManager = new LinearLayoutManager(getContext());
+		mRecyclerView.setLayoutManager(mLayoutManager);
 		mAdapter = new WeldConditionAdapter(getActivity(),
 				mView.findViewById(R.id.coordinator_layout), new ArrayList<WeldConditionItem>());
 		mAdapter.onLoadInstanceState(savedInstanceState);
@@ -806,40 +807,42 @@ public class WeldConditionFragment extends Fragment
 		protected Context mContext;
 		protected Activity mActivity;
 		protected View mSnackbarView;
-		protected SparseBooleanArray selectedItems;
+		protected SparseBooleanArray mSelectedItems;
+		protected Handler mHandler;
 
 		public WeldConditionAdapter(Activity activity, View snackbarView,
 		                            List<WeldConditionItem> dataSet) {
 			mDataset = dataSet;
 			mActivity = activity;
 			mSnackbarView = snackbarView;
-			selectedItems = new SparseBooleanArray();
+			mSelectedItems = new SparseBooleanArray();
+			mHandler = new Handler();
 		}
 
 		public boolean toggleSelection(int position) {
-			if (selectedItems.get(position, false)) {
-				selectedItems.delete(position);
+			if (mSelectedItems.get(position, false)) {
+				mSelectedItems.delete(position);
 				return false;
 			}
-			selectedItems.put(position, true);
+			mSelectedItems.put(position, true);
 			return true;
 		}
 
 		public void clearSelections() {
-			selectedItems.clear();
+			mSelectedItems.clear();
 			notifyDataSetChanged();
 		}
 
 		public int getSelectedItemCount() {
-			return selectedItems.size();
+			return mSelectedItems.size();
 		}
 
 		public ArrayList<Integer> getSelectedItems() {
 			ArrayList<Integer> items = null;
 			try {
-				items = new ArrayList<>(selectedItems.size());
-				for (int i = 0; i < selectedItems.size(); i++) {
-					items.add(selectedItems.keyAt(i));
+				items = new ArrayList<>(mSelectedItems.size());
+				for (int i = 0; i < mSelectedItems.size(); i++) {
+					items.add(mSelectedItems.keyAt(i));
 				}
 			} catch (NullPointerException e) {
 				Log.d(TAG, e.getLocalizedMessage());
@@ -855,7 +858,7 @@ public class WeldConditionFragment extends Fragment
 						savedInstanceState.getIntegerArrayList("weld_condition_selected_items");
 				if (items != null) {
 					for (Integer item : items) {
-						selectedItems.put(item, true);
+						mSelectedItems.put(item, true);
 					}
 				}
 			} catch (Exception e) {
@@ -873,7 +876,7 @@ public class WeldConditionFragment extends Fragment
 				mDataset.addAll(data);
 				notifyDataSetChanged();
 			} else {
-				selectedItems.clear();
+				mSelectedItems.clear();
 			}
 		}
 
@@ -1363,7 +1366,7 @@ public class WeldConditionFragment extends Fragment
 		}
 
 		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
 					.inflate(R.layout.view_holder_item_weld_condition, parent, false);
@@ -1374,7 +1377,7 @@ public class WeldConditionFragment extends Fragment
 					final int position = (int) v.getTag();
 					if (toggleSelection(position))
 						mLastPosition = position;
-					holder.mItemView.setBackgroundColor(selectedItems.get(position, false)
+					holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
 							? ContextCompat.getColor(mContext, R.color.tab3_textview_background)
 							: Color.TRANSPARENT);
 					snackbar_setCheckedItem();
@@ -1396,8 +1399,13 @@ public class WeldConditionFragment extends Fragment
 					try {
 						if (!hasFocus) {
 							final EditText editText = (EditText) v;
+							final String editTextString = editText.getText().toString();
 							final WeldConditionItem item = (WeldConditionItem) editText.getTag();
-							Integer squeezeForce = Integer.parseInt(editText.getText().toString());
+							if (editTextString.equals("")) {
+								editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
+								return;
+							}
+							Integer squeezeForce = Integer.parseInt(editTextString);
 							if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE])
 								squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
 							final String squeezeForceString = String.format("%d", squeezeForce);
@@ -1408,6 +1416,16 @@ public class WeldConditionFragment extends Fragment
 								mSaveFlag = true;
 								fab_setImage();
 							}
+						} else {
+							// 키보드가 나온후에 한줄 스크롤 하기 위해 0.2초의 딜레이 후 스크롤 한다
+							mHandler.postDelayed(new Runnable() {
+								@Override
+								public void run() {
+									final int scrollPosition = holder.getLayoutPosition() + 1;
+									mLayoutManager.scrollToPosition(scrollPosition);
+//									Log.d("onFocusChange", String.format("scrollTo: %d", scrollPosition));
+								}
+							}, 250);
 						}
 					} catch (NumberFormatException e) {
 						Log.d("onFocusChange", e.getLocalizedMessage());
@@ -1420,6 +1438,11 @@ public class WeldConditionFragment extends Fragment
 				@Override
 				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 //					Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
+					if (actionId == 5) {
+						final int scrollPosition = holder.getLayoutPosition() + 2;
+						mLayoutManager.scrollToPosition(scrollPosition);
+//						Log.d("onEditorAction", String.format("scrollTo: %d", scrollPosition));
+					}
 					if (actionId == 6) {
 						Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);
 						return true;
@@ -1434,7 +1457,7 @@ public class WeldConditionFragment extends Fragment
 		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
 			final ViewHolder holder = (ViewHolder) rh;
 			WeldConditionItem item = mDataset.get(position);
-			holder.mItemView.setBackgroundColor(selectedItems.get(position, false)
+			holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
 					? ContextCompat.getColor(mContext,
 					R.color.tab3_textview_background) : Color.TRANSPARENT);
 			for (int i = 0; i < holder.tvList.size(); i++) {
@@ -1443,9 +1466,11 @@ public class WeldConditionFragment extends Fragment
 			holder.mItemView.setTag(position);
 			holder.tvList.get(WeldConditionItem.SQUEEZE_FORCE).setTag(item);
 			if (position < mDataset.size() - 1) {
-				holder.tvList.get(WeldConditionItem.SQUEEZE_FORCE).setImeOptions(EditorInfo.IME_ACTION_NEXT);
+				holder.tvList.get(WeldConditionItem.SQUEEZE_FORCE)
+						.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 			} else {
-				holder.tvList.get(WeldConditionItem.SQUEEZE_FORCE).setImeOptions(EditorInfo.IME_ACTION_DONE);
+				holder.tvList.get(WeldConditionItem.SQUEEZE_FORCE)
+						.setImeOptions(EditorInfo.IME_ACTION_DONE);
 			}
 		}
 
@@ -1490,9 +1515,14 @@ public class WeldConditionFragment extends Fragment
 				public void onFocusChange(View v, boolean hasFocus) {
 					try {
 						if (!hasFocus) {
-							EditText editText = (EditText) v;
-							WeldConditionItem item = (WeldConditionItem) v.getTag(R.string.tag_item);
-							Integer valueInteger = Integer.parseInt(editText.getText().toString());
+							final EditText editText = (EditText) v;
+							final String editTextString = editText.getText().toString();
+							final WeldConditionItem item = (WeldConditionItem) v.getTag(R.string.tag_item);
+							if (editTextString.equals("")) {
+								editText.setText(item.get(WeldConditionItem.SQUEEZE_FORCE));
+								return;
+							}
+							Integer valueInteger = Integer.parseInt(editTextString);
 							if (valueInteger > valueMax[WeldConditionItem.SQUEEZE_FORCE])
 								valueInteger = valueMax[WeldConditionItem.SQUEEZE_FORCE];
 							final String valueString = String.format("%d", valueInteger);
@@ -1565,8 +1595,8 @@ public class WeldConditionFragment extends Fragment
 
 			mSqueezeForceRecyclerView = (RecyclerView) dialogView.findViewById(R.id.recycler_view);
 			mSqueezeForceRecyclerView.setHasFixedSize(true);
-			RecyclerView.LayoutManager layoutManager =
-					new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
+			RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 4,
+					LinearLayoutManager.VERTICAL, false);
 			mSqueezeForceRecyclerView.setLayoutManager(layoutManager);
 			mSqueezeForceRecyclerView.setAdapter(mSqueezeForceAdapter);
 

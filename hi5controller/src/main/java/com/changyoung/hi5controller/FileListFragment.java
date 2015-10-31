@@ -99,6 +99,8 @@ public class FileListFragment extends Fragment {
 	}
 
 	public String getDirPath() {
+		if (dirPath == null)
+			return null;
 		return dirPath.getPath();
 	}
 

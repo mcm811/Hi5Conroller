@@ -38,7 +38,8 @@
 			android:layout_height="match_parent"
 			android:paddingEnd="2dp"
 			android:paddingStart="2dp"
-			android:scrollbars="vertical"/>
+			android:scrollbars="vertical"
+			tools:listitem="@layout/view_holder_item_weld_count"/>
 
 	</android.support.v4.widget.SwipeRefreshLayout>
 

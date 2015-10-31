@@ -1483,9 +1483,14 @@ public class WeldCountFragment extends Fragment
 				public void onFocusChange(View v, boolean hasFocus) {
 					try {
 						if (!hasFocus) {
-							EditText editText = (EditText) v;
-							WeldCountFile.Job item = (WeldCountFile.Job) v.getTag(R.string.tag_item);
-							Integer valueInteger = Integer.parseInt(editText.getText().toString());
+							final EditText editText = (EditText) v;
+							final String editTextString = editText.getText().toString();
+							final WeldCountFile.Job item = (WeldCountFile.Job) v.getTag(R.string.tag_item);
+							if (editTextString.equals("")) {
+								editText.setText(item.getCN());
+								return;
+							}
+							Integer valueInteger = Integer.parseInt(editTextString);
 							if (valueInteger > WeldCountFile.VALUE_MAX)
 								valueInteger = WeldCountFile.VALUE_MAX;
 							final String valueString = String.format("%d", valueInteger);
