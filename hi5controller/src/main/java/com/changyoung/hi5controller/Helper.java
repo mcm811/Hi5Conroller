@@ -347,13 +347,14 @@ public class Helper {
 
 		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
 			if (event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
-				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 				if (view == null)
 					view = activity.getCurrentFocus();
 				try {
 					if (view != null) {
 						imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-						view.clearFocus();
+						if (view.hasFocus())
+							view.clearFocus();
 					}
 				} catch (NullPointerException e) {
 					Log.d("hideSoftKeyboard", e.getLocalizedMessage());

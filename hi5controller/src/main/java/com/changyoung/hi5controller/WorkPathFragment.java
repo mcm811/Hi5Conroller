@@ -14,6 +14,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -269,11 +273,40 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			}
 		});
 
-		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
+		final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
 		if (fab != null) {
 			fab.setOnClickListener(new View.OnClickListener() {
+				private void scaleAnimationFab(final float from, final float to) {
+					ScaleAnimation shrink = new ScaleAnimation(from, to, from, to,
+							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+					shrink.setDuration(250);
+					shrink.setInterpolator(new AccelerateInterpolator());
+					shrink.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationStart(Animation animation) {
+
+						}
+
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							ScaleAnimation expand = new ScaleAnimation(to, from, to, from,
+									Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+							expand.setDuration(250);
+							expand.setInterpolator(new DecelerateInterpolator());
+							fab.startAnimation(expand);
+						}
+
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+
+						}
+					});
+					fab.startAnimation(shrink);
+				}
+
 				@Override
 				public void onClick(View v) {
+					scaleAnimationFab(1.0f, 1.5f);
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);

@@ -65,7 +65,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
 			android:layout_margin="16dp"
-			android:src="@drawable/ic_edit_white"
+			android:src="@drawable/ic_view_module_white_48dp"
 			app:backgroundTint="@color/pink_A200"/>
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

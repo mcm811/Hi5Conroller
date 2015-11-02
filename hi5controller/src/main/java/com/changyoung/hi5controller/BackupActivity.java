@@ -11,6 +11,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -127,11 +130,22 @@ public class BackupActivity extends AppCompatActivity
 			logD("onBackPressed()");
 		}
 
-		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+		final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 		if (fab != null) {
 			fab.setOnClickListener(new View.OnClickListener() {
+				private void animationFab() {
+					fab.clearAnimation();
+					final RotateAnimation rotation = new RotateAnimation(0f, 360f,
+							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+					rotation.setDuration(500);
+					rotation.setFillAfter(true);
+					rotation.setInterpolator(new AccelerateDecelerateInterpolator());
+					fab.startAnimation(rotation);
+				}
+
 				@Override
 				public void onClick(View view) {
+					animationFab();
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
 					String ret = restore();

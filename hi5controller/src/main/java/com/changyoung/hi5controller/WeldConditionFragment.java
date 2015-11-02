@@ -46,6 +46,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -77,7 +81,6 @@ public class WeldConditionFragment extends Fragment
 		LoaderManager.LoaderCallbacks<List<WeldConditionFragment.WeldConditionItem>> {
 
 	private static final int MSG_REFRESH = 0;
-
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "WeldConditionFragment";
 	private static final int[] valueMax = { 2000, 100, 350, 500, 500, 500, 500, 1000, 1000 };
@@ -90,6 +93,7 @@ public class WeldConditionFragment extends Fragment
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mSqueezeForceRecyclerView;
 	private FloatingActionButton mFab;
+	private int mFabImageId = R.drawable.ic_view_module_white_48dp;
 	private WeldConditionSqueezeForceAdapter mSqueezeForceAdapter;
 
 	private LooperHandler looperHandler;
@@ -168,7 +172,7 @@ public class WeldConditionFragment extends Fragment
 			public void onClick(View v) {
 				if (mSaveFlag) {
 					mSaveFlag = false;
-					fab_setImage();
+					setImageFab();
 					mAdapter.update(onGetWorkPath());
 					show("저장 완료: " + onGetWorkPath());
 				} else if (mAdapter.getSelectedItemCount() == 0) {
@@ -302,7 +306,7 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
-	private void snackbar_setCheckedItem() {
+	private void setCheckedItemSnackbar() {
 		try {
 			if (mView != null && isAdded()) {
 				final int selectedItemCount = mAdapter.getSelectedItemCount();
@@ -314,9 +318,9 @@ public class WeldConditionFragment extends Fragment
 							.setAction("선택 취소", new View.OnClickListener() {
 								@Override
 								public void onClick(View v) {
-									setCheckedItem(false);
-									snackbar = null;
 									Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
+									mAdapter.clearSelections();
+									setImageFab();
 								}
 							});
 				}
@@ -340,29 +344,61 @@ public class WeldConditionFragment extends Fragment
 			if (isAdded()) {
 				if (!value)
 					mAdapter.clearSelections();
-				fab_setImage();
+				setImageFab();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		snackbar_setCheckedItem();
+		setCheckedItemSnackbar();
 	}
 
-	private void fab_setImage() {
-		try {
-			if (isAdded()) {
-				if (mSaveFlag)
-					mFab.setImageResource(R.drawable.ic_save_white);
-				else if (mAdapter.getItemCount() == 0)
-					mFab.setImageResource(R.drawable.ic_refresh_white);
-				else if (mAdapter.getSelectedItemCount() == 0)
-					mFab.setImageResource(R.drawable.ic_view_module_white_48dp);
-				else
-					mFab.setImageResource(R.drawable.ic_edit_white);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	private void setImageFab() {
+		int fabImageId;
+		if (mSaveFlag) {
+			fabImageId = R.drawable.ic_save_white;
+		} else if (mAdapter.getItemCount() == 0) {
+			fabImageId = R.drawable.ic_refresh_white;
+		} else if (mAdapter.getSelectedItemCount() == 0) {
+			fabImageId = R.drawable.ic_view_module_white_48dp;
+		} else {
+			fabImageId = R.drawable.ic_edit_white;
 		}
+		if (fabImageId == mFabImageId)
+			return;
+		mFabImageId = fabImageId;
+
+		mFab.clearAnimation();
+		RotateAnimation animation = new RotateAnimation(0f, 180f,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+		animation.setDuration(250);
+		animation.setInterpolator(new AccelerateInterpolator());
+		animation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				try {
+					if (isAdded())
+						mFab.setImageResource(mFabImageId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				RotateAnimation expand = new RotateAnimation(180f, 0f,
+						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+				expand.setDuration(250);
+				expand.setInterpolator(new DecelerateInterpolator());
+				mFab.startAnimation(expand);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+		});
+		mFab.startAnimation(animation);
 	}
 
 	public String onGetWorkPath() {
@@ -1274,7 +1310,7 @@ public class WeldConditionFragment extends Fragment
 					if (isUpdate) {
 						mAdapter.update(onGetWorkPath());
 						mAdapter.notifyDataSetChanged();
-						fab_setImage();
+						setImageFab();
 					}
 					setCheckedItem(true);
 				}
@@ -1380,8 +1416,8 @@ public class WeldConditionFragment extends Fragment
 					holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
 							? ContextCompat.getColor(mContext, R.color.tab3_textview_background)
 							: Color.TRANSPARENT);
-					snackbar_setCheckedItem();
-					fab_setImage();
+					setCheckedItemSnackbar();
+					setImageFab();
 				}
 			});
 			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -1414,16 +1450,20 @@ public class WeldConditionFragment extends Fragment
 							if (!item.get(WeldConditionItem.SQUEEZE_FORCE).equals(squeezeForceString)) {
 								item.set(WeldConditionItem.SQUEEZE_FORCE, squeezeForceString);
 								mSaveFlag = true;
-								fab_setImage();
+								setImageFab();
 							}
 						} else {
 							// 키보드가 나온후에 한줄 스크롤 하기 위해 0.2초의 딜레이 후 스크롤 한다
 							mHandler.postDelayed(new Runnable() {
 								@Override
 								public void run() {
-									final int scrollPosition = holder.getLayoutPosition() + 1;
-									mLayoutManager.scrollToPosition(scrollPosition);
-//									Log.d("onFocusChange", String.format("scrollTo: %d", scrollPosition));
+									if (!mLayoutManager.isSmoothScrolling()) {
+										final int scrollPosition = holder.getLayoutPosition() + 1;
+										if (scrollPosition != 0) {
+//											Log.d("onFocusChange", String.format("scrollTo: %d", scrollPosition));
+											mRecyclerView.scrollToPosition(scrollPosition);
+										}
+									}
 								}
 							}, 250);
 						}
@@ -1440,8 +1480,8 @@ public class WeldConditionFragment extends Fragment
 //					Log.d("onEditorAction", "actionId: " + String.valueOf(actionId));
 					if (actionId == 5) {
 						final int scrollPosition = holder.getLayoutPosition() + 2;
-						mLayoutManager.scrollToPosition(scrollPosition);
 //						Log.d("onEditorAction", String.format("scrollTo: %d", scrollPosition));
+						mRecyclerView.scrollToPosition(scrollPosition);
 					}
 					if (actionId == 6) {
 						Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);

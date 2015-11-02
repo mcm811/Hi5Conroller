@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity
 					tabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
 					tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
 				}
-
+				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
 //				try {
 //					Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab.getPosition());
 //					if (refresh != null) {

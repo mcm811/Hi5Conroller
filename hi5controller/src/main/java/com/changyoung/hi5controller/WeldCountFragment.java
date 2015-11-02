@@ -36,6 +36,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -163,30 +169,111 @@ public class WeldCountFragment extends Fragment
 
 		final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_count_fab);
 		fab.setOnClickListener(new View.OnClickListener() {
+			private void animationFab() {
+				fab.clearAnimation();
+				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 540f : 0f;
+				final float toDegree = mOrderType == ORDER_TYPE_ASCEND ? 0f : 540f;
+				final RotateAnimation rotation = new RotateAnimation(fromDegree, toDegree,
+						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+				rotation.setDuration(500);
+				rotation.setFillAfter(true);
+				rotation.setInterpolator(new AccelerateDecelerateInterpolator());
+				fab.startAnimation(rotation);
+			}
+
+			private void animationRecyclerView() {
+				mRecyclerView.clearAnimation();
+				AlphaAnimation animation = new AlphaAnimation(1.0f, 0f);
+				animation.setDuration(400);
+				animation.setInterpolator(new AccelerateInterpolator());
+				animation.setAnimationListener(new Animation.AnimationListener() {
+					@Override
+					public void onAnimationStart(Animation animation) {
+
+					}
+
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						mOrderType = mOrderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+						mAdapter.sortName(mOrderType);
+						Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
+
+						AlphaAnimation expand = new AlphaAnimation(0f, 1.0f);
+						expand.setDuration(100);
+						expand.setInterpolator(new DecelerateInterpolator());
+						mRecyclerView.startAnimation(expand);
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+
+					}
+				});
+				mRecyclerView.startAnimation(animation);
+			}
+
 			@Override
 			public void onClick(View v) {
-				mOrderType = mOrderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
-				mAdapter.sortName(mOrderType);
-				fab.setScaleY(fab.getScaleY() * -1);
-				Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
+				animationFab();
+				animationRecyclerView();
 			}
 		});
 		fab.setOnLongClickListener(new View.OnLongClickListener() {
+			private void animationFab() {
+				fab.clearAnimation();
+				final RotateAnimation rotation = new RotateAnimation(360f, 0f,
+						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+				rotation.setDuration(500);
+				rotation.setFillAfter(true);
+				rotation.setInterpolator(new AccelerateDecelerateInterpolator());
+				fab.startAnimation(rotation);
+			}
+
+			private void animationRecyclerView() {
+				mRecyclerView.clearAnimation();
+				AlphaAnimation animation = new AlphaAnimation(1.0f, 0f);
+				animation.setDuration(400);
+				animation.setInterpolator(new AccelerateInterpolator());
+				animation.setAnimationListener(new Animation.AnimationListener() {
+					@Override
+					public void onAnimationStart(Animation animation) {
+
+					}
+
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						if (mLayoutManager instanceof GridLayoutManager) {
+							mLayoutType = LAYOUT_TYPE_STAGGERRED;
+							mLayoutManager = new StaggeredGridLayoutManager(2,
+									StaggeredGridLayoutManager.VERTICAL);
+						} else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+							mLayoutType = LAYOUT_TYPE_LINEAR;
+							mLayoutManager = new LinearLayoutManager(getContext());
+						} else if (mLayoutManager instanceof LinearLayoutManager) {
+							mLayoutType = LAYOUT_TYPE_GRID;
+							mLayoutManager = new GridLayoutManager(getContext(), 2);
+						}
+						mRecyclerView.setLayoutManager(mLayoutManager);
+						Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+
+						AlphaAnimation expand = new AlphaAnimation(0f, 1.0f);
+						expand.setDuration(100);
+						expand.setInterpolator(new DecelerateInterpolator());
+						mRecyclerView.startAnimation(expand);
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+
+					}
+				});
+				mRecyclerView.startAnimation(animation);
+			}
+
 			@Override
 			public boolean onLongClick(View v) {
-				if (mLayoutManager instanceof GridLayoutManager) {
-					mLayoutType = LAYOUT_TYPE_STAGGERRED;
-					mLayoutManager = new StaggeredGridLayoutManager(2,
-							StaggeredGridLayoutManager.VERTICAL);
-				} else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
-					mLayoutType = LAYOUT_TYPE_LINEAR;
-					mLayoutManager = new LinearLayoutManager(getContext());
-				} else if (mLayoutManager instanceof LinearLayoutManager) {
-					mLayoutType = LAYOUT_TYPE_GRID;
-					mLayoutManager = new GridLayoutManager(getContext(), 2);
-				}
-				mRecyclerView.setLayoutManager(mLayoutManager);
-				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+				animationFab();
+				animationRecyclerView();
 				return true;
 			}
 		});
