@@ -92,6 +92,7 @@ public class WeldCountFragment extends Fragment
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mFileRecyclerView;
 	private WeldCountFileEditorAdapter mFileAdapter;
+	private FloatingActionButton mFab;
 
 	private LooperHandler looperHandler;
 	private WeldCountObserver observer;
@@ -167,23 +168,25 @@ public class WeldCountFragment extends Fragment
 			}
 		});
 
-		final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.weld_count_fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			private void animationFab() {
-				fab.clearAnimation();
-				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 540f : 0f;
-				final float toDegree = mOrderType == ORDER_TYPE_ASCEND ? 0f : 540f;
-				final RotateAnimation rotation = new RotateAnimation(fromDegree, toDegree,
-						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-				rotation.setDuration(500);
-				rotation.setFillAfter(true);
-				rotation.setInterpolator(new AccelerateDecelerateInterpolator());
-				fab.startAnimation(rotation);
+		mFab = (FloatingActionButton) mView.findViewById(R.id.weld_count_fab);
+		mFab.setOnClickListener(new View.OnClickListener() {
+			private void startOnClickAnimationFab() {
+				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 0f : 180f;
+				final float toDegree = (fromDegree + 180f) % 360f;
+				Log.d("onClickAnimationFab",
+						String.format("from: %.0f, to: %.0f", fromDegree, toDegree));
+				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
+						Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				animation.setDuration(500);
+				animation.setFillAfter(true);
+				animation.setInterpolator(new AccelerateDecelerateInterpolator());
+				mFab.startAnimation(animation);
 			}
 
-			private void animationRecyclerView() {
+			private void startOnClickAnimationRecyclerView() {
 				mRecyclerView.clearAnimation();
-				AlphaAnimation animation = new AlphaAnimation(1.0f, 0f);
+				AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
 				animation.setDuration(400);
 				animation.setInterpolator(new AccelerateInterpolator());
 				animation.setAnimationListener(new Animation.AnimationListener() {
@@ -198,7 +201,7 @@ public class WeldCountFragment extends Fragment
 						mAdapter.sortName(mOrderType);
 						Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
 
-						AlphaAnimation expand = new AlphaAnimation(0f, 1.0f);
+						AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 						expand.setDuration(100);
 						expand.setInterpolator(new DecelerateInterpolator());
 						mRecyclerView.startAnimation(expand);
@@ -214,24 +217,28 @@ public class WeldCountFragment extends Fragment
 
 			@Override
 			public void onClick(View v) {
-				animationFab();
-				animationRecyclerView();
+				startOnClickAnimationFab();
+				startOnClickAnimationRecyclerView();
 			}
 		});
-		fab.setOnLongClickListener(new View.OnLongClickListener() {
-			private void animationFab() {
-				fab.clearAnimation();
-				final RotateAnimation rotation = new RotateAnimation(360f, 0f,
-						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-				rotation.setDuration(500);
-				rotation.setFillAfter(true);
-				rotation.setInterpolator(new AccelerateDecelerateInterpolator());
-				fab.startAnimation(rotation);
+		mFab.setOnLongClickListener(new View.OnLongClickListener() {
+			private void startOnLongClickAnimationFab() {
+				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 0f : 180f;
+				final float toDegree = (fromDegree + 360f) % 720f;
+				Log.d("onLongClickAnimationFab",
+						String.format("from: %.0f, to: %.0f", fromDegree, toDegree));
+				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
+						Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				animation.setDuration(500);
+				animation.setFillAfter(true);
+				animation.setInterpolator(new AccelerateDecelerateInterpolator());
+				mFab.startAnimation(animation);
 			}
 
-			private void animationRecyclerView() {
+			private void startOnLongClickAnimationRecyclerView() {
 				mRecyclerView.clearAnimation();
-				AlphaAnimation animation = new AlphaAnimation(1.0f, 0f);
+				AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
 				animation.setDuration(400);
 				animation.setInterpolator(new AccelerateInterpolator());
 				animation.setAnimationListener(new Animation.AnimationListener() {
@@ -256,7 +263,7 @@ public class WeldCountFragment extends Fragment
 						mRecyclerView.setLayoutManager(mLayoutManager);
 						Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
 
-						AlphaAnimation expand = new AlphaAnimation(0f, 1.0f);
+						AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 						expand.setDuration(100);
 						expand.setInterpolator(new DecelerateInterpolator());
 						mRecyclerView.startAnimation(expand);
@@ -272,8 +279,8 @@ public class WeldCountFragment extends Fragment
 
 			@Override
 			public boolean onLongClick(View v) {
-				animationFab();
-				animationRecyclerView();
+				startOnLongClickAnimationFab();
+				startOnLongClickAnimationRecyclerView();
 				return true;
 			}
 		});
@@ -287,7 +294,7 @@ public class WeldCountFragment extends Fragment
 		else if (mLayoutType == LAYOUT_TYPE_STAGGERRED)
 			mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new WeldCountAdapter(getActivity(), fab, new ArrayList<WeldCountFile>());
+		mAdapter = new WeldCountAdapter(getActivity(), mFab, new ArrayList<WeldCountFile>());
 		mRecyclerView.setAdapter(mAdapter);
 
 		looperHandler = new LooperHandler(Looper.getMainLooper());
@@ -368,13 +375,16 @@ public class WeldCountFragment extends Fragment
 	public void show(String msg) {
 		try {
 			if (msg != null && isAdded()) {
-				Snackbar.make(mRecyclerView, msg, Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+				Snackbar.make(mFab, msg, Snackbar.LENGTH_SHORT)
+						.setAction("Action", null)
+						.show();
 				logD(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 
 	public String onGetWorkPath() {
 		if (mListener != null) {
@@ -401,6 +411,19 @@ public class WeldCountFragment extends Fragment
 	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
 		Log.d(TAG, String.format("id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
 		mAdapter.setData(data, mOrderType);
+		if (mFab != null) {
+			final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 180f : 0f;
+			final float toDegree = (fromDegree + 180f) % 360f * 1f;
+			Log.d("onLoadFinished",
+					String.format("from: %.0f, to: %.0f", fromDegree, toDegree));
+			final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
+					Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			animation.setDuration(500);
+			animation.setFillAfter(true);
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			mFab.startAnimation(animation);
+		}
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
 		if (mView != null) {
@@ -425,7 +448,7 @@ public class WeldCountFragment extends Fragment
 	 * fragment to allow an interaction in this fragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
-	 * <p/>
+	 * <p>
 	 * See the Android Training lesson <a href=
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
@@ -1160,8 +1183,9 @@ public class WeldCountFragment extends Fragment
 		public void show(String msg) {
 			try {
 				if (msg != null) {
-					Snackbar.make(mSnackbarView, msg,
-							Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+					Snackbar.make(mSnackbarView, msg, Snackbar.LENGTH_SHORT)
+							.setAction("Action", null)
+							.show();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

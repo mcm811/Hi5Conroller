@@ -148,9 +148,14 @@ public class BackupActivity extends AppCompatActivity
 					animationFab();
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
-					String ret = restore();
-					if (ret != null)
-						show(ret);
+					fab.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							String ret = restore();
+							if (ret != null)
+								show(ret);
+						}
+					}, 500);
 				}
 			});
 		}
@@ -299,12 +304,13 @@ public class BackupActivity extends AppCompatActivity
 			if (++mBackPressedCount > EXIT_COUNT)
 				super.onBackPressed();
 			else
-				show(String.format(getResources().getString(R.string.main_activity_exit_format), Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
+				show(String.format(getResources().getString(R.string.main_activity_exit_format),
+						Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
 		}
 	}
 
 	@Override
-	public void show(String msg) {
+	public void show(final String msg) {
 		try {
 			if (msg != null) {
 				Snackbar.make(findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)

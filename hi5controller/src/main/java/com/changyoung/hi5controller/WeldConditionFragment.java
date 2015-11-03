@@ -327,8 +327,15 @@ public class WeldConditionFragment extends Fragment
 				if (selectedItemCount > 0 && mAdapter.getItemCount() > 0) {
 					if (snackbar.isShown())
 						snackbar.setText(String.valueOf(selectedItemCount) + "개 항목 선택됨");
-					else
-						snackbar.show();
+					else {
+						new Handler().postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								if (snackbar != null)
+									snackbar.show();
+							}
+						}, 500);
+					}
 				} else {
 					snackbar.dismiss();
 					snackbar = null;
@@ -353,24 +360,25 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	private void setImageFab() {
-		int fabImageId;
-		if (mSaveFlag) {
+		long fabDelay = 0;
+		int fabImageId = R.drawable.ic_edit_white;
+		if (mSaveFlag)
 			fabImageId = R.drawable.ic_save_white;
-		} else if (mAdapter.getItemCount() == 0) {
+		else if (mAdapter.getItemCount() == 0)
 			fabImageId = R.drawable.ic_refresh_white;
-		} else if (mAdapter.getSelectedItemCount() == 0) {
+		else if (mAdapter.getSelectedItemCount() == 0) {
 			fabImageId = R.drawable.ic_view_module_white_48dp;
-		} else {
-			fabImageId = R.drawable.ic_edit_white;
+			fabDelay = 350;
 		}
 		if (fabImageId == mFabImageId)
 			return;
 		mFabImageId = fabImageId;
 
 		mFab.clearAnimation();
-		RotateAnimation animation = new RotateAnimation(0f, 180f,
-				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-		animation.setDuration(250);
+		final RotateAnimation animation = new RotateAnimation(0f, 180f,
+				Animation.RELATIVE_TO_SELF, 0.5f,
+				Animation.RELATIVE_TO_SELF, 0.5f);
+		animation.setDuration(150);
 		animation.setInterpolator(new AccelerateInterpolator());
 		animation.setAnimationListener(new Animation.AnimationListener() {
 			@Override
@@ -387,8 +395,9 @@ public class WeldConditionFragment extends Fragment
 					e.printStackTrace();
 				}
 				RotateAnimation expand = new RotateAnimation(180f, 0f,
-						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-				expand.setDuration(250);
+						Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				expand.setDuration(350);
 				expand.setInterpolator(new DecelerateInterpolator());
 				mFab.startAnimation(expand);
 			}
@@ -398,7 +407,12 @@ public class WeldConditionFragment extends Fragment
 
 			}
 		});
-		mFab.startAnimation(animation);
+		mFab.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mFab.startAnimation(animation);
+			}
+		}, fabDelay);
 	}
 
 	public String onGetWorkPath() {

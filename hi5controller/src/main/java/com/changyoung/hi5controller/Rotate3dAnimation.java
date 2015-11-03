@@ -12,18 +12,18 @@ import android.view.animation.Transformation;
 public class Rotate3dAnimation extends Animation {
 	private final float mFromDegrees;
 	private final float mToDegrees;
-	private final float mCenterX;
-	private final float mCenterY;
+	private final float mPivotX;
+	private final float mPivotY;
 	private final float mDepthZ;
 	private final boolean mReverse;
 	private Camera mCamera;
 
-	public Rotate3dAnimation(float fromDegrees, float toDegrees, float centerX,
-	                         float centerY, float depthZ, boolean reverse) {
+	public Rotate3dAnimation(float fromDegrees, float toDegrees, float pivotX,
+	                         float pivotY, float depthZ, boolean reverse) {
 		mFromDegrees = fromDegrees;
 		mToDegrees = toDegrees;
-		mCenterX = centerX;
-		mCenterY = centerY;
+		mPivotX = pivotX;
+		mPivotY = pivotY;
 		mDepthZ = depthZ;
 		mReverse = reverse;
 	}
@@ -41,8 +41,8 @@ public class Rotate3dAnimation extends Animation {
 		float degrees = fromDegrees
 				+ ((mToDegrees - fromDegrees) * interpolatedTime);
 
-		final float centerX = mCenterX;
-		final float centerY = mCenterY;
+		final float pivotX = mPivotX;
+		final float pivotY = mPivotY;
 		final Camera camera = mCamera;
 
 		final Matrix matrix = t.getMatrix();
@@ -57,7 +57,7 @@ public class Rotate3dAnimation extends Animation {
 		camera.getMatrix(matrix);
 		camera.restore();
 
-		matrix.preTranslate(-centerX, -centerY);
-		matrix.postTranslate(centerX, centerY);
+		matrix.preTranslate(-pivotX, -pivotY);
+		matrix.postTranslate(pivotX, pivotY);
 	}
 }
