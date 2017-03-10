@@ -40,8 +40,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -385,6 +387,10 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
+	@Override
+	public View getFab() {
+		return mFab;
+	}
 
 	public String onGetWorkPath() {
 		if (mListener != null) {
@@ -448,7 +454,7 @@ public class WeldCountFragment extends Fragment
 	 * fragment to allow an interaction in this fragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
-	 * <p>
+	 * <p/>
 	 * See the Android Training lesson <a href=
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
@@ -1352,10 +1358,12 @@ public class WeldCountFragment extends Fragment
 				}
 			});
 
-			AlertDialog alertDialog = dialogBuilder.show();
+			AlertDialog alertDialog = dialogBuilder.create();
 			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+			alertDialog.show();
 
 			final String ttsMsg = mContext.getString(R.string.tts_begin_number);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1440,18 +1448,46 @@ public class WeldCountFragment extends Fragment
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
 					.inflate(R.layout.view_holder_item_weld_count, parent, false);
-			ViewHolder holder = new ViewHolder(v);
+			final ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					final int position = (int) v.getTag();
 					final WeldCountFile weldCountFile = mDataset.get(position);
 					if (weldCountFile.getJobInfo().getTotal() == 0) {
-						Helper.UiHelper.textViewActivity(mContext,
+						Helper.UiHelper.textViewActivity(mActivity,
 								weldCountFile.getName(),
 								weldCountFile.getRowText());
 					} else {
-						showFileEditorDialog(position);
+						final float scale = 1.2f;
+						AnimationSet animationSet = new AnimationSet(true);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+							animationSet.addAnimation(Helper.UiHelper
+									.getCenterTranslateAnimation(mView, holder.mItemView, scale));
+						animationSet.addAnimation(new ScaleAnimation(1f, scale, 1f, scale,
+								ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+								ScaleAnimation.RELATIVE_TO_SELF, 0.5f));
+						animationSet.setDuration(200);
+						animationSet.setInterpolator(new DecelerateInterpolator());
+						animationSet.setAnimationListener(new Animation.AnimationListener() {
+							@Override
+							public void onAnimationStart(Animation animation) {
+
+							}
+
+							@Override
+							public void onAnimationEnd(Animation animation) {
+								showFileEditorDialog(position);
+							}
+
+							@Override
+							public void onAnimationRepeat(Animation animation) {
+
+							}
+						});
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+							holder.mItemView.setElevation(holder.mItemView.getElevation() + 1f);
+						holder.mItemView.startAnimation(animationSet);
 					}
 				}
 			});
@@ -1467,7 +1503,7 @@ public class WeldCountFragment extends Fragment
 								showFileEditorDialog((int) v.getTag());
 							} else if (which == 1) {
 								final WeldCountFile weldCountFile = mDataset.get((int) v.getTag());
-								Helper.UiHelper.textViewActivity(mContext, weldCountFile.getName(),
+								Helper.UiHelper.textViewActivity(mActivity, weldCountFile.getName(),
 										weldCountFile.getRowText());
 							}
 						}

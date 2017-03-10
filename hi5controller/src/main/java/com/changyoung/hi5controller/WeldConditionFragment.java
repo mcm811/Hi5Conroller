@@ -185,7 +185,7 @@ public class WeldConditionFragment extends Fragment
 		mFab.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				Helper.UiHelper.textViewActivity(getContext(), "ROBOT.SWD",
+				Helper.UiHelper.textViewActivity(getActivity(), "ROBOT.SWD",
 						Helper.FileHelper.readFileString(onGetWorkPath()));
 				return true;
 			}
@@ -304,6 +304,11 @@ public class WeldConditionFragment extends Fragment
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public View getFab() {
+		return mFab;
 	}
 
 	private void setCheckedItemSnackbar() {
@@ -1330,10 +1335,12 @@ public class WeldConditionFragment extends Fragment
 				}
 			});
 
-			AlertDialog alertDialog = dialogBuilder.show();
+			AlertDialog alertDialog = dialogBuilder.create();
 			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+			alertDialog.show();
 
 			final String ttsMsg = getContext().getString(R.string.tts_squeeze_force_value);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1427,6 +1434,7 @@ public class WeldConditionFragment extends Fragment
 					final int position = (int) v.getTag();
 					if (toggleSelection(position))
 						mLastPosition = position;
+					//noinspection ResourceAsColor
 					holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
 							? ContextCompat.getColor(mContext, R.color.tab3_textview_background)
 							: Color.TRANSPARENT);
@@ -1511,6 +1519,7 @@ public class WeldConditionFragment extends Fragment
 		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
 			final ViewHolder holder = (ViewHolder) rh;
 			WeldConditionItem item = mDataset.get(position);
+			//noinspection ResourceAsColor
 			holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
 					? ContextCompat.getColor(mContext,
 					R.color.tab3_textview_background) : Color.TRANSPARENT);
@@ -1689,10 +1698,12 @@ public class WeldConditionFragment extends Fragment
 					}
 				}
 			});
-			AlertDialog alertDialog = dialogBuilder.show();
+			AlertDialog alertDialog = dialogBuilder.create();
 			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+			alertDialog.show();
 		}
 
 		private class ViewHolder extends RecyclerView.ViewHolder {

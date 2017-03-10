@@ -1,6 +1,7 @@
 package com.changyoung.hi5controller;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -266,11 +268,16 @@ public class Helper {
 	}
 
 	public static class UiHelper {
-		public static void textViewActivity(Context context, String title, String text) {
+		public static void textViewActivity(Activity context, String title, String text) {
 			Intent intent = new Intent(context, TextScrollingActivity.class);
 			intent.putExtra("title", title);
 			intent.putExtra("text", text);
-			context.startActivity(intent);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				//noinspection unchecked
+				context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(context).toBundle());
+			} else {
+				context.startActivity(intent);
+			}
 		}
 
 		@SuppressWarnings("unused")
@@ -339,6 +346,25 @@ public class Helper {
 			builder.show();
 		}
 
+		@SuppressWarnings("unused")
+		public static TranslateAnimation getCenterTranslateAnimation(View parentView, View view) {
+			return getCenterTranslateAnimation(parentView, view, 1.0f);
+		}
+
+		public static TranslateAnimation getCenterTranslateAnimation(View parentView, View view, float scale) {
+			float fromX = view.getX();
+			float toX = (parentView.getWidth() - view.getWidth()) / 2f - fromX;
+			float fromY = view.getY();
+			float toY = (parentView.getHeight() - view.getHeight()) / 2f - fromY;
+			return new TranslateAnimation(
+					TranslateAnimation.RELATIVE_TO_SELF, 0f,
+					TranslateAnimation.ABSOLUTE, toX / scale,
+					TranslateAnimation.RELATIVE_TO_SELF, 0f,
+					TranslateAnimation.ABSOLUTE, toY / scale
+			);
+		}
+
+		@SuppressWarnings("unused")
 		public static void clearFocus(Activity activity) {
 			View view = activity.getCurrentFocus();
 			if (view != null)
@@ -364,6 +390,7 @@ public class Helper {
 			}
 		}
 
+		@SuppressWarnings("unused")
 		public static void showSoftKeyboard(Activity activity, View view) {
 			InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			if (view == null)

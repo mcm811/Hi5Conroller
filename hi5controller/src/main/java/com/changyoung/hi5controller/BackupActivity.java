@@ -29,6 +29,8 @@ public class BackupActivity extends AppCompatActivity
 	private final static String TAG = "BackupActivity";
 	private int mBackPressedCount;
 
+	private FloatingActionButton mFab;
+
 	private void logD(String msg) {
 		try {
 			Log.d(TAG, msg);
@@ -89,17 +91,19 @@ public class BackupActivity extends AppCompatActivity
 		}
 
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.backup_path_toolbar);
-		toolbar.inflateMenu(R.menu.menu_toolbar_back_path);
-		toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				String ret = refresh(item.getItemId());
-				if (ret != null)
-					show(ret);
-				mBackPressedCount = 0;
-				return true;
-			}
-		});
+		if (toolbar != null) {
+			toolbar.inflateMenu(R.menu.menu_toolbar_back_path);
+			toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					String ret = refresh(item.getItemId());
+					if (ret != null)
+						show(ret);
+					mBackPressedCount = 0;
+					return true;
+				}
+			});
+		}
 
 		AdView adView = new AdView(getContext());
 		adView.setAdSize(AdSize.BANNER);
@@ -116,9 +120,12 @@ public class BackupActivity extends AppCompatActivity
 				.setRequestAgent("android_studio:ad_template").build();
 		adView.loadAd(adRequest);
 		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
-		frameLayout.addView(adView, frameLayout.getChildCount() - 1);
+		if (frameLayout != null) {
+			frameLayout.addView(adView, frameLayout.getChildCount() - 1);
+		}
 
 		try {
+			//noinspection ConstantConditions
 			findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -130,17 +137,17 @@ public class BackupActivity extends AppCompatActivity
 			logD("onBackPressed()");
 		}
 
-		final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-		if (fab != null) {
-			fab.setOnClickListener(new View.OnClickListener() {
+		mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+		if (mFab != null) {
+			mFab.setOnClickListener(new View.OnClickListener() {
 				private void animationFab() {
-					fab.clearAnimation();
+					mFab.clearAnimation();
 					final RotateAnimation rotation = new RotateAnimation(0f, 360f,
 							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 					rotation.setDuration(500);
 					rotation.setFillAfter(true);
 					rotation.setInterpolator(new AccelerateDecelerateInterpolator());
-					fab.startAnimation(rotation);
+					mFab.startAnimation(rotation);
 				}
 
 				@Override
@@ -148,7 +155,7 @@ public class BackupActivity extends AppCompatActivity
 					animationFab();
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
-					fab.postDelayed(new Runnable() {
+					mFab.postDelayed(new Runnable() {
 						@Override
 						public void run() {
 							String ret = restore();
@@ -193,8 +200,10 @@ public class BackupActivity extends AppCompatActivity
 			if (forced) {
 				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
 				final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-				etPath.setText(Helper.Pref.getBackupPath(getContext()));
-				fragment.refreshFilesList(etPath.getText().toString());
+				if (etPath != null) {
+					etPath.setText(Helper.Pref.getBackupPath(getContext()));
+					fragment.refreshFilesList(etPath.getText().toString());
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -231,6 +240,11 @@ public class BackupActivity extends AppCompatActivity
 		}
 
 		return null;
+	}
+
+	@Override
+	public View getFab() {
+		return mFab;
 	}
 
 	private String restore() {
@@ -313,6 +327,7 @@ public class BackupActivity extends AppCompatActivity
 	public void show(final String msg) {
 		try {
 			if (msg != null) {
+				//noinspection ConstantConditions
 				Snackbar.make(findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
 						.setAction("Action", null).show();
 				logD(msg);
@@ -325,6 +340,8 @@ public class BackupActivity extends AppCompatActivity
 	@Override
 	public void onPathChanged(File path) {
 		EditText etPath = (EditText) findViewById(R.id.etBackupPath);
-		etPath.setText(path.getPath());
+		if (etPath != null) {
+			etPath.setText(path.getPath());
+		}
 	}
 }

@@ -187,25 +187,33 @@ public class FileListFragment extends Fragment {
 			Log.d(TAG, dir.getName());
 
 			mAdapter.clear();
-			for (File item : dir.listFiles()) {
-				if (item.isFile() || item.isDirectory())
-					mAdapter.add(item);
-			}
-			mAdapter.sort(new Comparator<File>() {
-				public int compare(File obj1, File obj2) {
-					int ret = 0;
-					if (obj1.isDirectory() && obj2.isDirectory())
-						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
-					else if (obj1.isFile() && obj2.isFile())
-						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
-					else if (obj1.isDirectory() && obj2.isFile())
-						ret = -1;
-					else if (obj1.isFile() && obj2.isDirectory()) {
-						ret = 1;
+			File[] files = dir.listFiles();
+			if (files != null) {
+				for (File item : files) {
+					if (item != null) {
+						if (item.isFile() || item.isDirectory()) {
+							mAdapter.add(item);
+						}
 					}
-					return ret;
 				}
-			});
+			}
+			if (mAdapter.getItemCount() > 0) {
+				mAdapter.sort(new Comparator<File>() {
+					public int compare(File obj1, File obj2) {
+						int ret = 0;
+						if (obj1.isDirectory() && obj2.isDirectory())
+							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+						else if (obj1.isFile() && obj2.isFile())
+							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+						else if (obj1.isDirectory() && obj2.isFile())
+							ret = -1;
+						else if (obj1.isFile() && obj2.isDirectory()) {
+							ret = 1;
+						}
+						return ret;
+					}
+				});
+			}
 
 			setDirPath(dir);
 			mAdapter.insert(dir, 0);
@@ -258,8 +266,10 @@ public class FileListFragment extends Fragment {
 		mAdapter = null;
 		dirPath = null;
 		looperHandler = null;
-		fileListObserver.stopWatching();
-		fileListObserver = null;
+		if (fileListObserver != null) {
+			fileListObserver.stopWatching();
+			fileListObserver = null;
+		}
 	}
 
 	/**
@@ -267,7 +277,7 @@ public class FileListFragment extends Fragment {
 	 * fragment to allow an interaction in this fragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
-	 * <p>
+	 * <p/>
 	 * See the Android Training lesson <a href=
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
@@ -456,7 +466,7 @@ public class FileListFragment extends Fragment {
 					} else if (file.isDirectory()) {
 						refreshFilesList(file.getPath());
 					} else {
-						Helper.UiHelper.textViewActivity(getContext(), file.getName(),
+						Helper.UiHelper.textViewActivity(getActivity(), file.getName(),
 								Helper.FileHelper.readFileString(file.getPath()));
 					}
 				}

@@ -19,18 +19,22 @@ public class TextScrollingActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				finish();
-			}
-		});
+		if (fab != null) {
+			fab.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					finish();
+				}
+			});
+		}
 		//noinspection ConstantConditions
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		Intent intent = getIntent();
 		getSupportActionBar().setTitle(intent.getExtras().getString("title", "텍스트 뷰어"));
 		TextView textView = (TextView) findViewById(R.id.textView);
-		textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10f);
-		textView.setText(intent.getExtras().getString("text", ""));
+		if (textView != null) {
+			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10f);
+			textView.setText(intent.getExtras().getString("text", ""));
+		}
 	}
 }

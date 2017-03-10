@@ -31,7 +31,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:hint="@string/WorkPath"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:textAppearance="?android:attr/textAppearanceSmall"/>
 		</android.support.design.widget.TextInputLayout>
 
@@ -78,6 +78,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|start"
 			android:layout_margin="16dp"
+			android:transitionName="@string/transitionNameFab"
 			android:src="@drawable/ic_done_white"
 			ads:backgroundTint="@color/pink_A200"
 			app:borderWidth="0dp"

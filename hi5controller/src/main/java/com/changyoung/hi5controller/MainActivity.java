@@ -1,5 +1,6 @@
 package com.changyoung.hi5controller;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -24,6 +25,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 
 import java.io.File;
 
@@ -33,6 +37,10 @@ public class MainActivity extends AppCompatActivity
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
 	private final static String TAG = "MainActivity";
+
+	private ViewPager mViewPager;
+	private TabLayout mTabLayout;
+	private DrawerLayout mDrawer;
 
 	private int mBackPressedCount;
 
@@ -52,15 +60,12 @@ public class MainActivity extends AppCompatActivity
 		try {
 			if (msg == null)
 				return;
-			ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-			TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-			Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tabLayout.getSelectedTabPosition());
+			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(mTabLayout.getSelectedTabPosition());
 			if (refresh != null)
 				refresh.show(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-			Snackbar.make(viewPager, msg, Snackbar.LENGTH_SHORT)
+			Snackbar.make(mViewPager, msg, Snackbar.LENGTH_SHORT)
 					.setAction("Action", null).show();
 			logD(msg);
 		}
@@ -69,60 +74,71 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate");
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		toolbar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
-
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		if (fab != null) {
-			fab.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-							.setAction("Action", null).show();
-					mBackPressedCount = 0;
-				}
-			});
-			findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+		if (toolbar != null) {
+			toolbar.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					startActivity(new Intent(MainActivity.this, BackupActivity.class));
+					onBackPressed();
 				}
 			});
 		}
 
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		if (drawer != null) {
+//		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//		if (fab != null) {
+//			fab.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View view) {
+//					Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//							.setAction("Action", null).show();
+//					mBackPressedCount = 0;
+//				}
+//			});
+//			findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					startActivity(new Intent(MainActivity.this, BackupActivity.class));
+//				}
+//			});
+//		}
+
+		mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+		if (mDrawer != null) {
 			ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-					MainActivity.this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-			drawer.setDrawerListener(toggle);
+					MainActivity.this, mDrawer, toolbar,
+					R.string.navigation_drawer_open,
+					R.string.navigation_drawer_close);
+			//noinspection deprecation
+			mDrawer.setDrawerListener(toggle);
 			toggle.syncState();
 		}
 
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-		navigationView.setNavigationItemSelectedListener(MainActivity.this);
+		if (navigationView != null) {
+			navigationView.setNavigationItemSelectedListener(MainActivity.this);
+		}
 
-		TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-		tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-		tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+		mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+		if (mTabLayout != null) {
+			mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+			mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+		}
 
 		PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), getApplicationContext());
-		final ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-		viewPager.setAdapter(pagerAdapter);
-		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-		tabLayout.setupWithViewPager(viewPager);
-		tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+		mViewPager = (ViewPager) findViewById(R.id.view_pager);
+		if (mViewPager != null) {
+			mViewPager.setAdapter(pagerAdapter);
+		}
+		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+		mTabLayout.setupWithViewPager(mViewPager);
+		mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
 			int toolBarLayoutColorId = R.color.tab1_tablayout_background;
 			int toolBarColorId = R.color.tab1_actionbar_background;
@@ -136,16 +152,16 @@ public class MainActivity extends AppCompatActivity
 					toolBarLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), toolBarLayoutColorId));
 				if (toolbar != null)
 					toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), toolBarColorId));
-				if (tabLayout != null) {
-					tabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
-					tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
+				if (mTabLayout != null) {
+					mTabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
+					mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
 				}
 			}
 
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
 				// 탭을 터치 했을때 뷰페이지 이동
-				((ViewPager) findViewById(R.id.view_pager)).setCurrentItem(tab.getPosition(), true);
+				mViewPager.setCurrentItem(tab.getPosition(), true);
 				mBackPressedCount = 0;
 				switch (tab.getPosition()) {
 					case PagerAdapter.WORK_PATH_FRAGMENT:
@@ -174,13 +190,13 @@ public class MainActivity extends AppCompatActivity
 					toolBarLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), toolBarLayoutColorId));
 				if (toolbar != null)
 					toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), toolBarColorId));
-				if (tabLayout != null) {
-					tabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
-					tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
+				if (mTabLayout != null) {
+					mTabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
+					mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
 				}
 				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
 //				try {
-//					Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab.getPosition());
+//					Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab.getPosition());
 //					if (refresh != null) {
 //						refresh.refresh(false);
 //					}
@@ -210,15 +226,13 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onBackPressed() {
 		final int EXIT_COUNT = 0;
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		if (drawer.isDrawerOpen(GravityCompat.START)) {
-			drawer.closeDrawer(GravityCompat.START);
+		if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+			mDrawer.closeDrawer(GravityCompat.START);
 			mBackPressedCount = 0;
 		} else {
 			try {
-				ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-				TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-				Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tabLayout.getSelectedTabPosition());
+				Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+						.getItem(mTabLayout.getSelectedTabPosition());
 				if (refresh != null) {
 					String ret = refresh.onBackPressedFragment();
 					if (ret == null || ret.compareTo("/") == 0)
@@ -230,7 +244,8 @@ public class MainActivity extends AppCompatActivity
 				if (++mBackPressedCount > EXIT_COUNT) {
 					onExitDialog();
 				} else {
-					show(String.format(getResources().getString(R.string.main_activity_exit_format), Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
+					show(String.format(getResources().getString(R.string.main_activity_exit_format),
+							Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
 				}
 			}
 		}
@@ -250,22 +265,58 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		mBackPressedCount = 0;
-
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
+		mBackPressedCount = 0;
 		int id = item.getItemId();
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
-			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 			show(getResources().getString(R.string.action_settings));
 			return true;
 		}
 		if (id == R.id.action_backup) {
-			startActivity(new Intent(MainActivity.this, BackupActivity.class));
+			final FloatingActionButton fab = (FloatingActionButton) getFab();
+			if (fab != null && android.os.Build.VERSION.SDK_INT
+					>= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				if (mTabLayout.getSelectedTabPosition() == PagerAdapter.WORK_PATH_FRAGMENT) {
+					ActivityOptions options = ActivityOptions
+							.makeSceneTransitionAnimation(this, fab, "fab");
+					startActivity(new Intent(this, BackupActivity.class), options.toBundle());
+				} else {
+					final Intent intent = new Intent(this, BackupActivity.class);
+					final ActivityOptions options = ActivityOptions
+							.makeSceneTransitionAnimation(this, fab, "fab");
+					TranslateAnimation translateAnimation = new TranslateAnimation(
+							TranslateAnimation.RELATIVE_TO_SELF, 0f,
+							TranslateAnimation.ABSOLUTE, (mTabLayout.getRight() - fab.getRight()) - fab.getLeft(),
+							TranslateAnimation.RELATIVE_TO_SELF, 0f,
+							TranslateAnimation.RELATIVE_TO_SELF, 0f);
+					translateAnimation.setDuration(400);
+					translateAnimation.setInterpolator(new DecelerateInterpolator());
+					translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationStart(Animation animation) {
+
+						}
+
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							startActivity(intent, options.toBundle());
+						}
+
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+
+						}
+					});
+					fab.startAnimation(translateAnimation);
+				}
+			} else {
+				startActivity(new Intent(this, BackupActivity.class));
+			}
 			return true;
 		}
 //		if (id == R.id.action_exit) {
@@ -276,37 +327,47 @@ public class MainActivity extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
+	private View getFab() {
+		View fab = null;
+		try {
+			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+					.getItem(mTabLayout.getSelectedTabPosition());
+			if (refresh != null)
+				fab = refresh.getFab();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return fab;
+	}
+
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
 		mBackPressedCount = 0;
 
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		if (id == R.id.nav_weld_count) {
-			viewPager.setCurrentItem(PagerAdapter.WELD_COUNT_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WELD_COUNT_FRAGMENT, true);
 		} else if (id == R.id.nav_weld_condition) {
-			viewPager.setCurrentItem(PagerAdapter.WELD_CONDITION_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WELD_CONDITION_FRAGMENT, true);
 		} else if (id == R.id.nav_storage) {
-			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_sdcard) {
-			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_extsdcard) {
-			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_usbstorage) {
-			viewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_backup) {
 			startActivity(new Intent(MainActivity.this, BackupActivity.class));
 		} else if (id == R.id.nav_exit) {
 			finish();
 		}
-
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawer.closeDrawer(GravityCompat.START);
+		mDrawer.closeDrawer(GravityCompat.START);
 
 		try {
-			TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-			Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tabLayout.getSelectedTabPosition());
+			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+					.getItem(mTabLayout.getSelectedTabPosition());
 			if (refresh != null)
 				show(refresh.refresh(id));
 		} catch (Exception e) {
@@ -319,8 +380,8 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onPathChanged(File path) {
 		Log.d(TAG, "onPathChanged");
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) viewPager.getAdapter()).getItem(PagerAdapter.WORK_PATH_FRAGMENT);
+		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) mViewPager.getAdapter())
+				.getItem(PagerAdapter.WORK_PATH_FRAGMENT);
 		if (fragment != null)
 			fragment.onPathChanged(path.getPath());
 	}
@@ -334,11 +395,10 @@ public class MainActivity extends AppCompatActivity
 	public void onSetWorkPath(String path) {
 		Log.d(TAG, "onSetWorkPath");
 		Helper.Pref.setWorkPath(getContext(), path);
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-		final int[] tabs = {PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT};
+		final int[] tabs = { PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT };
 		for (int tab : tabs) {
-			Refresh refresh = (Refresh) ((PagerAdapter) viewPager.getAdapter()).getItem(tab);
+			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
 			if (refresh != null)
 				refresh.refresh(true);
 		}

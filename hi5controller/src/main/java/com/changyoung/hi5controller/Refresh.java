@@ -1,5 +1,7 @@
 package com.changyoung.hi5controller;
 
+import android.view.View;
+
 /**
  * Created by chang on 2015-10-11.
  * changmin811@gmail.com
@@ -13,6 +15,8 @@ public interface Refresh {
 	String refresh(int menuId);
 
 	String onBackPressedFragment();
+
+	View getFab();
 
 	void show(String msg);
 }

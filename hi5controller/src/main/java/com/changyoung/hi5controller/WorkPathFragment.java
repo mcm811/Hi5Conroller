@@ -36,11 +36,12 @@ import java.io.File;
  * create an instance of this fragment.
  */
 public class WorkPathFragment extends Fragment implements Refresh {
-	private static final String TAG = "WorPathFragment";
+	private static final String TAG = "WorkPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	FileListFragment fragment;
 	private View mView;
 	private String mWorkPath;
+	private FloatingActionButton mFab;
 
 	private OnWorkPathListener mListener;
 
@@ -100,6 +101,8 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				e.printStackTrace();
 				logD("refresh");
 			}
+		} else {
+			logD("isAdded() == false, refresh:" + path);
 		}
 		return false;
 	}
@@ -185,8 +188,11 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		try {
 			if (msg == null)
 				return;
-			Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
-					.setAction("Action", null).show();
+			if (mView != null) {
+				Snackbar.make(mView.findViewById(R.id.coordinator_layout),
+						msg, Snackbar.LENGTH_SHORT)
+						.setAction("Action", null).show();
+			}
 			logD(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -210,6 +216,10 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public View getFab() {
+		return mFab;
 	}
 
 	@Override
@@ -273,12 +283,13 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			}
 		});
 
-		final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
-		if (fab != null) {
-			fab.setOnClickListener(new View.OnClickListener() {
+		mFab = (FloatingActionButton) mView.findViewById(R.id.fab);
+		if (mFab != null) {
+			mFab.setOnClickListener(new View.OnClickListener() {
 				private void scaleAnimationFab(final float from, final float to) {
 					ScaleAnimation shrink = new ScaleAnimation(from, to, from, to,
-							Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+							Animation.RELATIVE_TO_SELF, 0.5f,
+							Animation.RELATIVE_TO_SELF, 0.5f);
 					shrink.setDuration(250);
 					shrink.setInterpolator(new AccelerateInterpolator());
 					shrink.setAnimationListener(new Animation.AnimationListener() {
@@ -290,10 +301,11 @@ public class WorkPathFragment extends Fragment implements Refresh {
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							ScaleAnimation expand = new ScaleAnimation(to, from, to, from,
-									Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+									Animation.RELATIVE_TO_SELF, 0.5f,
+									Animation.RELATIVE_TO_SELF, 0.5f);
 							expand.setDuration(250);
 							expand.setInterpolator(new DecelerateInterpolator());
-							fab.startAnimation(expand);
+							mFab.startAnimation(expand);
 						}
 
 						@Override
@@ -301,20 +313,24 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 						}
 					});
-					fab.startAnimation(shrink);
+					mFab.startAnimation(shrink);
 				}
 
 				@Override
 				public void onClick(View v) {
 					scaleAnimationFab(1.0f, 1.5f);
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
-					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+					FileListFragment fragment = (FileListFragment) getChildFragmentManager()
+							.findFragmentById(R.id.work_path_fragment);
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
 					if (mWorkPath.compareTo(path) == 0) {
-//						startActivity(new Intent(getContext(), BackupActivity.class));
-						String ret = Helper.FileHelper.backup(getContext(), mView.findViewById(R.id.coordinator_layout));
+//						ActivityOptions options = ActivityOptions
+//								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
+//						startActivity(new Intent(getContext(), BackupActivity.class), options.toBundle());
+						String ret = Helper.FileHelper.backup(getContext(),
+								mView.findViewById(R.id.coordinator_layout));
 						if (ret != null)
 							show(ret);
 					} else {

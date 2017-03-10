@@ -32,7 +32,7 @@
 				android:focusable="false"
 				android:focusableInTouchMode="false"
 				android:hint="@string/BackupPath"
-				android:singleLine="true"
+				android:maxLines="1"
 				android:textAppearance="?android:attr/textAppearanceSmall"/>
 		</android.support.design.widget.TextInputLayout>
 
@@ -78,8 +78,9 @@
 			android:id="@+id/fab"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|left"
+			android:layout_gravity="bottom|start"
 			android:layout_margin="16dp"
+			android:transitionName="@string/transitionNameFab"
 			android:src="@drawable/ic_settings_backup_restore_white"
 			app:backgroundTint="@color/pink_A200"
 			app:borderWidth="0dp"
