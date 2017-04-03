@@ -625,7 +625,7 @@ public class WeldCountFragment extends Fragment
 						sb.append("...");
 						break;
 					}
-					sb.append(cn).append("  ");
+					sb.append(cn).append(" ");
 				}
 			}
 			if (sb.length() > 0)
@@ -650,6 +650,32 @@ public class WeldCountFragment extends Fragment
 				sb.append(Job.getRowString());
 				sb.append("\n");
 			}
+			return sb.toString();
+		}
+
+		public String getMoveList() {
+			StringBuilder sb = new StringBuilder();
+			Integer n = 0;
+			Job prevJob = null;
+			for (Job job : jobList) {
+				if (prevJob != null && job.isSpot()) {
+					String mv = prevJob.getA();
+					if (mv != null) {
+						if (++n > 200) {    // 200개 까지만 보여줌
+							sb.append("...");
+							break;
+						}
+						if (mv.contains("A=0")) {
+							sb.append(mv).append(" ");
+						} else {
+							sb.insert(0, " ").insert(0, mv);
+						}
+					}
+				}
+				prevJob = job;
+			}
+			if (sb.length() > 0)
+				sb.insert(0, "MV: ");
 			return sb.toString();
 		}
 
@@ -819,6 +845,10 @@ public class WeldCountFragment extends Fragment
 				return rowType;
 			}
 
+			public boolean isSpot() {
+				return getRowType() == JOB_SPOT;
+			}
+
 			public String getCN() {
 				if (getRowType() == JOB_SPOT)
 					return ((SpotJob) row).getCN();
@@ -845,6 +875,13 @@ public class WeldCountFragment extends Fragment
 					return null;
 			}
 
+			public String getA() {
+				if (getRowType() == JOB_MOVE)
+					return ((MoveJob) row).getA();
+				else
+					return null;
+			}
+
 			public Integer getRowType() {
 				return row.getRowType();
 			}
@@ -858,8 +895,8 @@ public class WeldCountFragment extends Fragment
 			}
 
 			public class JobValue {
-				private String mValue;
 				private String mType;
+				private String mValue;
 
 				public JobValue(String str) {
 					setUpdate(str);
@@ -877,12 +914,18 @@ public class WeldCountFragment extends Fragment
 					return mType;
 				}
 
+				public boolean equalType(String s) {
+					if (mType == null || s == null)
+						return false;
+					return mType.equals(s);
+				}
+
 				public void setType(String type) {
 					this.mType = type;
 				}
 
 				public String getUpdate() {
-					return mType + "=" + mValue;
+					return mType == null || mType.isEmpty() ? mValue : mType + "=" + mValue;
 				}
 
 				public void setUpdate(String value) {
@@ -891,6 +934,9 @@ public class WeldCountFragment extends Fragment
 						if (s.length == 2) {
 							mType = s[0];
 							mValue = s[1];
+						} else {
+							mType = "";
+							mValue = value;
 						}
 					}
 				}
@@ -952,7 +998,7 @@ public class WeldCountFragment extends Fragment
 				public SpotJob(Integer rowNumber, String rowString) {
 					super(JOB_SPOT, rowNumber, rowString);
 					mJobValueList = new ArrayList<>();
-					String[] s = rowString.trim().split(" ");
+					String[] s = rowString.trim().split(" +");
 					if (s.length == 2) {
 						String[] f = s[1].split(",");
 						for (String aF : f) {
@@ -970,7 +1016,7 @@ public class WeldCountFragment extends Fragment
 
 				public String getCN() {
 					for (JobValue s : mJobValueList) {
-						if (s.getType().equals("CN"))
+						if (s.equalType("CN"))
 							return s.getValue();
 					}
 					return null;
@@ -978,7 +1024,7 @@ public class WeldCountFragment extends Fragment
 
 				public void setCN(String value) {
 					for (JobValue s : mJobValueList) {
-						if (s.getType().equals("CN")) {
+						if (s.equalType("CN")) {
 							s.setValue(value);
 							Update();
 						}
@@ -987,7 +1033,7 @@ public class WeldCountFragment extends Fragment
 
 				public String getGN() {
 					for (JobValue s : mJobValueList) {
-						if (s.getType().equals("GN"))
+						if (s.equalType("GN"))
 							return s.getValue();
 					}
 					return null;
@@ -995,7 +1041,7 @@ public class WeldCountFragment extends Fragment
 
 				public String getG() {
 					for (JobValue s : mJobValueList) {
-						if (s.getType().equals("G"))
+						if (s.equalType("G"))
 							return s.getValue();
 					}
 					return null;
@@ -1003,10 +1049,51 @@ public class WeldCountFragment extends Fragment
 			}
 
 			public class MoveJob extends RowJob {
-				//			Integer step;
+				String mStep;
+				List<JobValue> mJobValueList;
+				String mParam;
+
 				public MoveJob(Integer rowNumber, String rowString) {
 					super(JOB_MOVE, rowNumber, rowString);
+					mJobValueList = new ArrayList<>();
+					String[] s = rowString.trim().split(" +");
+//					Log.d(TAG, "Move: " + rowString);
+//					Log.d(TAG, "s.Length: " + s.length);
+//					for (String ds : s) {
+//						Log.d(TAG, "s[" + ds + "]");
+//					}
+					if (s.length == 4) {
+						mStep = s[0].substring(1);
+						//Log.d(TAG,"step:" + mStep + ";");
+						String[] f = s[2].split(",");
+						for (String aF : f) {
+							mJobValueList.add(new JobValue(aF));
+						}
+						mParam = s[3].trim();
+					}
 				}
+
+				public void Update() {
+					String rs = "S" + getStep() + (getStep().length() == 1 ? "   " : "  ") + "MOVE ";
+					for (JobValue jv : mJobValueList) {
+						rs += jv.getUpdate() + ",";
+					}
+					int n = rs.lastIndexOf(',');
+					setRowString(rs.substring(0, n > 0 ? n - 1 : n) + "  " + mParam);
+				}
+
+				public String getA() {
+					for (JobValue s : mJobValueList) {
+						if (s.equalType("A")) {
+							//Log.d(TAG, "value[" + s.getValue() + "] " + getStep());
+							//if (!s.getValue().equals("0"))
+							return "S" + getStep() + ":A=" + s.getValue();
+						}
+					}
+					return null;
+				}
+
+				public String getStep() { return mStep; }
 			}
 
 			public class WaitJob extends RowJob {
@@ -1544,6 +1631,13 @@ public class WeldCountFragment extends Fragment
 				holder.tvCN.setVisibility(View.VISIBLE);
 				holder.tvCN.setText(CNString);
 			}
+			final String MoveString = jobFile.getMoveList();
+			if (MoveString == null || MoveString.isEmpty()) {
+				holder.tvMove.setVisibility(View.GONE);
+			} else {
+				holder.tvMove.setVisibility(View.VISIBLE);
+				holder.tvMove.setText(MoveString);
+			}
 			holder.mItemView.setTag(position);
 		}
 
@@ -1564,6 +1658,7 @@ public class WeldCountFragment extends Fragment
 			public TextView tvCount;
 			public TextView tvPreview;
 			public TextView tvCN;
+			public TextView tvMove;
 
 			public ViewHolder(View itemView) {
 				super(itemView);
@@ -1574,6 +1669,7 @@ public class WeldCountFragment extends Fragment
 				tvCount = (TextView) itemView.findViewById(R.id.tvCount);
 				tvPreview = (TextView) itemView.findViewById(R.id.tvPreview);
 				tvCN = (TextView) itemView.findViewById(R.id.tvCN);
+				tvMove = (TextView) itemView.findViewById(R.id.tvMove);
 			}
 		}
 	}
