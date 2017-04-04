@@ -16,8 +16,8 @@ android {
 		applicationId "com.changyoung.hi5controller"
 		minSdkVersion 19
 		targetSdkVersion 25
-		versionCode 20
-		versionName '1.1.0'
+		versionCode 21
+		versionName '1.1.1'
 	}
 	buildTypes {
 		release {
@@ -29,7 +29,7 @@ android {
 		debug {
 			applicationIdSuffix '.debug'
 			useProguard false
-			minifyEnabled true;
+			minifyEnabled true
 		}
 	}
 //	compileOptions.encoding = 'UTF-8'

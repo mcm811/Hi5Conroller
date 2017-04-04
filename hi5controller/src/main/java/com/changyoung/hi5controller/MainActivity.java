@@ -3,9 +3,11 @@ package com.changyoung.hi5controller;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -28,6 +30,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -81,12 +84,7 @@ public class MainActivity extends AppCompatActivity
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		if (toolbar != null) {
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onBackPressed();
-				}
-			});
+			toolbar.setOnClickListener(v -> onBackPressed());   // lamda()
 		}
 
 //		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -121,6 +119,16 @@ public class MainActivity extends AppCompatActivity
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		if (navigationView != null) {
 			navigationView.setNavigationItemSelectedListener(MainActivity.this);
+			try {
+				PackageInfo pi= getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+				View v = navigationView.getHeaderView(0);
+				TextView tvAppName = (TextView) v.findViewById(R.id.tvAppName);
+				String s = "HI5 용접관리" + " (v" + pi.versionName + ") ";
+				Log.d("App Name", s);
+				tvAppName.setText(s);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -136,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 		}
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 		mTabLayout.setupWithViewPager(mViewPager);
-		mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -341,7 +349,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public boolean onNavigationItemSelected(MenuItem item) {
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		mBackPressedCount = 0;
 
 		// Handle navigation view item clicks here.
@@ -405,15 +413,15 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public static class PagerAdapter extends FragmentStatePagerAdapter {
-		public final static int WORK_PATH_FRAGMENT = 0;
-		public final static int WELD_COUNT_FRAGMENT = 1;
-		public final static int WELD_CONDITION_FRAGMENT = 2;
-		public final static int NUM_OF_TABS = 3;
+		final static int WORK_PATH_FRAGMENT = 0;
+		final static int WELD_COUNT_FRAGMENT = 1;
+		final static int WELD_CONDITION_FRAGMENT = 2;
+		final static int NUM_OF_TABS = 3;
 
 		private Context mContext;
 		private Fragment[] mFragments;
 
-		public PagerAdapter(FragmentManager fm, Context context) {
+		PagerAdapter(FragmentManager fm, Context context) {
 			super(fm);
 			mContext = context;
 			mFragments = new Fragment[NUM_OF_TABS];
