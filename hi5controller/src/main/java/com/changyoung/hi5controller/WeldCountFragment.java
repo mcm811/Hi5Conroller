@@ -621,7 +621,7 @@ public class WeldCountFragment extends Fragment
 			for (Job job : jobList) {
 				String cn = job.getCN();
 				if (cn != null) {
-					if (++n > 200) {    // 200개 까지만 보여줌
+					if (++n > 500) {    // 200개 까지만 보여줌
 						sb.append("...");
 						break;
 					}
@@ -661,14 +661,13 @@ public class WeldCountFragment extends Fragment
 				if (prevJob != null && job.isSpot()) {
 					String mv = prevJob.getA();
 					if (mv != null) {
-						if (++n > 200) {    // 200개 까지만 보여줌
-							sb.append("...");
-							break;
-						}
-						if (mv.contains("A=0")) {
+//						if (mv.contains("A=0") && ++n < 100) {
+//							sb.append(mv).append(" ");
+//						} else {
+//							sb.insert(0, " ").insert(0, mv);
+//						}
+						if (!mv.contains("A=0")) {
 							sb.append(mv).append(" ");
-						} else {
-							sb.insert(0, " ").insert(0, mv);
 						}
 					}
 				}
@@ -994,11 +993,25 @@ public class WeldCountFragment extends Fragment
 
 			public class SpotJob extends RowJob {
 				List<JobValue> mJobValueList;
+				String mComment;
 
 				public SpotJob(Integer rowNumber, String rowString) {
 					super(JOB_SPOT, rowNumber, rowString);
 					mJobValueList = new ArrayList<>();
-					String[] s = rowString.trim().split(" +");
+					String rs = rowString;
+					try {
+						String[] cs = rs.trim().split("'");
+						if (cs.length == 2) {
+							rs = cs[0];
+							mComment = cs[1];
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+//					Log.d(TAG, "rs: " + rs);
+//					Log.d(TAG, "mComment: " + mComment);
+
+					String[] s = rs.trim().split(" +");
 					if (s.length == 2) {
 						String[] f = s[1].split(",");
 						for (String aF : f) {
@@ -1008,10 +1021,24 @@ public class WeldCountFragment extends Fragment
 				}
 
 				public void Update() {
-					setRowString("     SPOT "
-							+ mJobValueList.get(0).getUpdate() + ","
-							+ mJobValueList.get(1).getUpdate() + ","
-							+ mJobValueList.get(2).getUpdate());
+					String rs = "     SPOT ";
+					for (JobValue jv : mJobValueList) {
+						rs += jv.getUpdate() + ",";
+					}
+					int n = rs.lastIndexOf(',');
+					if (n != -1)
+						rs = rs.substring(0, n);
+//					Log.d(TAG, "UPDATE rs: " + rs);
+//					Log.d(TAG, "UPDATE mComment: " + mComment);
+
+					if (mComment != null && !mComment.isEmpty()) {
+						rs += " '" + mComment;
+					}
+					setRowString(rs);
+//					setRowString("     SPOT "
+//							+ mJobValueList.get(0).getUpdate() + ","
+//							+ mJobValueList.get(1).getUpdate() + ","
+//							+ mJobValueList.get(2).getUpdate());
 				}
 
 				public String getCN() {
@@ -1052,12 +1079,24 @@ public class WeldCountFragment extends Fragment
 				String mStep;
 				List<JobValue> mJobValueList;
 				String mParam;
+				String mComment;
 
 				public MoveJob(Integer rowNumber, String rowString) {
 					super(JOB_MOVE, rowNumber, rowString);
 					mJobValueList = new ArrayList<>();
-					String[] s = rowString.trim().split(" +");
 //					Log.d(TAG, "Move: " + rowString);
+					String rs = rowString;
+					try {
+						String[] cs = rs.trim().split("'");
+						if (cs.length == 2) {
+							rs = cs[0];
+							mComment = cs[1];
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					String[] s = rs.trim().split(" +");
 //					Log.d(TAG, "s.Length: " + s.length);
 //					for (String ds : s) {
 //						Log.d(TAG, "s[" + ds + "]");
@@ -1079,7 +1118,13 @@ public class WeldCountFragment extends Fragment
 						rs += jv.getUpdate() + ",";
 					}
 					int n = rs.lastIndexOf(',');
-					setRowString(rs.substring(0, n > 0 ? n - 1 : n) + "  " + mParam);
+					if (n != -1)
+						rs = rs.substring(0, n);
+					if (mParam != null && !mParam.isEmpty())
+						rs += "  " + mParam;
+					if (mComment != null && !mComment.isEmpty())
+						rs += " '" + mComment;
+					setRowString(rs);
 				}
 
 				public String getA() {
