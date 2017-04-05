@@ -36,7 +36,7 @@ import java.io.File;
  * create an instance of this fragment.
  */
 public class WorkPathFragment extends Fragment implements Refresh {
-	private static final String TAG = "WorkPathFragment";
+	private static final String TAG = "HI5:WorkPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	FileListFragment fragment;
 	private View mView;

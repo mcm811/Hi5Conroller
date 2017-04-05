@@ -93,6 +93,10 @@
 	<string name="title_selected_item">선택 항목:</string>
 	<string name="transitionNameFab">fab</string>
 	<string name="hi5_weld_management">HI5 Weld Management</string>
+	<string name="move">Move</string>
+	<string name="output_data">(Output data)</string>
+	<string name="output_type">(Output type)</string>
+	<string name="squeeze_force">(Squeeze force)</string>
 
 	<string-array name="dialog_items">
 		<item>계열 수정</item>

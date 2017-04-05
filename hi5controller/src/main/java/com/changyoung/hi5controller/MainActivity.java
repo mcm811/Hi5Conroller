@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity
 		FileListFragment.OnPathChangedListener, WorkPathFragment.OnWorkPathListener,
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
-	private final static String TAG = "MainActivity";
+	private final static String TAG = "HI5:MainActivity";
 	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
@@ -76,8 +75,9 @@ public class MainActivity extends AppCompatActivity
 			List<StorageVolume> volumes = sm.getStorageVolumes();
 			for (StorageVolume volume : volumes) {
 				if (volume.isRemovable()) {
-					Log.e("Storage", volume.toString());
-					Log.e("Dir", Environment.getExternalStorageDirectory().getPath());
+					Log.e(TAG, volume.getState());
+					Log.e(TAG, "Storage:" + volume.getDescription(getContext()));
+					Log.e(TAG, "Dir:" + Environment.getExternalStorageDirectory().getPath());
 					Intent intent = volume.createAccessIntent(null);
 //					Intent intent = volume.createAccessIntent(Environment.DIRECTORY_DOCUMENTS);
 					int request_code = 0;
@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity
 		} else {
 			Log.e(TAG, "permission has been granted");
 		}
-//		createAccessIntent();
 	}
 
 	@Override
@@ -151,14 +150,16 @@ public class MainActivity extends AppCompatActivity
 		setContentView(R.layout.activity_main);
 
 		checkPermissionExternalStorage();
+		if (BuildConfig.DEBUG)
+			createAccessIntent();
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		if (toolbar != null) {
 			toolbar.setOnClickListener(v -> onBackPressed());   // lamda()
-			Log.d("TITLE", toolbar.getTitle().toString());
+			Log.d(TAG, "TITLE:" + toolbar.getTitle().toString());
 		} else {
-			Log.d("TITLE", "toolbar is null");
+			Log.d(TAG, "TITLE:" + "toolbar is null");
 		}
 
 //		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -194,11 +195,12 @@ public class MainActivity extends AppCompatActivity
 		if (navigationView != null) {
 			navigationView.setNavigationItemSelectedListener(MainActivity.this);
 			try {
-				PackageInfo pi = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+//				PackageInfo pi = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+//				String s = "HI5 용접관리" + " (v" + pi.versionName + ") ";
+				String s = "HI5 용접관리" + " (v" + BuildConfig.VERSION_NAME + ") ";
 				View v = navigationView.getRootView();
 				TextView tvAppName = (TextView) v.findViewById(R.id.tvAppName);
-				String s = "HI5 용접관리" + " (v" + pi.versionName + ") ";
-				Log.d("App Name", s);
+				Log.d(TAG, "App Name:" + s);
 				tvAppName.setText(s);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -242,8 +244,6 @@ public class MainActivity extends AppCompatActivity
 
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
-				checkPermissionExternalStorage();
-
 				// 탭을 터치 했을때 뷰페이지 이동
 				mViewPager.setCurrentItem(tab.getPosition(), true);
 				mBackPressedCount = 0;

@@ -7,12 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -34,6 +30,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -82,7 +79,7 @@ public class WeldConditionFragment extends Fragment
 
 	private static final int MSG_REFRESH = 0;
 	private static final String ARG_WORK_PATH = "workPath";
-	private static final String TAG = "WeldConditionFragment";
+	private static final String TAG = "HI5:WeldConditionFragment";
 	private static final int[] valueMax = { 2000, 100, 350, 500, 500, 500, 500, 1000, 1000 };
 
 	private View mView;
@@ -151,6 +148,7 @@ public class WeldConditionFragment extends Fragment
 //		}
 	}
 
+	@SuppressLint("CutPasteId")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
@@ -200,7 +198,7 @@ public class WeldConditionFragment extends Fragment
 		mAdapter.onLoadInstanceState(savedInstanceState);
 		mRecyclerView.setAdapter(mAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
-				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
 		mRecyclerView.addItemDecoration(itemDecoration);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		mSqueezeForceAdapter = new WeldConditionSqueezeForceAdapter(getActivity(),
@@ -482,7 +480,7 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	public static class WeldConditionObserver extends FileObserver {
-		static final String TAG = "WeldConditionObserver";
+		static final String TAG = "HI5:WeldConditionObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
 				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
 		File file;
@@ -538,7 +536,7 @@ public class WeldConditionFragment extends Fragment
 		public static final int FIXED_TIP_CLEARANCE = 4;    // 고정극 제거율
 		public static final int PANEL_THICKNESS = 5;        // 패널 두께
 		public static final int COMMAND_OFFSET = 6;         // 명령 옵셋
-		private static final String TAG = "WeldConditionItem";
+		private static final String TAG = "HI5:WeldConditionItem";
 		private List<String> rowList;
 		private String rowString;
 
@@ -630,7 +628,7 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	public static class WeldConditionLoader extends AsyncTaskLoader<List<WeldConditionItem>> {
-		private static final String TAG = "WeldConditionLoader";
+		private static final String TAG = "HI5:WeldConditionLoader";
 
 		WeldConditionFragment.OnWorkPathListener mCallBack;
 		List<WeldConditionItem> mList;
@@ -776,6 +774,7 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
+/*
 	public static class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
 		private static final int[] ATTRS = new int[]{
@@ -855,6 +854,7 @@ public class WeldConditionFragment extends Fragment
 			}
 		}
 	}
+*/
 
 	@SuppressWarnings("unused")
 	public class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -925,6 +925,10 @@ public class WeldConditionFragment extends Fragment
 			outState.putIntegerArrayList("weld_condition_selected_items", getSelectedItems());
 		}
 
+		public List<WeldConditionItem> getData() {
+			return mDataset;
+		}
+
 		public void setData(List<WeldConditionItem> data) {
 			mDataset.clear();
 			if (data != null) {
@@ -933,10 +937,6 @@ public class WeldConditionFragment extends Fragment
 			} else {
 				mSelectedItems.clear();
 			}
-		}
-
-		public List<WeldConditionItem> getData() {
-			return mDataset;
 		}
 
 		public WeldConditionItem getItem(int index) {

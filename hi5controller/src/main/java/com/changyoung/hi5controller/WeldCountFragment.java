@@ -76,7 +76,7 @@ public class WeldCountFragment extends Fragment
 	private static final int MSG_REFRESH = 0;
 
 	private static final String ARG_WORK_PATH = "workPath";
-	private static final String TAG = "WeldCountFragment";
+	private static final String TAG = "HI5:WeldCountFragment";
 
 	private static final int ORDER_TYPE_ASCEND = 0;
 	private static final int ORDER_TYPE_DESCEND = 1;
@@ -463,7 +463,7 @@ public class WeldCountFragment extends Fragment
 	}
 
 	public static class WeldCountObserver extends FileObserver {
-		static final String TAG = "WeldCountObserver";
+		static final String TAG = "HI5:WeldCountObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
 				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
 		File file;
@@ -511,7 +511,7 @@ public class WeldCountFragment extends Fragment
 	}
 
 	public static class WeldCountFile extends File {
-		private static final String TAG = "WeldCountFile";
+		private static final String TAG = "HI5:WeldCountFile";
 		public static int VALUE_MAX = 255;
 
 		private List<Job> jobList;
@@ -703,7 +703,7 @@ public class WeldCountFragment extends Fragment
 
 		@SuppressWarnings("unused")
 		class JobInfo {
-			private static final String TAG = "JobInfo";
+			private static final String TAG = "HI5:JobInfo";
 			private Integer total;         // SPOT 의 총 카운트
 			private Integer step;          // S1 S2 S3 붙은 것들 젤 마지막 S번호 값
 			private List<Integer> gnList;  // SPOT 단어 다음에 나오는 첫번째 단어 분석 해서 종류 결정(GN1, GN2, GN3, G1, G2)
@@ -1187,7 +1187,7 @@ public class WeldCountFragment extends Fragment
 	}
 
 	public static class WeldCountLoader extends AsyncTaskLoader<List<WeldCountFile>> {
-		private static final String TAG = "WeldCountLoader";
+		private static final String TAG = "HI5:WeldCountLoader";
 
 		WeldCountFragment.OnWorkPathListener mCallBack;
 		List<WeldCountFile> mList;

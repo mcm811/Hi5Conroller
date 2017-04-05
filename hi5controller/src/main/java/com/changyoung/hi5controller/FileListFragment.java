@@ -3,10 +3,6 @@ package com.changyoung.hi5controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -47,7 +44,7 @@ public class FileListFragment extends Fragment {
 	private static final int MSG_REFRESH_DIR = 0;
 	private static final int MSG_REFRESH_PARENT_DIR = 1;
 
-	private static final String TAG = "FileListFragment";
+	private static final String TAG = "HI5:FileListFragment";
 	private static final String ARG_DIR_PATH = "dirPath";
 	public View snackbarView;
 	private View mView;
@@ -104,12 +101,12 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	public void setDirPath(String value) {
-		this.dirPath = new File(value);
-	}
-
 	public void setDirPath(File value) {
 		this.dirPath = value;
+	}
+
+	public void setDirPath(String value) {
+		this.dirPath = new File(value);
 	}
 
 	public File getDirFile() {
@@ -150,7 +147,8 @@ public class FileListFragment extends Fragment {
 		mAdapter = new FileListAdapter(getActivity(), new ArrayList<File>());
 		mRecyclerView.setAdapter(mAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
-				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+				new android.support.v7.widget.DividerItemDecoration(getContext(),
+						DividerItemDecoration.VERTICAL);
 		mRecyclerView.addItemDecoration(itemDecoration);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -287,7 +285,7 @@ public class FileListFragment extends Fragment {
 	}
 
 	public static class FileListObserver extends FileObserver {
-		static final String TAG = "FileListObserver";
+		static final String TAG = "HI5:FileListObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
 				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
 		File file;
@@ -326,6 +324,7 @@ public class FileListFragment extends Fragment {
 		}
 	}
 
+/*
 	public static class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
 		private static final int[] ATTRS = new int[]{
@@ -405,6 +404,7 @@ public class FileListFragment extends Fragment {
 			}
 		}
 	}
+*/
 
 	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		protected List<File> mDataset;

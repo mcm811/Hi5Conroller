@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class BackupActivity extends AppCompatActivity
 		implements Refresh, FileListFragment.OnPathChangedListener {
-	private final static String TAG = "BackupActivity";
+	private final static String TAG = "HI5:BackupActivity";
 	private int mBackPressedCount;
 
 	private FloatingActionButton mFab;

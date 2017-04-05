@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class SplashActivity extends Activity {
-	private final static String TAG = "SplashActivity";
+	private final static String TAG = "HI5:SplashActivity";
 
 	/*
 	private final int PERMISSION_REQUEST_STORAGE = 100;

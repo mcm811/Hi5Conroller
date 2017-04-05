@@ -6,9 +6,9 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="2dp"
+	android:background="?android:attr/selectableItemBackground"
 	android:clickable="true"
 	android:focusable="true"
-	android:background="?android:attr/selectableItemBackground"
 	android:orientation="vertical"
 	card_view:cardCornerRadius="2dp"
 	card_view:cardElevation="@dimen/cardview_default_elevation">
@@ -46,11 +46,11 @@
 			android:id="@+id/tvCount"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignParentStart="true"
+			android:layout_below="@+id/tvFileName"
 			android:text="@string/job_count"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textSize="10sp"
-			android:layout_below="@+id/tvFileName"
-			android:layout_alignParentStart="true"/>
+			android:textSize="10sp"/>
 
 		<TextView
 			android:id="@+id/tvSize"
@@ -89,7 +89,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentStart="true"
 			android:layout_below="@+id/tvCN"
-			android:text="Move"
+			android:text="@string/move"
 			android:textColor="@color/blue_A200"
 			android:textSize="10sp"/>
 	</RelativeLayout>
