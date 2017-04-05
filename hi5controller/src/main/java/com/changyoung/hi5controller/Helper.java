@@ -46,41 +46,41 @@ import java.util.Locale;
  * Created by chang on 2015-10-13.
  * changmin811@gmail.com
  */
-public class Helper {
-	public static class Pref {
-		public final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
-		public final static String STORAGE_PATH = "/storage";
-		public final static String PACKAGE_NAME = "com.changyoung.hi5controller";
-		public final static String WORK_PATH_KEY = "work_path";
-		public final static String BACKUP_PATH_KEY = "backup_path";
-		public final static String ORDER_TYPE_KEY = "order_type";
-		public final static String LAYOUT_TYPE_KEY = "layout_type";
+class Helper {
+	static class Pref {
+		final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+		final static String STORAGE_PATH = "/storage";
+		final static String PACKAGE_NAME = "com.changyoung.hi5controller";
+		final static String WORK_PATH_KEY = "work_path";
+		final static String BACKUP_PATH_KEY = "backup_path";
+		final static String ORDER_TYPE_KEY = "order_type";
+		final static String LAYOUT_TYPE_KEY = "layout_type";
 
-		public static String getWorkPath(Context context) {
+		static String getWorkPath(Context context) {
 			return getPath(context, WORK_PATH_KEY);
 		}
 
-		public static void setWorkPath(Context context, String value) {
+		static void setWorkPath(Context context, String value) {
 			setPath(context, WORK_PATH_KEY, value);
 		}
 
-		public static String getBackupPath(Context context) {
+		static String getBackupPath(Context context) {
 			return getWorkPath(context) + "/Backup";
 		}
 
-		public static void setBackupPath(Context context, String value) {
+		static void setBackupPath(Context context, String value) {
 			setPath(context, BACKUP_PATH_KEY, value);
 		}
 
-		public static String getPath(Context context, String key) {
+		static String getPath(Context context, String key) {
 			return getString(context, key, EXTERNAL_STORAGE_PATH);
 		}
 
-		public static void setPath(Context context, String key, String value) {
+		static void setPath(Context context, String key, String value) {
 			putString(context, key, value);
 		}
 
-		public static String getString(Context context, String key, String defValue) {
+		static String getString(Context context, String key, String defValue) {
 			try {
 				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 				return prefs.getString(key, defValue);
@@ -90,7 +90,7 @@ public class Helper {
 			}
 		}
 
-		public static void putString(Context context, String key, String value) {
+		static void putString(Context context, String key, String value) {
 			try {
 				if (key != null && value != null) {
 					SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
@@ -103,7 +103,7 @@ public class Helper {
 			}
 		}
 
-		public static int getInt(Context context, String key, int defValue) {
+		static int getInt(Context context, String key, int defValue) {
 			try {
 				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 				return prefs.getInt(key, defValue);
@@ -113,7 +113,7 @@ public class Helper {
 			}
 		}
 
-		public static void putInt(Context context, String key, int value) {
+		static void putInt(Context context, String key, int value) {
 			try {
 				if (key != null) {
 					SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
@@ -128,7 +128,7 @@ public class Helper {
 	}
 
 	public static class TimeHelper {
-		public static String getLasModified(File file) {
+		static String getLasModified(File file) {
 			return getTimeString("yyyy-MM-dd a hh-mm-ss", file.lastModified());
 		}
 
@@ -137,7 +137,7 @@ public class Helper {
 			return getTimeString(format, file.lastModified());
 		}
 
-		public static String getTimeString(String format, long time) {
+		static String getTimeString(String format, long time) {
 			return new SimpleDateFormat(format, Locale.KOREA).format(new Date(time));
 		}
 	}
@@ -145,7 +145,7 @@ public class Helper {
 	public static class FileHelper {
 		private final static String TAG = "FileHelper";
 
-		public static String readFileString(String path) {
+		static String readFileString(String path) {
 			StringBuilder sb = new StringBuilder();
 			try {
 				FileInputStream fileInputStream = new FileInputStream(path);
@@ -174,7 +174,7 @@ public class Helper {
 			delete(new File(path), recursive);
 		}
 
-		public static void delete(File dir, boolean recursive) {
+		static void delete(File dir, boolean recursive) {
 			if (dir.isDirectory() && recursive) {
 				for (File file : dir.listFiles()) {
 					delete(file, true);
@@ -190,7 +190,7 @@ public class Helper {
 			copy(new File(sourcePath), new File(destPath), recursive);
 		}
 
-		public static void copy(File source, File dest, boolean recursive) throws IOException {
+		static void copy(File source, File dest, boolean recursive) throws IOException {
 			if (source.isFile()) {
 				if (!dest.exists() && !dest.mkdirs())
 					return;
@@ -222,7 +222,7 @@ public class Helper {
 			}
 		}
 
-		public static String backup(Context context, View view) {
+		static String backup(Context context, View view) {
 			String ret = null;
 			boolean sourceChecked = false;
 			try {
@@ -268,7 +268,7 @@ public class Helper {
 	}
 
 	public static class UiHelper {
-		public static void textViewActivity(Activity context, String title, String text) {
+		static void textViewActivity(Activity context, String title, String text) {
 			Intent intent = new Intent(context, TextScrollingActivity.class);
 			intent.putExtra("title", title);
 			intent.putExtra("text", text);
@@ -303,7 +303,7 @@ public class Helper {
 			builder.show();
 		}
 
-		public static void adMobExitDialog(final Activity context) {
+		static void adMobExitDialog(final Activity context) {
 			AdView adView = new AdView(context);
 			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
 			adView.setScaleX(0.95f);
@@ -351,7 +351,7 @@ public class Helper {
 			return getCenterTranslateAnimation(parentView, view, 1.0f);
 		}
 
-		public static TranslateAnimation getCenterTranslateAnimation(View parentView, View view, float scale) {
+		static TranslateAnimation getCenterTranslateAnimation(View parentView, View view, float scale) {
 			float fromX = view.getX();
 			float toX = (parentView.getWidth() - view.getWidth()) / 2f - fromX;
 			float fromY = view.getY();
@@ -371,7 +371,7 @@ public class Helper {
 				view.clearFocus();
 		}
 
-		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
+		static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
 			if (event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
 				final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 				if (view == null)
@@ -422,13 +422,13 @@ public class Helper {
 		@SuppressWarnings("unused")
 		private Handler handler;
 
-		public AsyncTaskFileDialog(Context context, View view, String msg) {
+		AsyncTaskFileDialog(Context context, View view, String msg) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;
 		}
 
-		public AsyncTaskFileDialog(Context context, View view, String msg, Handler handler) {
+		AsyncTaskFileDialog(Context context, View view, String msg, Handler handler) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;
@@ -505,6 +505,7 @@ public class Helper {
 						String.format("%s %s 중", file.getName(), msg));
 				//noinspection ResultOfMethodCallIgnored
 				file.delete();
+//				DocumentsContract.deleteDocument(context.getContentResolver(), file.toURI());
 				if (deleteListSize < 20) {
 					try {
 						Thread.sleep(sleepTime);

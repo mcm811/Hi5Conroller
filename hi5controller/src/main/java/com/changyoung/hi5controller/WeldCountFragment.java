@@ -45,7 +45,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -567,13 +566,25 @@ public class WeldCountFragment extends Fragment
 			return items;
 		}
 
-		public void saveFile() {
+		void saveFile() {
 			jobInfo = saveFile(getPath(), jobList);
 		}
 
 		private JobInfo saveFile(String fileName, List<Job> items) {
+/*
+			String state = Environment.getExternalStorageState();
+			if (Environment.MEDIA_MOUNTED.equals(state)) {
+				Log.e("ExtStorage", "Writable");
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			}
+			if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+				Log.e("ExtStorage", "Read only");
+			}
+*/
+
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+				Log.e(TAG, fileName);
+				FileOutputStream fileOutputStream = new FileOutputStream(fileName, false);
 				OutputStreamWriter outputStreamReader = new OutputStreamWriter(fileOutputStream, "EUC-KR");
 				BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
 
@@ -913,14 +924,14 @@ public class WeldCountFragment extends Fragment
 					return mType;
 				}
 
+				public void setType(String type) {
+					this.mType = type;
+				}
+
 				public boolean equalType(String s) {
 					if (mType == null || s == null)
 						return false;
 					return mType.equals(s);
-				}
-
-				public void setType(String type) {
-					this.mType = type;
 				}
 
 				public String getUpdate() {
@@ -1138,7 +1149,9 @@ public class WeldCountFragment extends Fragment
 					return null;
 				}
 
-				public String getStep() { return mStep; }
+				public String getStep() {
+					return mStep;
+				}
 			}
 
 			public class WaitJob extends RowJob {

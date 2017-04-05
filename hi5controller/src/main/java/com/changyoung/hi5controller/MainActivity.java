@@ -1,18 +1,25 @@
 package com.changyoung.hi5controller;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PersistableBundle;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -31,8 +38,12 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
+
+import static android.os.Build.VERSION_CODES.M;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener,
@@ -40,11 +51,10 @@ public class MainActivity extends AppCompatActivity
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
 	private final static String TAG = "MainActivity";
-
+	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
 	private DrawerLayout mDrawer;
-
 	private int mBackPressedCount;
 
 	MainActivity getContext() {
@@ -56,6 +66,65 @@ public class MainActivity extends AppCompatActivity
 			Log.d(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@TargetApi(25)
+	private void createAccessIntent() {
+		try {
+			StorageManager sm = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
+			List<StorageVolume> volumes = sm.getStorageVolumes();
+			for (StorageVolume volume : volumes) {
+				if (volume.isRemovable()) {
+					Log.e("Storage", volume.toString());
+					Log.e("Dir", Environment.getExternalStorageDirectory().getPath());
+					Intent intent = volume.createAccessIntent(null);
+//					Intent intent = volume.createAccessIntent(Environment.DIRECTORY_DOCUMENTS);
+					int request_code = 0;
+					startActivityForResult(intent, request_code);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@TargetApi(M)
+	private void checkPermissionExternalStorage() {
+		int writeExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		int readExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+		Log.e(TAG, "WRITE_EXTERNAL_STORAGE : " + writeExtPerm);
+		Log.e(TAG, "READ_EXTERNAL_STORAGE : " + readExtPerm);
+
+		if (writeExtPerm != PackageManager.PERMISSION_GRANTED || readExtPerm != PackageManager.PERMISSION_GRANTED) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+				Toast.makeText(this, "Read/Write external storage", Toast.LENGTH_SHORT).show();
+			}
+			ActivityCompat.requestPermissions(this,
+					new String[]{
+							Manifest.permission.READ_EXTERNAL_STORAGE,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE
+					},
+					PERMISSION_REQUEST_EXTERNAL_STORAGE);
+		} else {
+			Log.e(TAG, "permission has been granted");
+		}
+//		createAccessIntent();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case PERMISSION_REQUEST_EXTERNAL_STORAGE:
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED
+						&& grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+					Log.e(TAG, "Permission granted");
+				} else {
+					Log.e(TAG, "Permission always deny");
+				}
+				break;
 		}
 	}
 
@@ -81,10 +150,15 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		checkPermissionExternalStorage();
+
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		if (toolbar != null) {
 			toolbar.setOnClickListener(v -> onBackPressed());   // lamda()
+			Log.d("TITLE", toolbar.getTitle().toString());
+		} else {
+			Log.d("TITLE", "toolbar is null");
 		}
 
 //		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -120,8 +194,8 @@ public class MainActivity extends AppCompatActivity
 		if (navigationView != null) {
 			navigationView.setNavigationItemSelectedListener(MainActivity.this);
 			try {
-				PackageInfo pi= getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
-				View v = navigationView.getHeaderView(0);
+				PackageInfo pi = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+				View v = navigationView.getRootView();
 				TextView tvAppName = (TextView) v.findViewById(R.id.tvAppName);
 				String s = "HI5 용접관리" + " (v" + pi.versionName + ") ";
 				Log.d("App Name", s);
@@ -168,6 +242,8 @@ public class MainActivity extends AppCompatActivity
 
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
+				checkPermissionExternalStorage();
+
 				// 탭을 터치 했을때 뷰페이지 이동
 				mViewPager.setCurrentItem(tab.getPosition(), true);
 				mBackPressedCount = 0;
