@@ -9,7 +9,8 @@ import android.view.animation.Transformation;
  * Created by changmin on 2015. 11. 2..
  * changmin811@gmila.com
  */
-public class Rotate3dAnimation extends Animation {
+@SuppressWarnings("unused")
+class Rotate3dAnimation extends Animation {
 	private final float mFromDegrees;
 	private final float mToDegrees;
 	private final float mPivotX;

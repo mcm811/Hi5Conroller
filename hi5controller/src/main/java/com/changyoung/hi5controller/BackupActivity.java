@@ -37,11 +37,11 @@ public class BackupActivity extends AppCompatActivity
 		}
 	}
 
-	BackupActivity getContext() {
+	private BackupActivity getContext() {
 		return this;
 	}
 
-	BackupActivity getActivity() {
+	private BackupActivity getActivity() {
 		return this;
 	}
 
@@ -274,7 +274,7 @@ public class BackupActivity extends AppCompatActivity
 		return ret;
 	}
 
-	public void backup() {
+	private void backup() {
 		String ret = Helper.FileHelper.backup(getContext(), findViewById(R.id.coordinator_layout));
 		if (ret == null)
 			refresh(Helper.Pref.getBackupPath(getContext()));

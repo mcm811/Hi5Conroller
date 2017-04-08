@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:local="http://schemas.android.com/apk/res-auto">
+      xmlns:local="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:ignore="UnusedResources">
 
 	<item
 		android:id="@+id/toolbar_backup_path_menu_backup"
 		android:icon="@drawable/ic_archive_white"
 		android:orderInCategory="100"
 		android:title="@string/action_backup"
-		local:showAsAction="always"/>
+		local:showAsAction="always"
+		tools:ignore="AlwaysShowAction"/>
 
 	<item
 		android:id="@+id/toolbar_backup_path_menu_home"
 		android:icon="@drawable/ic_home_white"
 		android:orderInCategory="101"
 		android:title="@string/nav_home"
-		local:showAsAction="always"/>
+		local:showAsAction="always"
+		tools:ignore="AlwaysShowAction"/>
 
 </menu>

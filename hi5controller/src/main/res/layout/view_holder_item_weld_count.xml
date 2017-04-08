@@ -3,6 +3,7 @@
 	android:id="@+id/cardlist_item"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:card_view="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="2dp"
@@ -40,7 +41,8 @@
 			android:layout_below="@+id/tvMove"
 			android:text="@string/preview"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textSize="10sp"/>
+			android:textSize="10sp"
+			tools:ignore="SmallSp"/>
 
 		<TextView
 			android:id="@+id/tvCount"
@@ -50,7 +52,8 @@
 			android:layout_below="@+id/tvFileName"
 			android:text="@string/job_count"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textSize="10sp"/>
+			android:textSize="10sp"
+			tools:ignore="SmallSp"/>
 
 		<TextView
 			android:id="@+id/tvSize"
@@ -60,7 +63,8 @@
 			android:layout_alignTop="@+id/tvTime"
 			android:text="@string/file_size"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textSize="8sp"/>
+			android:textSize="8sp"
+			tools:ignore="SmallSp"/>
 
 		<TextView
 			android:id="@+id/tvTime"
@@ -70,7 +74,8 @@
 			android:layout_below="@+id/tvPreview"
 			android:text="@string/file_time"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textSize="8sp"/>
+			android:textSize="8sp"
+			tools:ignore="SmallSp"/>
 
 		<TextView
 			android:id="@+id/tvCN"
@@ -81,7 +86,8 @@
 			android:text="@string/cn_strings"
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textColor="@color/pink_A200"
-			android:textSize="10sp"/>
+			android:textSize="10sp"
+			tools:ignore="SmallSp"/>
 
 		<TextView
 			android:id="@+id/tvMove"
@@ -91,6 +97,7 @@
 			android:layout_below="@+id/tvCN"
 			android:text="@string/move"
 			android:textColor="@color/blue_A200"
-			android:textSize="10sp"/>
+			android:textSize="10sp"
+			tools:ignore="SmallSp"/>
 	</RelativeLayout>
 </android.support.v7.widget.CardView>

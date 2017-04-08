@@ -7,7 +7,8 @@ import android.view.View;
  * changmin811@gmail.com
  */
 
-public interface Refresh {
+@SuppressWarnings("unused")
+interface Refresh {
 	void refresh(boolean forced);
 
 	boolean refresh(String path);

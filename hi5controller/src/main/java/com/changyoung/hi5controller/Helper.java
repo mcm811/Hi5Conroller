@@ -71,7 +71,7 @@ class Helper {
 			setPath(context, BACKUP_PATH_KEY, value);
 		}
 
-		static String getPath(Context context, String key) {
+		static String getPath(Context context, @SuppressWarnings("SameParameterValue") String key) {
 			return getString(context, key, EXTERNAL_STORAGE_PATH);
 		}
 
@@ -79,7 +79,7 @@ class Helper {
 			putString(context, key, value);
 		}
 
-		static String getString(Context context, String key, String defValue) {
+		static String getString(Context context, String key, @SuppressWarnings("SameParameterValue") String defValue) {
 			try {
 				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 				return prefs.getString(key, defValue);
@@ -141,6 +141,7 @@ class Helper {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static class FileHelper {
 		private final static String TAG = "FileHelper";
 
@@ -316,8 +317,7 @@ class Helper {
 			tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
 			tvMessage.setTypeface(Typeface.DEFAULT_BOLD);
 			tvMessage.setPadding(40, 10, 40, 0);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-				tvMessage.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+			tvMessage.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
 			tvMessage.setText("종료 하시겠습니까?");
 
 			LinearLayout linearLayout = new LinearLayout(context);
@@ -403,10 +403,10 @@ class Helper {
 		private static final int MSG_REFRESH_PARENT_DIR = 1;
 
 		private final static long BASE_SLEEP_TIME = 250;
+		private final Context mContext;
+		private final View view;
+		private final String msg;
 		private ProgressDialog progressDialog;
-		private Context mContext;
-		private View view;
-		private String msg;
 		@SuppressWarnings("unused")
 		private Handler handler;
 
@@ -416,7 +416,7 @@ class Helper {
 			this.msg = msg;
 		}
 
-		AsyncTaskFileDialog(Context context, View view, String msg, Handler handler) {
+		AsyncTaskFileDialog(Context context, View view, @SuppressWarnings("SameParameterValue") String msg, Handler handler) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;

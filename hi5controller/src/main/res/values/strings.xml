@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 	<string name="app_name">HI5 용접 관리</string>
 
 	<string name="main_activity_exit_format">"%s번 더 누르면 종료 됩니다"</string>
@@ -7,9 +7,9 @@
 
 	<string name="action_settings">설정</string>
 	<string name="action_backup">백업 / 복원</string>
-	<string name="action_restore">복원</string>
-	<string name="action_exit">종료</string>
-	<string name="action_done">완료</string>
+	<string name="action_restore" tools:ignore="UnusedResources">복원</string>
+	<string name="action_exit" tools:ignore="UnusedResources">종료</string>
+	<string name="action_done" tools:ignore="UnusedResources">완료</string>
 
 	<string name="OutputData">출력</string>
 	<string name="OutputType">종류</string>
@@ -28,26 +28,26 @@
 	<string name="Editor_CommandOffset">명령 옵셋</string>
 	<string name="Editor_BeginNumber">시작 번호</string>
 
-	<string name="no_files_or_directories">No files or directories</string>
-	<string name="wcd_edit">선택 항목 수정</string>
-	<string name="wcd_ok">확인</string>
-	<string name="Load">읽기</string>
-	<string name="Settings">설정</string>
-	<string name="Backup">백업</string>
-	<string name="Share">공유</string>
-	<string name="Save">저장</string>
-	<string name="Exit">종료</string>
+	<string name="no_files_or_directories" tools:ignore="UnusedResources">No files or directories</string>
+	<string name="wcd_edit" tools:ignore="UnusedResources">선택 항목 수정</string>
+	<string name="wcd_ok" tools:ignore="UnusedResources">확인</string>
+	<string name="Load" tools:ignore="UnusedResources">읽기</string>
+	<string name="Settings" tools:ignore="UnusedResources">설정</string>
+	<string name="Backup" tools:ignore="UnusedResources">백업</string>
+	<string name="Share" tools:ignore="UnusedResources">공유</string>
+	<string name="Save" tools:ignore="UnusedResources">저장</string>
+	<string name="Exit" tools:ignore="UnusedResources">종료</string>
 	<string name="WorkPath">작업 경로</string>
 	<string name="BackupPath">백업 경로</string>
-	<string name="Read">읽기</string>
-	<string name="View">보기</string>
-	<string name="Edit">수정</string>
+	<string name="Read" tools:ignore="UnusedResources">읽기</string>
+	<string name="View" tools:ignore="UnusedResources">보기</string>
+	<string name="Edit" tools:ignore="UnusedResources">수정</string>
 
 	<string name="work_path_fragment">작업 경로</string>
 	<string name="weld_count_fragment">용접 카운트</string>
 	<string name="weld_condition_fragment">용접 조건</string>
-	<string name="backup_path_fragment">백업</string>
-	<string name="text_view_fragment">파일 보기</string>
+	<string name="backup_path_fragment" tools:ignore="UnusedResources">백업</string>
+	<string name="text_view_fragment" tools:ignore="UnusedResources">파일 보기</string>
 
 	<string name="nav_weld_count">용접 카운트</string>
 	<string name="nav_weld_condition">용접 조건</string>
@@ -59,9 +59,9 @@
 	<string name="nav_app_exit">앱</string>
 	<string name="nav_exit">종료</string>
 	<string name="nav_backup">@string/action_backup</string>
-	<string name="nav_restore">복원</string>
-	<string name="nav_home">홈</string>
-	<string name="nav_up">위로</string>
+	<string name="nav_restore" tools:ignore="UnusedResources">복원</string>
+	<string name="nav_home" tools:ignore="UnusedResources">홈</string>
+	<string name="nav_up" tools:ignore="UnusedResources">위로</string>
 	<string name="nav_done">완료</string>
 
 	<!-- WeldConditionFragment -->
@@ -76,7 +76,7 @@
 	<!- -->
 	<string name="banner_ad_unit_id_debug">ca-app-pub-3940256099942544/6300978111</string>
 	<string name="banner_ad_unit_id_release">ca-app-pub-4103700007170181/6544598462</string>
-	<string name="banner_ad_unit_id">@string/banner_ad_unit_id_debug</string>
+	<string name="banner_ad_unit_id" tools:ignore="UnusedResources">@string/banner_ad_unit_id_debug</string>
 	<string name="setup_work_path">작업 경로를 설정 하십시오</string>
 	<string name="changyoung_robot">Changyoung robot</string>
 	<string name="file_name">file name</string>

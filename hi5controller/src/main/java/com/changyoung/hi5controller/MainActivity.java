@@ -60,10 +60,11 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-	MainActivity getContext() {
+	private MainActivity getContext() {
 		return this;
 	}
 
+	@SuppressWarnings("EmptyMethod")
 	@TargetApi(25)
 	private void createAccessIntent() {
 /*
@@ -222,8 +223,8 @@ public class MainActivity extends AppCompatActivity
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 		mTabLayout.setupWithViewPager(mViewPager);
 		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-			CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			final CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 			int toolBarLayoutColorId = R.color.tab1_tablayout_background;
 			int toolBarColorId = R.color.tab1_actionbar_background;
@@ -336,9 +337,8 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-	public boolean onExitDialog() {
+	private void onExitDialog() {
 		Helper.UiHelper.adMobExitDialog(this);
-		return true;
 		//super.onBackPressed();
 	}
 
@@ -496,8 +496,8 @@ public class MainActivity extends AppCompatActivity
 		final static int WELD_CONDITION_FRAGMENT = 2;
 		final static int NUM_OF_TABS = 3;
 
-		private Context mContext;
-		private Fragment[] mFragments;
+		private final Context mContext;
+		private final Fragment[] mFragments;
 
 		PagerAdapter(FragmentManager fm, Context context) {
 			super(fm);

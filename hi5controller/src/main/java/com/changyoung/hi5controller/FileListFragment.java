@@ -100,12 +100,12 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	public void setDirPath(String value) {
-		this.dirPath = new File(value);
+	private void setDirPath(File value) {
+		this.dirPath = value;
 	}
 
-	public void setDirPath(File value) {
-		this.dirPath = value;
+	private void setDirPath(String value) {
+		this.dirPath = new File(value);
 	}
 
 	public File getDirFile() {
@@ -157,9 +157,9 @@ public class FileListFragment extends Fragment {
 		return refreshFilesList(dirPath.getParent());
 	}
 
-	public String refreshFilesList() {
+	public void refreshFilesList() {
 		final File file = null;
-		return refreshFilesList(file);
+		refreshFilesList(file);
 	}
 
 	public String refreshFilesList(String path) {
@@ -230,7 +230,7 @@ public class FileListFragment extends Fragment {
 		refreshFilesList(getDirPath());
 	}
 
-	public void onDirPathChanged(File path) {
+	private void onDirPathChanged(File path) {
 		if (mListener != null) {
 			mListener.onPathChanged(path);
 		}
@@ -278,12 +278,14 @@ public class FileListFragment extends Fragment {
 		void onPathChanged(File path);
 	}
 
+	@SuppressWarnings("unused")
 	public static class FileListObserver extends FileObserver {
+		@SuppressWarnings("unused")
 		static final String TAG = "HI5:FileListObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
 				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
-		File file;
-		private Handler handler;
+		final File file;
+		private final Handler handler;
 
 		public FileListObserver(File file, Handler handler) {
 			super(file.getPath(), mask);
@@ -400,11 +402,12 @@ public class FileListFragment extends Fragment {
 	}
 */
 
+	@SuppressWarnings("unused")
 	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		protected List<File> mDataset;
-		protected Context mContext;
+		final List<File> mDataset;
 		@SuppressWarnings("unused")
 		protected Activity mActivity;
+		Context mContext;
 
 		public FileListAdapter(Activity activity, List<File> dataset) {
 			mActivity = activity;
@@ -419,14 +422,16 @@ public class FileListFragment extends Fragment {
 			mDataset.add(item);
 		}
 
-		public void insert(File item, int index) {
+		public void insert(File item, @SuppressWarnings("SameParameterValue") int index) {
 			mDataset.add(index, item);
 		}
 
 		public void sort(Comparator<File> comparator) {
+			//noinspection Java8ListSort
 			Collections.sort(mDataset, comparator);
 		}
 
+		@SuppressWarnings("unused")
 		public void setData(List<File> data) {
 			mDataset.clear();
 			mDataset.addAll(data);
@@ -535,11 +540,11 @@ public class FileListFragment extends Fragment {
 		}
 
 		public class ViewHolder extends RecyclerView.ViewHolder {
-			public View mItemView;
-			public TextView mFileTimeTextView;
-			public TextView mFileNameTextView;
-			public ImageView mFileImageView;
-			public FloatingActionButton mFileFab;
+			public final View mItemView;
+			public final TextView mFileTimeTextView;
+			public final TextView mFileNameTextView;
+			public final ImageView mFileImageView;
+			public final FloatingActionButton mFileFab;
 
 			public ViewHolder(View itemView) {
 				super(itemView);

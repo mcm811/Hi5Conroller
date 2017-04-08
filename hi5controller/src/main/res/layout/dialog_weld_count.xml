@@ -2,12 +2,14 @@
 <LinearLayout
 	android:id="@+id/linearLayout_WeldCount"
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:focusable="true"
 	android:focusableInTouchMode="true"
 	android:orientation="vertical"
-	android:padding="2dp">
+	android:padding="2dp"
+	tools:ignore="UnusedResources">
 
 	<TextView
 		android:id="@+id/statusText"
@@ -46,11 +48,11 @@
 		android:id="@+id/recycler_view"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
-		android:layout_weight="1"
 		android:layout_marginBottom="10sp"
+		android:layout_marginTop="10sp"
+		android:layout_weight="1"
 		android:paddingEnd="25dp"
-		android:paddingStart="25dp"
-		android:layout_marginTop="10sp"/>
+		android:paddingStart="25dp"/>
 
 	<SeekBar
 		android:id="@+id/sampleSeekBar"

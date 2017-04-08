@@ -40,6 +40,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -401,7 +402,7 @@ public class WeldConditionFragment extends Fragment
 		mFab.postDelayed(() -> mFab.startAnimation(animation), fabDelay);
 	}
 
-	public String onGetWorkPath() {
+	private String onGetWorkPath() {
 		if (mListener != null) {
 			return mListener.onGetWorkPath() + "/ROBOT.SWD";
 		}
@@ -410,13 +411,13 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public Loader<List<WeldConditionItem>> onCreateLoader(int id, Bundle args) {
-		logD(String.format("ID_%d onCreateLoader()", id));
+		logD(String.format(Locale.KOREA, "ID_%d onCreateLoader()", id));
 		return new WeldConditionLoader(getActivity(), mListener);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<List<WeldConditionItem>> loader, List<WeldConditionItem> data) {
-		logD(String.format("id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
+		logD(String.format(Locale.KOREA, "id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
 		mAdapter.setData(data);
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
@@ -436,7 +437,7 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public void onLoaderReset(Loader<List<WeldConditionItem>> loader) {
-		logD(String.format("ID_%d onLoaderReset()", loader.getId()));
+		logD(String.format(Locale.KOREA, "ID_%d onLoaderReset()", loader.getId()));
 		mAdapter.setData(null);
 	}
 
@@ -454,12 +455,13 @@ public class WeldConditionFragment extends Fragment
 		String onGetWorkPath();
 	}
 
+	@SuppressWarnings("unused")
 	public static class WeldConditionObserver extends FileObserver {
 		static final String TAG = "HI5:WeldConditionObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
 				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
-		File file;
-		private Handler handler;
+		final File file;
+		private final Handler handler;
 
 		@SuppressWarnings("unused")
 		public WeldConditionObserver(File file, Handler handler) {
@@ -478,19 +480,19 @@ public class WeldConditionFragment extends Fragment
 
 		public void onEvent(int event, String path) {
 			if ((event & CREATE) == CREATE)
-				logD(String.format("CREATE: %s/%s", file.getPath(), path));
+				logD(String.format(Locale.KOREA, "CREATE: %s/%s", file.getPath(), path));
 			else if ((event & DELETE) == DELETE)
-				logD(String.format("DELETE: %s/%s", file.getPath(), path));
+				logD(String.format(Locale.KOREA, "DELETE: %s/%s", file.getPath(), path));
 			else if ((event & DELETE_SELF) == DELETE_SELF)
-				logD(String.format("DELETE_SELF: %s/%s", file.getPath(), path));
+				logD(String.format(Locale.KOREA, "DELETE_SELF: %s/%s", file.getPath(), path));
 			else if ((event & MOVED_FROM) == MOVED_FROM)
-				logD(String.format("MOVED_FROM: %s/%s", file.getPath(), path));
+				logD(String.format(Locale.KOREA, "MOVED_FROM: %s/%s", file.getPath(), path));
 			else if ((event & MOVED_TO) == MOVED_TO)
-				logD(String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
+				logD(String.format(Locale.KOREA, "MOVED_TO: %s", path == null ? file.getPath() : path));
 			else if ((event & MOVE_SELF) == MOVE_SELF)
-				logD(String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
+				logD(String.format(Locale.KOREA, "MOVE_SELF: %s", path == null ? file.getPath() : path));
 			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
-				logD(String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
+				logD(String.format(Locale.KOREA, "CLOSE_WRITE: %s", path == null ? file.getPath() : path));
 			else
 				return;
 
@@ -536,8 +538,8 @@ public class WeldConditionFragment extends Fragment
 			return ret;
 		}
 
-		public String set(int index, String object) {
-			return rowList.set(index, object);
+		public void set(int index, String object) {
+			rowList.set(index, object);
 		}
 
 		public Integer size() {
@@ -602,10 +604,11 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static class WeldConditionLoader extends AsyncTaskLoader<List<WeldConditionItem>> {
 		private static final String TAG = "HI5:WeldConditionLoader";
 
-		WeldConditionFragment.OnWorkPathListener mCallBack;
+		final WeldConditionFragment.OnWorkPathListener mCallBack;
 		List<WeldConditionItem> mList;
 		WeldConditionReceiver mReceiver;
 
@@ -672,7 +675,7 @@ public class WeldConditionFragment extends Fragment
 				logD("deliverResult() mList.size: " + mList.size());
 		}
 
-		protected void onReleaseResources(List<WeldConditionItem> data) {
+		void onReleaseResources(List<WeldConditionItem> data) {
 			// For a simple List<> there is nothing to do.  For something
 			// like a Cursor, we would close it here.
 			if (data != null) {
@@ -920,7 +923,7 @@ public class WeldConditionFragment extends Fragment
 			return mDataset.get(index);
 		}
 
-		String update(String path) {
+		void update(String path) {
 			String ret;
 			StringBuilder sb = new StringBuilder();
 			File file = new File(path);
@@ -973,8 +976,7 @@ public class WeldConditionFragment extends Fragment
 				ret = "저장 실패" + file.getName();
 			}
 			observer.startWatching();
-
-			return ret;
+			logD(ret);
 		}
 
 		@SuppressWarnings("UnusedParameters")
@@ -1002,8 +1004,7 @@ public class WeldConditionFragment extends Fragment
 			if (checkedPositions.size() == 0)
 				mLastPosition = position;
 
-			@SuppressLint("InflateParams")
-			final View dialogView = LayoutInflater.from(getContext())
+			@SuppressLint("InflateParams")            final View dialogView = LayoutInflater.from(getContext())
 					.inflate(R.layout.dialog_weld_condition_editor, null);
 			final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 			dialogBuilder.setView(dialogView);
@@ -1013,8 +1014,7 @@ public class WeldConditionFragment extends Fragment
 			textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
 			textViewTitle.setTypeface(Typeface.DEFAULT_BOLD);
 			textViewTitle.setPadding(20, 10, 20, 10);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-				textViewTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+			textViewTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 			textViewTitle.setText("용접 조건 수정");
 			dialogBuilder.setCustomTitle(textViewTitle);
 
@@ -1080,13 +1080,13 @@ public class WeldConditionFragment extends Fragment
 											Integer.parseInt(editText.getText().toString());
 									if (etNumber > valueMax[finalIndex])
 										etNumber = valueMax[finalIndex];
-									editText.setText(String.format("%d", etNumber));
+									editText.setText(String.format(Locale.KOREA, "%d", etNumber));
 								} else {
 									Float etNumber =
 											Float.parseFloat(editText.getText().toString());
 									if (etNumber > (float) valueMax[finalIndex])
 										etNumber = (float) valueMax[finalIndex];
-									editText.setText(String.format("%.1f", etNumber));
+									editText.setText(String.format(Locale.KOREA, "%.1f", etNumber));
 								}
 							} catch (NumberFormatException e) {
 								logD(e.getLocalizedMessage());
@@ -1148,7 +1148,7 @@ public class WeldConditionFragment extends Fragment
 						}
 						if (checkedPositions.size() == 0) {
 							mLastPosition = progress;
-							statusText.setText(String.format("%s %d", dialog_title1, mLastPosition + 1));
+							statusText.setText(String.format(Locale.KOREA, "%s %d", dialog_title1, mLastPosition + 1));
 						}
 					}
 				}
@@ -1299,11 +1299,18 @@ public class WeldConditionFragment extends Fragment
 			});
 
 			AlertDialog alertDialog = dialogBuilder.create();
-			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-			alertDialog.setCanceledOnTouchOutside(false);
-			alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
-			alertDialog.show();
+			try {
+				Window window = alertDialog.getWindow();
+				if (window != null) {
+					window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+							| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+					window.getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+				}
+				alertDialog.setCanceledOnTouchOutside(false);
+				alertDialog.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			final String ttsMsg = getContext().getString(R.string.tts_squeeze_force_value);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1418,7 +1425,7 @@ public class WeldConditionFragment extends Fragment
 						Integer squeezeForce = Integer.parseInt(editTextString);
 						if (squeezeForce > valueMax[WeldConditionItem.SQUEEZE_FORCE])
 							squeezeForce = valueMax[WeldConditionItem.SQUEEZE_FORCE];
-						final String squeezeForceString = String.format("%d", squeezeForce);
+						final String squeezeForceString = String.format(Locale.KOREA, "%d", squeezeForce);
 						if (!squeezeForceString.equals(editText1.getText().toString()))
 							editText1.setText(squeezeForceString);
 						if (!item.get(WeldConditionItem.SQUEEZE_FORCE).equals(squeezeForceString)) {
@@ -1432,7 +1439,7 @@ public class WeldConditionFragment extends Fragment
 							if (!mLayoutManager.isSmoothScrolling()) {
 								final int scrollPosition = holder.getLayoutPosition() + 1;
 								if (scrollPosition != 0) {
-//											Log.i("onFocusChange", String.format("scrollTo: %d", scrollPosition));
+//											Log.i("onFocusChange", String.format(Locale.KOREA, "scrollTo: %d", scrollPosition));
 									mRecyclerView.scrollToPosition(scrollPosition);
 								}
 							}
@@ -1448,7 +1455,7 @@ public class WeldConditionFragment extends Fragment
 //					Log.i("onEditorAction", "actionId: " + String.valueOf(actionId));
 				if (actionId == 5) {
 					final int scrollPosition = holder.getLayoutPosition() + 2;
-//						Log.i("onEditorAction", String.format("scrollTo: %d", scrollPosition));
+//						Log.i("onEditorAction", String.format(Locale.KOREA, "scrollTo: %d", scrollPosition));
 					mRecyclerView.scrollToPosition(scrollPosition);
 				}
 				if (actionId == 6) {
@@ -1531,7 +1538,7 @@ public class WeldConditionFragment extends Fragment
 						Integer valueInteger = Integer.parseInt(editTextString);
 						if (valueInteger > valueMax[WeldConditionItem.SQUEEZE_FORCE])
 							valueInteger = valueMax[WeldConditionItem.SQUEEZE_FORCE];
-						final String valueString = String.format("%d", valueInteger);
+						final String valueString = String.format(Locale.KOREA, "%d", valueInteger);
 						if (!valueString.equals(editText.getText().toString()))
 							editText.setText(valueString);
 						item.set(WeldConditionItem.SQUEEZE_FORCE, valueString);
@@ -1618,7 +1625,7 @@ public class WeldConditionFragment extends Fragment
 			sfLinearLayout.addView(adView, sfLinearLayout.getChildCount());
 
 			TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
-			statusText.setText(String.format("가압력 수정 (용접 조건: %d개)", mAdapter.getItemCount()));
+			statusText.setText(String.format(Locale.KOREA, "가압력 수정 (용접 조건: %d개)", mAdapter.getItemCount()));
 
 			dialogBuilder.setNegativeButton("취소", (dialog, which) -> refresh(true));
 
@@ -1630,17 +1637,20 @@ public class WeldConditionFragment extends Fragment
 				}
 			});
 			AlertDialog alertDialog = dialogBuilder.create();
-			alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-					| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+			Window window = alertDialog.getWindow();
+			if (window != null) {
+				window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+						| WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+				window.getAttributes().windowAnimations = R.style.AlertDialogAnimation;
+			}
 			alertDialog.setCanceledOnTouchOutside(false);
-			alertDialog.getWindow().getAttributes().windowAnimations = R.style.AlertDialogAnimation;
 			alertDialog.show();
 		}
 
 		private class ViewHolder extends RecyclerView.ViewHolder {
-			View mItemView;
-			TextInputLayout textInputLayout;
-			EditText editText;
+			final View mItemView;
+			final TextInputLayout textInputLayout;
+			final EditText editText;
 
 			ViewHolder(View itemView) {
 				super(itemView);

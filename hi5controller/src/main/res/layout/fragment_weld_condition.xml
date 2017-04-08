@@ -67,6 +67,7 @@
 			android:layout_margin="5dp"
 			android:src="@drawable/ic_view_module_white_48dp"
 			android:transitionName="@string/transitionNameFab"
-			app:backgroundTint="@color/red_A200"/>
+			app:backgroundTint="@color/red_A200"
+			tools:targetApi="lollipop"/>
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

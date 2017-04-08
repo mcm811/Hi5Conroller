@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/nav_header_height"
-                android:background="@color/blue_400"
+                android:background="@drawable/side_nav_bar"
+                android:elevation="6dp"
                 android:gravity="bottom"
                 android:orientation="vertical"
                 android:paddingBottom="15dp"
@@ -10,36 +12,37 @@
                 android:paddingStart="10dp"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                android:weightSum="1">
+                android:weightSum="1"
+                tools:targetApi="lollipop">
 
-    <ImageView
-	    android:id="@+id/imageView"
-	    android:layout_width="40dp"
-	    android:layout_height="60dp"
-	    android:layout_alignParentStart="true"
-	    android:layout_alignWithParentIfMissing="false"
-	    android:layout_centerVertical="true"
-	    android:layout_marginStart="0dp"
-	    android:contentDescription="@string/hi5_weld_management"
-	    android:paddingTop="@dimen/nav_header_vertical_spacing"
-	    android:src="@drawable/industrial_robot_black"/>
+	<ImageView
+		android:id="@+id/imageView"
+		android:layout_width="40dp"
+		android:layout_height="60dp"
+		android:layout_alignParentStart="true"
+		android:layout_alignWithParentIfMissing="false"
+		android:layout_centerVertical="true"
+		android:layout_marginStart="0dp"
+		android:contentDescription="@string/hi5_weld_management"
+		android:paddingTop="@dimen/nav_header_vertical_spacing"
+		android:src="@drawable/industrial_robot_black"/>
 
-    <TextView
-	    android:id="@+id/tvAppName"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_above="@+id/tvAppCompany"
-	    android:layout_toEndOf="@+id/imageView"
-	    android:paddingTop="@dimen/nav_header_vertical_spacing"
-	    android:text="@string/app_name"
-	    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+	<TextView
+		android:id="@+id/tvAppName"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@+id/tvAppCompany"
+		android:layout_toEndOf="@+id/imageView"
+		android:paddingTop="@dimen/nav_header_vertical_spacing"
+		android:text="@string/app_name"
+		android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
-    <TextView
-	    android:id="@+id/tvAppCompany"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignBottom="@+id/imageView"
-	    android:layout_alignStart="@+id/tvAppName"
-	    android:text="@string/changyoung_robot"/>
+	<TextView
+		android:id="@+id/tvAppCompany"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignBottom="@+id/imageView"
+		android:layout_alignStart="@+id/tvAppName"
+		android:text="@string/changyoung_robot"/>
 
 </RelativeLayout>

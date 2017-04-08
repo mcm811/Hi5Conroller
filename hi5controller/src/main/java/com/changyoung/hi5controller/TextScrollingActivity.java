@@ -9,8 +9,7 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 public class TextScrollingActivity extends AppCompatActivity {
-	TextView textView;
-/*
+	/*
 	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
 */
@@ -32,7 +31,7 @@ public class TextScrollingActivity extends AppCompatActivity {
 		Intent intent = getIntent();
 		getSupportActionBar().setTitle(intent.getExtras().getString("title", "텍스트 뷰어"));
 
-		textView = (TextView) findViewById(R.id.text_scrolling_textView);
+		TextView textView = (TextView) findViewById(R.id.text_scrolling_textView);
 		if (textView != null) {
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12f);
 			textView.setText(intent.getExtras().getString("text", ""));

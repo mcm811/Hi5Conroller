@@ -30,7 +30,7 @@ import java.io.File;
 public class WorkPathFragment extends Fragment implements Refresh {
 	private static final String TAG = "HI5:WorkPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
-	FileListFragment fragment;
+	private FileListFragment fragment;
 	private View mView;
 	private String mWorkPath;
 	private FloatingActionButton mFab;
@@ -294,8 +294,9 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 		mFab = (FloatingActionButton) mView.findViewById(R.id.fab);
 		if (mFab != null) {
+			//noinspection SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue
 			mFab.setOnClickListener(new View.OnClickListener() {
-				private void scaleAnimationFab(final float from, final float to) {
+				private void scaleAnimationFab(@SuppressWarnings("SameParameterValue") final float from, @SuppressWarnings("SameParameterValue") final float to) {
 					ScaleAnimation shrink = new ScaleAnimation(from, to, from, to,
 							Animation.RELATIVE_TO_SELF, 0.5f,
 							Animation.RELATIVE_TO_SELF, 0.5f);
@@ -334,19 +335,21 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
-					if (mWorkPath.compareTo(path) == 0) {
+					if (mWorkPath != null) {
+						if (mWorkPath.compareTo(path) == 0) {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
 //						startActivity(new Intent(getContext(), BackupActivity.class), options.toBundle());
-						String ret = Helper.FileHelper.backup(getContext(),
-								mView.findViewById(R.id.coordinator_layout));
-						if (ret != null)
-							show(ret);
-					} else {
-						etPath.setText(path);
-						onSetWorkPath(path);
-						fragment.refreshFilesList();
-						show("경로 설정 완료: " + path);
+							String ret = Helper.FileHelper.backup(getContext(),
+									mView.findViewById(R.id.coordinator_layout));
+							if (ret != null)
+								show(ret);
+						} else {
+							etPath.setText(path);
+							onSetWorkPath(path);
+							fragment.refreshFilesList();
+							show("경로 설정 완료: " + path);
+						}
 					}
 				}
 			});
@@ -386,13 +389,13 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		return mView;
 	}
 
-	public void onSetWorkPath(String path) {
+	private void onSetWorkPath(String path) {
 		if (mListener != null) {
 			mListener.onSetWorkPath(path);
 		}
 	}
 
-	public String onGetWorkPath() {
+	private String onGetWorkPath() {
 		if (mListener != null) {
 			return mListener.onGetWorkPath();
 		}

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
 	android:layout_gravity="center"
-	android:minHeight="25px"
-	android:minWidth="25px"
+	android:minHeight="25dp"
+	android:minWidth="25dp"
 	android:paddingBottom="2sp"
+	android:paddingEnd="0sp"
 	android:paddingStart="5sp"
 	android:paddingTop="2sp">
 	<!--android:background="@color/tab2_textview_background">-->
@@ -17,6 +19,7 @@
 		android:layout_marginStart="5sp"
 		android:gravity="end"
 		android:hint="@string/OutputData"
+		android:paddingEnd="0sp"
 		android:paddingStart="4sp"
 		android:text="@string/OutputData"
 		android:textSize="15sp"/>
@@ -29,7 +32,8 @@
 		android:gravity="end"
 		android:hint="@string/output_data"
 		android:text="@string/output_data"
-		android:textSize="8sp"/>
+		android:textSize="8sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvPanelThickness"
@@ -41,7 +45,8 @@
 		android:gravity="end"
 		android:hint="@string/PanelThickness"
 		android:text="@string/PanelThickness"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvCommandOffset"
@@ -55,7 +60,8 @@
 		android:gravity="end|bottom"
 		android:hint="@string/CommandOffset"
 		android:text="@string/CommandOffset"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvMoveTipClearance"
@@ -66,7 +72,8 @@
 		android:gravity="end"
 		android:hint="@string/MoveTipClearance"
 		android:text="@string/MoveTipClearance"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvOutputType"
@@ -76,6 +83,7 @@
 		android:gravity="center"
 		android:hint="@string/OutputType"
 		android:paddingEnd="4sp"
+		android:paddingStart="0sp"
 		android:text="@string/OutputType"
 		android:textSize="15sp"/>
 
@@ -87,7 +95,8 @@
 		android:gravity="end"
 		android:hint="@string/output_type"
 		android:text="@string/output_type"
-		android:textSize="8sp"/>
+		android:textSize="8sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvSqueezeForce"
@@ -109,7 +118,8 @@
 		android:gravity="center_horizontal"
 		android:hint="@string/squeeze_force"
 		android:text="@string/squeeze_force"
-		android:textSize="8sp"/>
+		android:textSize="8sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvFixedTipClearance"
@@ -122,5 +132,6 @@
 		android:gravity="start|bottom"
 		android:hint="@string/FixedTipClearance"
 		android:text="@string/FixedTipClearance"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 </RelativeLayout>

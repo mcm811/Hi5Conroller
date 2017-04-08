@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -34,7 +35,8 @@
 		android:gravity="end"
 		android:hint="@string/PanelThickness"
 		android:text="@string/PanelThickness"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvCommandOffset"
@@ -48,7 +50,8 @@
 		android:gravity="end|bottom"
 		android:hint="@string/CommandOffset"
 		android:text="@string/CommandOffset"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvMoveTipClearance"
@@ -59,7 +62,8 @@
 		android:gravity="end"
 		android:hint="@string/MoveTipClearance"
 		android:text="@string/MoveTipClearance"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 
 	<TextView
 		android:id="@+id/tvOutputType"
@@ -77,20 +81,20 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
+		android:layout_marginEnd="30sp"
+		android:layout_marginStart="30sp"
 		android:layout_toEndOf="@id/tvOutputData"
 		android:layout_toStartOf="@id/tvOutputType"
+		android:background="@android:color/transparent"
 		android:gravity="center_horizontal"
 		android:hint="@string/SqueezeForce"
-		android:text="@string/SqueezeForce"
-		android:background="@android:color/transparent"
-		android:textSize="25sp"
-		android:textStyle="bold"
+		android:imeOptions="actionNext"
 		android:inputType="number"
-		android:layout_marginStart="30sp"
-		android:layout_marginEnd="30sp"
-		android:selectAllOnFocus="true"
 		android:longClickable="false"
-		android:imeOptions="actionNext"/>
+		android:selectAllOnFocus="true"
+		android:text="@string/SqueezeForce"
+		android:textSize="25sp"
+		android:textStyle="bold"/>
 
 	<TextView
 		android:id="@+id/tvFixedTipClearance"
@@ -103,5 +107,6 @@
 		android:gravity="end|bottom"
 		android:hint="@string/FixedTipClearance"
 		android:text="@string/FixedTipClearance"
-		android:textSize="10sp"/>
+		android:textSize="10sp"
+		tools:ignore="SmallSp"/>
 </RelativeLayout>
