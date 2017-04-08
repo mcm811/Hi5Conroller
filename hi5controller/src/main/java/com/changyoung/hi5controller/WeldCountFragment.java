@@ -463,7 +463,7 @@ public class WeldCountFragment extends Fragment
 			logD("FILE_OBSERVER: " + file.getPath());
 		}
 
-		public WeldCountObserver(String path, Handler handler) {
+		WeldCountObserver(String path, Handler handler) {
 			super(path, mask);
 			this.file = new File(path);
 			this.handler = handler;
@@ -497,18 +497,18 @@ public class WeldCountFragment extends Fragment
 	}
 
 	@SuppressWarnings("unused")
-	public static class WeldCountFile extends File {
-		public static final int VALUE_MAX = 255;
+	static class WeldCountFile extends File {
+		static final int VALUE_MAX = 255;
 		private static final String TAG = "HI5:WeldCountFile";
 		private List<Job> jobList;
 		private JobInfo jobInfo;
 
-		public WeldCountFile(String path) {
+		WeldCountFile(String path) {
 			super(path);
 			readFile();
 		}
 
-		public Job get(Integer index) {
+		Job get(Integer index) {
 			return jobList.get(index);
 		}
 
@@ -516,15 +516,15 @@ public class WeldCountFragment extends Fragment
 //			jobList.set(index, value);
 //		}
 
-		public Integer size() {
+		Integer size() {
 			return jobList.size();
 		}
 
-		public JobInfo getJobInfo() {
+		JobInfo getJobInfo() {
 			return jobInfo;
 		}
 
-		public void readFile() {
+		void readFile() {
 			jobList = readFile(getPath(), new ArrayList<>());
 			jobInfo = createJobInfo(jobList, new JobInfo());
 		}

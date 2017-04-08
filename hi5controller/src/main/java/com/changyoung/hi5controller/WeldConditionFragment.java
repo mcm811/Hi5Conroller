@@ -48,13 +48,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -471,7 +466,7 @@ public class WeldConditionFragment extends Fragment
 			logD("FILE_OBSERVER: " + file.getPath());
 		}
 
-		public WeldConditionObserver(String path, Handler handler) {
+		WeldConditionObserver(String path, Handler handler) {
 			super(path, mask);
 			this.file = new File(path);
 			this.handler = handler;
@@ -506,20 +501,20 @@ public class WeldConditionFragment extends Fragment
 
 	@SuppressWarnings("unused")
 	public static class WeldConditionItem {
-		public static final int OUTPUT_DATA = 0;            // 출력 데이터
 		public static final int OUTPUT_TYPE = 1;            // 출력 타입
-		public static final int SQUEEZE_FORCE = 2;          // 가압력
 		public static final int MOVE_TIP_CLEARANCE = 3;     // 이동극 제거율
 		public static final int FIXED_TIP_CLEARANCE = 4;    // 고정극 제거율
 		public static final int PANEL_THICKNESS = 5;        // 패널 두께
 		public static final int COMMAND_OFFSET = 6;         // 명령 옵셋
+		static final int OUTPUT_DATA = 0;            // 출력 데이터
+		static final int SQUEEZE_FORCE = 2;          // 가압력
 		private static final String TAG = "HI5:WeldConditionItem";
 		private List<String> rowList;
 		private String rowString;
 
 		private boolean itemChecked;
 
-		public WeldConditionItem(String value) {
+		WeldConditionItem(String value) {
 			rowList = new ArrayList<>();
 			if (value != null) {
 				setRowString(value);
@@ -528,7 +523,7 @@ public class WeldConditionFragment extends Fragment
 			itemChecked = false;
 		}
 
-		public String get(int index) {
+		String get(int index) {
 			String ret = null;
 			try {
 				ret = rowList.get(index);
@@ -538,7 +533,7 @@ public class WeldConditionFragment extends Fragment
 			return ret;
 		}
 
-		public void set(int index, String object) {
+		void set(int index, String object) {
 			rowList.set(index, object);
 		}
 
@@ -591,7 +586,7 @@ public class WeldConditionFragment extends Fragment
 			return rowString;
 		}
 
-		public void setRowString(String rowString) {
+		void setRowString(String rowString) {
 			this.rowString = rowString;
 		}
 
@@ -612,8 +607,8 @@ public class WeldConditionFragment extends Fragment
 		List<WeldConditionItem> mList;
 		WeldConditionReceiver mReceiver;
 
-		public WeldConditionLoader(Context context,
-		                           WeldConditionFragment.OnWorkPathListener callBack) {
+		WeldConditionLoader(Context context,
+		                    WeldConditionFragment.OnWorkPathListener callBack) {
 			super(context);
 			mCallBack = callBack;
 		}
@@ -1018,6 +1013,7 @@ public class WeldConditionFragment extends Fragment
 			textViewTitle.setText("용접 조건 수정");
 			dialogBuilder.setCustomTitle(textViewTitle);
 
+/*
 			AdView adView = new AdView(getContext());
 			adView.setAdSize(AdSize.BANNER);
 			adView.setScaleX(0.95f);
@@ -1031,6 +1027,7 @@ public class WeldConditionFragment extends Fragment
 			adView.loadAd(adRequest);
 			LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.linearLayout1);
 			linearLayout.addView(adView, linearLayout.getChildCount());
+*/
 
 			final List<TextInputLayout> tilList = new ArrayList<>();
 			tilList.add((TextInputLayout) dialogView.findViewById(R.id.textInputLayout1));
@@ -1609,6 +1606,7 @@ public class WeldConditionFragment extends Fragment
 			mSqueezeForceRecyclerView.setLayoutManager(layoutManager);
 			mSqueezeForceRecyclerView.setAdapter(mSqueezeForceAdapter);
 
+/*
 			AdView adView = new AdView(getContext());
 			adView.setAdSize(AdSize.BANNER);
 			adView.setScaleX(0.85f);
@@ -1623,6 +1621,7 @@ public class WeldConditionFragment extends Fragment
 			LinearLayout sfLinearLayout = (LinearLayout)
 					dialogView.findViewById(R.id.linearLayout_WeldCondition_SqueezeForce);
 			sfLinearLayout.addView(adView, sfLinearLayout.getChildCount());
+*/
 
 			TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 			statusText.setText(String.format(Locale.KOREA, "가압력 수정 (용접 조건: %d개)", mAdapter.getItemCount()));
