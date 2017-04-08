@@ -2,6 +2,7 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
 	android:background="?android:attr/selectableItemBackground"
@@ -18,7 +19,8 @@
 		android:contentDescription="@string/file_icon_image"
 		android:foregroundTint="@color/brown_200"
 		android:scaleType="center"
-		android:src="@drawable/ic_description"/>
+		android:src="@drawable/ic_description"
+		tools:ignore="UnusedAttribute"/>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/file_fab"
@@ -31,7 +33,8 @@
 		android:rotation="0"
 		android:scaleType="center"
 		android:src="@drawable/ic_description"
-		app:backgroundTint="@color/grey_200"/>
+		app:backgroundTint="@color/grey_200"
+		tools:ignore="UnusedAttribute"/>
 
 	<TextView
 		android:id="@+id/file_text"

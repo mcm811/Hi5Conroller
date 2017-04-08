@@ -2,7 +2,6 @@ package com.changyoung.hi5controller;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -76,9 +75,9 @@ public class FileListFragment extends Fragment {
 		return fragment;
 	}
 
-	private void logD(String msg) {
+	private static void logD(String msg) {
 		try {
-			Log.d(TAG, msg);
+			Log.i(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -101,12 +100,12 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	public void setDirPath(File value) {
-		this.dirPath = value;
-	}
-
 	public void setDirPath(String value) {
 		this.dirPath = new File(value);
+	}
+
+	public void setDirPath(File value) {
+		this.dirPath = value;
 	}
 
 	public File getDirFile() {
@@ -131,12 +130,9 @@ public class FileListFragment extends Fragment {
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		if (refresher != null) {
-			refresher.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					refreshFilesList(getDirPath());
-					refresher.setRefreshing(false);
-				}
+			refresher.setOnRefreshListener(() -> {
+				refreshFilesList(getDirPath());
+				refresher.setRefreshing(false);
 			});
 		}
 
@@ -144,7 +140,7 @@ public class FileListFragment extends Fragment {
 		mRecyclerView.setHasFixedSize(true);
 		RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new FileListAdapter(getActivity(), new ArrayList<File>());
+		mAdapter = new FileListAdapter(getActivity(), new ArrayList<>());
 		mRecyclerView.setAdapter(mAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
 				new android.support.v7.widget.DividerItemDecoration(getContext(),
@@ -182,7 +178,7 @@ public class FileListFragment extends Fragment {
 			if (dir == null)
 				dir = dirPath;
 
-			Log.d(TAG, dir.getName());
+			logD(dir.getName());
 
 			mAdapter.clear();
 			File[] files = dir.listFiles();
@@ -196,20 +192,18 @@ public class FileListFragment extends Fragment {
 				}
 			}
 			if (mAdapter.getItemCount() > 0) {
-				mAdapter.sort(new Comparator<File>() {
-					public int compare(File obj1, File obj2) {
-						int ret = 0;
-						if (obj1.isDirectory() && obj2.isDirectory())
-							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
-						else if (obj1.isFile() && obj2.isFile())
-							ret = obj1.getName().compareToIgnoreCase(obj2.getName());
-						else if (obj1.isDirectory() && obj2.isFile())
-							ret = -1;
-						else if (obj1.isFile() && obj2.isDirectory()) {
-							ret = 1;
-						}
-						return ret;
+				mAdapter.sort((obj1, obj2) -> {
+					int ret = 0;
+					if (obj1.isDirectory() && obj2.isDirectory())
+						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+					else if (obj1.isFile() && obj2.isFile())
+						ret = obj1.getName().compareToIgnoreCase(obj2.getName());
+					else if (obj1.isDirectory() && obj2.isFile())
+						ret = -1;
+					else if (obj1.isFile() && obj2.isDirectory()) {
+						ret = 1;
 					}
+					return ret;
 				});
 			}
 
@@ -295,24 +289,24 @@ public class FileListFragment extends Fragment {
 			super(file.getPath(), mask);
 			this.file = file;
 			this.handler = handler;
-			Log.d(TAG, "FILE_OBSERVER: " + file.getPath());
+			logD("FILE_OBSERVER: " + file.getPath());
 		}
 
 		public void onEvent(int event, String path) {
 			if ((event & CREATE) == CREATE)
-				Log.d(TAG, String.format("CREATE: %s/%s", file.getPath(), path));
+				logD(String.format("CREATE: %s/%s", file.getPath(), path));
 			else if ((event & DELETE) == DELETE)
-				Log.d(TAG, String.format("DELETE: %s/%s", file.getPath(), path));
+				logD(String.format("DELETE: %s/%s", file.getPath(), path));
 			else if ((event & DELETE_SELF) == DELETE_SELF)
-				Log.d(TAG, String.format("DELETE_SELF: %s/%s", file.getPath(), path));
+				logD(String.format("DELETE_SELF: %s/%s", file.getPath(), path));
 			else if ((event & MOVED_FROM) == MOVED_FROM)
-				Log.d(TAG, String.format("MOVED_FROM: %s/%s", file.getPath(), path));
+				logD(String.format("MOVED_FROM: %s/%s", file.getPath(), path));
 			else if ((event & MOVED_TO) == MOVED_TO)
-				Log.d(TAG, String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
+				logD(String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
 			else if ((event & MOVE_SELF) == MOVE_SELF)
-				Log.d(TAG, String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
+				logD(String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
 			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
-				Log.d(TAG, String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
+				logD(String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
 			else
 				return;
 
@@ -453,64 +447,49 @@ public class FileListFragment extends Fragment {
 				holder.mFileFab.setVisibility(View.GONE);
 				holder.mFileImageView.setVisibility(View.VISIBLE);
 			}
-			holder.mItemView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					final int position = (int) v.getTag();
-					final File file = mDataset.get(position);
-					if (position == 0) {
-						String p = file.getParent();
-						if (p == null)
-							p = File.pathSeparator;
-						refreshFilesList(p);
-					} else if (file.isDirectory()) {
-						refreshFilesList(file.getPath());
-					} else {
-						Helper.UiHelper.textViewActivity(getActivity(), file.getName(),
-								Helper.FileHelper.readFileString(file.getPath()));
-					}
+			holder.mItemView.setOnClickListener(v12 -> {
+				final int position = (int) v12.getTag();
+				final File file = mDataset.get(position);
+				if (position == 0) {
+					String p = file.getParent();
+					if (p == null)
+						p = File.pathSeparator;
+					refreshFilesList(p);
+				} else if (file.isDirectory()) {
+					refreshFilesList(file.getPath());
+				} else {
+					Helper.UiHelper.textViewActivity(getActivity(), file.getName(),
+							Helper.FileHelper.readFileString(file.getPath()));
 				}
 			});
-			holder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					final int position = (int) v.getTag();
-					if (position == 0)
-						return false;
+			holder.mItemView.setOnLongClickListener(v1 -> {
+				final int position = (int) v1.getTag();
+				if (position == 0)
+					return false;
 
-					final File file = mDataset.get(position);
-					String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
-					String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
-					String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
-							fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
+				final File file = mDataset.get(position);
+				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
+				String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
+				String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
+						fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
 
-					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-					builder.setTitle(actionName)
-							.setMessage(msg)
-							.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									show("삭제가 취소 되었습니다");
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle(actionName)
+						.setMessage(msg)
+						.setNegativeButton("취소", (dialog, which) -> show("삭제가 취소 되었습니다"))
+						.setPositiveButton("삭제", (dialog, which) -> {
+							try {
+								new Helper.AsyncTaskFileDialog(getContext(),
+										snackbarView, "삭제", looperHandler)
+										.execute(file);
+							} catch (Exception e) {
+								e.printStackTrace();
+								show("삭제할 수 없습니다");
+							}
+						});
+				builder.create().show();
 
-								}
-							})
-							.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									try {
-										new Helper.AsyncTaskFileDialog(getContext(),
-												snackbarView, "삭제", looperHandler)
-												.execute(file);
-									} catch (Exception e) {
-										e.printStackTrace();
-										show("삭제할 수 없습니다");
-									}
-								}
-							});
-					builder.create().show();
-
-					return true;
-				}
+				return true;
 			});
 			return holder;
 		}
@@ -583,14 +562,14 @@ public class FileListFragment extends Fragment {
 			super.handleMessage(msg);
 			switch (msg.what) {
 				case MSG_REFRESH_DIR:
-					Log.d(TAG, "MSG_REFRESH_DIR");
+					logD("MSG_REFRESH_DIR");
 					if (msg.obj == null)
 						refreshFilesList();
 					else
 						refreshFilesList((File) msg.obj);
 					break;
 				case MSG_REFRESH_PARENT_DIR:
-					Log.d(TAG, "MSG_REFRESH_PARENT_DIR");
+					logD("MSG_REFRESH_PARENT_DIR");
 					if (msg.obj == null)
 						refreshParent();
 					else

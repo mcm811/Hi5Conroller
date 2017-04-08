@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +31,7 @@ public class BackupActivity extends AppCompatActivity
 
 	private void logD(String msg) {
 		try {
-			Log.d(TAG, msg);
+			Log.i(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -62,48 +60,41 @@ public class BackupActivity extends AppCompatActivity
 			final EditText etPath = (EditText) view.findViewById((R.id.etBackupPath));
 			if (etPath != null) {
 				etPath.setText(path);
-				etPath.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						try {
-							File file = new File(etPath.getText().toString());
-							if (file.isDirectory()) {
-								Helper.Pref.setBackupPath(getContext(), etPath.getText().toString());
-							} else {
-								throw new Exception();
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-							show("잘못된 경로: " + etPath.getText().toString());
-							etPath.setText(Helper.Pref.getBackupPath(getContext()));
+				etPath.setOnFocusChangeListener((v, hasFocus) -> {
+					try {
+						File file = new File(etPath.getText().toString());
+						if (file.isDirectory()) {
+							Helper.Pref.setBackupPath(getContext(), etPath.getText().toString());
+						} else {
+							throw new Exception();
 						}
-						fragment.refreshFilesList(etPath.getText().toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+						show("잘못된 경로: " + etPath.getText().toString());
+						etPath.setText(Helper.Pref.getBackupPath(getContext()));
 					}
+					fragment.refreshFilesList(etPath.getText().toString());
 				});
-				etPath.setOnKeyListener(new View.OnKeyListener() {
-					@Override
-					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
-						return false;
-					}
+				etPath.setOnKeyListener((v, keyCode, event) -> {
+					Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+					return false;
 				});
 			}
 		}
 
+/*
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.backup_path_toolbar);
 		if (toolbar != null) {
 			toolbar.inflateMenu(R.menu.menu_toolbar_back_path);
-			toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					String ret = refresh(item.getItemId());
-					if (ret != null)
-						show(ret);
-					mBackPressedCount = 0;
-					return true;
-				}
+			toolbar.setOnMenuItemClickListener(item -> {
+				String ret = refresh(item.getItemId());
+				if (ret != null)
+					show(ret);
+				mBackPressedCount = 0;
+				return true;
 			});
 		}
+*/
 
 		AdView adView = new AdView(getContext());
 		adView.setAdSize(AdSize.BANNER);
@@ -126,12 +117,7 @@ public class BackupActivity extends AppCompatActivity
 
 		try {
 			//noinspection ConstantConditions
-			findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onBackPressed();
-				}
-			});
+			findViewById(R.id.action_bar).setOnClickListener(v -> onBackPressed());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logD("onBackPressed()");
@@ -155,13 +141,10 @@ public class BackupActivity extends AppCompatActivity
 					animationFab();
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
-					mFab.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							String ret = restore();
-							if (ret != null)
-								show(ret);
-						}
+					mFab.postDelayed(() -> {
+						String ret = restore();
+						if (ret != null)
+							show(ret);
 					}, 500);
 				}
 			});
@@ -318,7 +301,7 @@ public class BackupActivity extends AppCompatActivity
 			if (++mBackPressedCount > EXIT_COUNT)
 				super.onBackPressed();
 			else
-				show(String.format(getResources().getString(R.string.main_activity_exit_format),
+				show(String.format(getText(R.string.main_activity_exit_format).toString(),
 						Integer.toString(EXIT_COUNT - mBackPressedCount + 1)));
 		}
 	}

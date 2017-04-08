@@ -54,10 +54,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
-			android:layout_margin="16dp"
+			android:layout_margin="5dp"
 			android:scaleX="-1"
 			android:scaleY="-1"
 			android:src="@drawable/ic_sort_white"
-			app:backgroundTint="@color/pink_A200"/>
+			app:backgroundTint="@color/green_A200"/>
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

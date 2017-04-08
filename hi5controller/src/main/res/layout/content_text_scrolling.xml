@@ -5,12 +5,15 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:clipToPadding="false"
+	android:scrollbars="horizontal|vertical"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	app:layout_scrollFlags="scroll"
 	tools:context="com.changyoung.hi5controller.TextScrollingActivity"
 	tools:showIn="@layout/activity_text_scrolling">
 
 	<TextView
-		android:id="@+id/textView"
+		android:id="@+id/text_scrolling_textView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/text_margin"/>

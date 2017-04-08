@@ -16,21 +16,22 @@ android {
 		applicationId "com.changyoung.hi5controller"
 		minSdkVersion 19
 		targetSdkVersion 25
-		versionCode 21
-		versionName '1.1.1'
+		versionCode 22
+		versionName '1.1.2'
 	}
 	buildTypes {
 		release {
 			minifyEnabled true
 			useProguard true
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 			signingConfig signingConfigs.config
 		}
 		debug {
-			applicationIdSuffix '.debug'
+			applicationIdSuffix '.d'
+			minifyEnabled false
 			useProguard false
-			minifyEnabled true
-			versionNameSuffix 'b'
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+			versionNameSuffix 'd'
 		}
 	}
 //	compileOptions.encoding = 'UTF-8'

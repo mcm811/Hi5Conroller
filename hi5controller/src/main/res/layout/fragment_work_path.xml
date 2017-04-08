@@ -45,16 +45,18 @@
 			android:layout_weight="1"
 			tools:layout="@layout/fragment_file_list"/>
 
-		<android.support.v7.widget.Toolbar
-			android:id="@+id/work_path_toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom"
-			android:background="@color/brown_500"
-			android:minHeight="?attr/actionBarSize"
-			android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-			app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-			app:titleTextAppearance="@style/Style.ToolBarTitle"/>
+		<!--
+				<android.support.v7.widget.Toolbar
+					android:id="@+id/work_path_toolbar"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="bottom|start"
+					android:background="@color/blue_500"
+					android:minHeight="?attr/actionBarSize"
+					android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+					app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+					app:titleTextAppearance="@style/Style.ToolBarTitle"/>
+		-->
 	</LinearLayout>
 
 	<!--<com.google.android.gms.ads.AdView-->
@@ -72,18 +74,43 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-	<android.support.design.widget.FloatingActionButton
+		<android.support.design.widget.FloatingActionButton
 			android:id="@+id/fab"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|start"
-			android:layout_margin="16dp"
-			android:transitionName="@string/transitionNameFab"
+			android:layout_margin="5dp"
 			android:src="@drawable/ic_done_white"
-			ads:backgroundTint="@color/pink_A200"
+			android:transitionName="@string/transitionNameFab"
+			ads:backgroundTint="@color/red_A200"
 			app:borderWidth="0dp"
-			app:elevation="6dp"/>
+			app:elevation="6dp"
+			tools:ignore="UnusedAttribute"/>
 
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/usb_fab"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_marginBottom="5dp"
+			android:layout_marginEnd="80dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:src="@drawable/ic_usb_white"
+			ads:backgroundTint="@color/green_A200"
+			ads:elevation="6dp"/>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/home_fab"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_margin="5dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:src="@drawable/ic_home_white"
+			ads:backgroundTint="@color/light_blue_A200"
+			ads:elevation="6dp"/>
 	</android.support.design.widget.CoordinatorLayout>
 
 </FrameLayout>

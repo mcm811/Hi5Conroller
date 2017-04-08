@@ -61,7 +61,7 @@ public class SplashActivity extends Activity {
 			finish();
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d("Splash", "onCreate() called with: " + "savedInstanceState = [" + savedInstanceState + "]");
+			Log.i(TAG, "onCreate() called with: " + "savedInstanceState = [" + savedInstanceState + "]");
 		}
 	}
 }

@@ -17,6 +17,7 @@
 
 	<application
 		android:allowBackup="true"
+		android:fullBackupContent="@xml/backup_descriptor"
 		android:icon="@mipmap/ic_launcher"
 		android:installLocation="preferExternal"
 		android:label="@string/app_name"

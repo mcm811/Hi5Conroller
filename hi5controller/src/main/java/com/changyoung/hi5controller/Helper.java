@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -162,7 +161,7 @@ class Helper {
 				inputStreamReader.close();
 				fileInputStream.close();
 			} catch (FileNotFoundException e) {
-				Log.d(TAG, e.getLocalizedMessage());
+				Log.i(TAG, e.getLocalizedMessage());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -181,9 +180,9 @@ class Helper {
 				}
 			}
 			if (dir.delete())
-				Log.d(TAG, String.format("succeed dir.delete: %s", dir.getPath()));
+				Log.i(TAG, String.format("succeed dir.delete: %s", dir.getPath()));
 			else
-				Log.d(TAG, String.format("failed dir.delete: %s", dir.getPath()));
+				Log.i(TAG, String.format("failed dir.delete: %s", dir.getPath()));
 		}
 
 		public static void copy(String sourcePath, String destPath, boolean recursive) throws IOException {
@@ -216,8 +215,8 @@ class Helper {
 			} finally {
 				// 삼성커널에서 setLastModified 미지원 인듯
 				if (dest.setLastModified(source.lastModified())) {
-					Log.d("Last Time - Source", TimeHelper.getLasModified(source));
-					Log.d("Last Time - Dest", TimeHelper.getLasModified(dest));
+					Log.i("Last Time - Source", TimeHelper.getLasModified(source));
+					Log.i("Last Time - Dest", TimeHelper.getLasModified(dest));
 				}
 			}
 		}
@@ -250,7 +249,7 @@ class Helper {
 					if (dest.exists())
 						FileHelper.delete(dest, false);
 					if (dest.mkdirs())
-						Log.d("backup", "dest.mkdirs");
+						Log.i("backup", "dest.mkdirs");
 					new AsyncTaskFileDialog(context, view, "백업").execute(source, dest);
 					return null;
 				}
@@ -294,10 +293,7 @@ class Helper {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setView(scrollView);
 
-			builder.setPositiveButton("닫기", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-				}
+			builder.setPositiveButton("닫기", (dialog, which) -> {
 			});
 
 			builder.show();
@@ -332,16 +328,8 @@ class Helper {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle("HI5 용접 관리");
 			builder.setView(linearLayout);
-			builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					context.finish();
-				}
-			});
-			builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-				}
+			builder.setPositiveButton("확인", (dialog, which) -> context.finish());
+			builder.setNegativeButton("취소", (dialog, which) -> {
 			});
 			builder.show();
 		}
@@ -383,7 +371,7 @@ class Helper {
 							view.clearFocus();
 					}
 				} catch (NullPointerException e) {
-					Log.d("hideSoftKeyboard", e.getLocalizedMessage());
+					Log.i("hideSoftKeyboard", e.getLocalizedMessage());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -397,11 +385,11 @@ class Helper {
 				view = activity.getCurrentFocus();
 			try {
 				if (view != null) {
-					Log.d("showSoftKeyboard", "imm.showSoftInput");
+					Log.i("showSoftKeyboard", "imm.showSoftInput");
 					imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
 				}
 			} catch (NullPointerException e) {
-				Log.d("showSoftKeyboard", e.getLocalizedMessage());
+				Log.i("showSoftKeyboard", e.getLocalizedMessage());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -545,7 +533,7 @@ class Helper {
 			if (result != null && view != null) {
 				Snackbar.make(view, result, Snackbar.LENGTH_SHORT)
 						.setAction("Action", null).show();
-				Log.d("AsyncTask", "onPostExecute: " + result);
+				Log.i("AsyncTask", "onPostExecute: " + result);
 			}
 //			if (handler != null) {
 //				Message msg = handler.obtainMessage();

@@ -8,7 +8,7 @@ import android.view.KeyEvent;
  * Created by changmin on 2015. 10. 31..
  * changmin811@gmail.com
  */
-public class EditText extends android.support.v7.widget.AppCompatEditText {
+public class EditText extends android.support.design.widget.TextInputEditText {
 	public EditText(Context context) {
 		super(context);
 	}

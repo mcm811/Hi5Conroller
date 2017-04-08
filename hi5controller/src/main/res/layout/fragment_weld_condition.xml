@@ -64,9 +64,9 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
-			android:layout_margin="16dp"
-			android:transitionName="@string/transitionNameFab"
+			android:layout_margin="5dp"
 			android:src="@drawable/ic_view_module_white_48dp"
-			app:backgroundTint="@color/pink_A200"/>
+			android:transitionName="@string/transitionNameFab"
+			app:backgroundTint="@color/red_A200"/>
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

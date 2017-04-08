@@ -1,17 +1,14 @@
 package com.changyoung.hi5controller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -19,11 +16,6 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 
 import java.io.File;
 
@@ -65,9 +57,15 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		return fragment;
 	}
 
+/*
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+	}
+*/
+
 	private void logD(String msg) {
 		try {
-			Log.d(TAG, msg);
+			Log.i(TAG, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -115,17 +113,17 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					ret = "경로 이동 실패: " + onGetWorkPath();
 				break;
 			case R.id.nav_storage:
-//			case R.id.toolbar_work_path_menu_storage:
+			case R.id.toolbar_work_path_menu_storage:
 				if (!refresh(Helper.Pref.STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
-//			case R.id.toolbar_work_path_menu_sdcard:
+			case R.id.toolbar_work_path_menu_sdcard:
 				if (!refresh(Helper.Pref.EXTERNAL_STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
-//			case R.id.toolbar_work_path_menu_extsdcard:
+			case R.id.toolbar_work_path_menu_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
 					File dir = new File(Helper.Pref.STORAGE_PATH);
@@ -139,7 +137,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 									}
 								}
 							} catch (NullPointerException e) {
-								Log.d(TAG, e.getLocalizedMessage());
+								Log.i(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
@@ -153,19 +151,19 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
 					File dir = new File(Helper.Pref.STORAGE_PATH);
-					Log.d(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
+					Log.i(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
 					for (File file : dir.listFiles()) {
 						if (file.getName().toLowerCase().startsWith("usb")) {
 							try {
 								for (File subItem : file.listFiles()) {
 									if (subItem.exists() && refresh(file.getPath())) {
-										Log.d(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
+										Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
 										ret = null;
 										break;
 									}
 								}
 							} catch (NullPointerException e) {
-								Log.d(TAG, e.getLocalizedMessage());
+								Log.i(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
@@ -235,13 +233,13 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		Log.d(TAG, "onCreateView");
+		Log.i(TAG, "onCreateView");
 		mView = inflater.inflate(R.layout.fragment_work_path, container, false);
 
 		String path = mWorkPath;
 		fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 		if (fragment == null) {
-			Log.d(TAG, "fragment == null");
+			Log.i(TAG, "fragment == null");
 			fragment = FileListFragment.newInstance(path);
 			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 			transaction.replace(R.id.work_path_fragment, fragment);
@@ -251,37 +249,48 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 		fragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
 		fragment.refreshFilesList(path);
-		EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
+		@SuppressLint("CutPasteId") EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
-		etPath.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-				try {
-					File file = new File(etPath.getText().toString());
-					if (file.isDirectory()) {
-						onSetWorkPath(etPath.getText().toString());
-					} else {
-						throw new Exception();
-					}
-				} catch (NullPointerException e) {
-					logD(e.getLocalizedMessage());
-				} catch (Exception e) {
-					e.printStackTrace();
-					show("잘못된 경로: " + etPath.getText().toString());
-					etPath.setText(onGetWorkPath());
+		etPath.setOnFocusChangeListener((v, hasFocus) -> {
+			FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+			@SuppressLint("CutPasteId") EditText etPath1 = (EditText) mView.findViewById(R.id.etWorkPath);
+			try {
+				File file = new File(etPath1.getText().toString());
+				if (file.isDirectory()) {
+					onSetWorkPath(etPath1.getText().toString());
+				} else {
+					throw new Exception();
 				}
-				fragment.refreshFilesList(etPath.getText().toString());
+			} catch (NullPointerException e) {
+				logD(e.getLocalizedMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+				show("잘못된 경로: " + etPath1.getText().toString());
+				etPath1.setText(onGetWorkPath());
 			}
+			fragment.refreshFilesList(etPath1.getText().toString());
 		});
-		etPath.setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
-				return false;
-			}
+		etPath.setOnKeyListener((v, keyCode, event) -> {
+			Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+			return false;
 		});
+
+		FloatingActionButton mHomeFab = (FloatingActionButton) mView.findViewById(R.id.home_fab);
+		if (mHomeFab != null) {
+			mHomeFab.setOnClickListener(v -> {
+				show(refresh(R.id.toolbar_work_path_menu_home));
+				logD("HomeFab");
+			});
+		}
+
+		FloatingActionButton mUsbFab = (FloatingActionButton) mView.findViewById(R.id.usb_fab);
+		if (mUsbFab != null) {
+			mUsbFab.setOnClickListener(v -> {
+				show(refresh(R.id.nav_usbstorage));
+				logD("UsbFab");
+			});
+
+		}
 
 		mFab = (FloatingActionButton) mView.findViewById(R.id.fab);
 		if (mFab != null) {
@@ -343,18 +352,19 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			});
 		}
 
-		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.work_path_toolbar);
+/*
+		android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) mView.findViewById(R.id.work_path_toolbar);
 		toolbar.inflateMenu(R.menu.menu_toolbar_work_path);
-		toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				String ret = refresh(item.getItemId());
-				if (ret != null)
-					show(ret);
-				return true;
-			}
+		toolbar.setOnMenuItemClickListener(item -> {
+			String ret = refresh(item.getItemId());
+			if (ret != null)
+				show(ret);
+			return true;
 		});
+*/
 
+/*
+		// 배너 광고
 		AdView adView = new AdView(getContext());
 		adView.setAdSize(AdSize.BANNER);
 		adView.setScaleX(0.4f);
@@ -371,6 +381,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		adView.loadAd(adRequest);
 		FrameLayout frameLayout = (FrameLayout) mView.findViewById(R.id.frame_layout);
 		frameLayout.addView(adView, frameLayout.getChildCount() - 1);
+*/
 
 		return mView;
 	}

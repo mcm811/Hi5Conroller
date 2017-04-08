@@ -8,10 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PersistableBundle;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -40,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
 
@@ -56,45 +52,49 @@ public class MainActivity extends AppCompatActivity
 	private DrawerLayout mDrawer;
 	private int mBackPressedCount;
 
+	private static void logD(String msg) {
+		try {
+			Log.i(TAG, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	MainActivity getContext() {
 		return this;
 	}
 
-	private void logD(String msg) {
-		try {
-			Log.d(TAG, msg);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	@TargetApi(25)
 	private void createAccessIntent() {
-		try {
-			StorageManager sm = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
-			List<StorageVolume> volumes = sm.getStorageVolumes();
-			for (StorageVolume volume : volumes) {
-				if (volume.isRemovable()) {
-					Log.e(TAG, volume.getState());
-					Log.e(TAG, "Storage:" + volume.getDescription(getContext()));
-					Log.e(TAG, "Dir:" + Environment.getExternalStorageDirectory().getPath());
-					Intent intent = volume.createAccessIntent(null);
-//					Intent intent = volume.createAccessIntent(Environment.DIRECTORY_DOCUMENTS);
-					int request_code = 0;
-					startActivityForResult(intent, request_code);
+/*
+		if (BuildConfig.DEBUG) {
+			try {
+				StorageManager sm = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
+				List<StorageVolume> volumes = sm.getStorageVolumes();
+				for (StorageVolume volume : volumes) {
+					if (volume.isRemovable()) {
+						logD(volume.getState());
+						logD("Storage:" + volume.getDescription(getContext()));
+						logD("Dir:" + Environment.getExternalStorageDirectory().getPath());
+						Intent intent = volume.createAccessIntent(null);
+//						Intent intent = volume.createAccessIntent(Environment.DIRECTORY_DOCUMENTS);
+						int request_code = 0;
+						startActivityForResult(intent, request_code);
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+*/
 	}
 
 	@TargetApi(M)
 	private void checkPermissionExternalStorage() {
 		int writeExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 		int readExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-		Log.e(TAG, "WRITE_EXTERNAL_STORAGE : " + writeExtPerm);
-		Log.e(TAG, "READ_EXTERNAL_STORAGE : " + readExtPerm);
+		logD("WRITE_EXTERNAL_STORAGE : " + writeExtPerm);
+		logD("READ_EXTERNAL_STORAGE : " + readExtPerm);
 
 		if (writeExtPerm != PackageManager.PERMISSION_GRANTED || readExtPerm != PackageManager.PERMISSION_GRANTED) {
 			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity
 					},
 					PERMISSION_REQUEST_EXTERNAL_STORAGE);
 		} else {
-			Log.e(TAG, "permission has been granted");
+			logD("permission has been granted");
 		}
 	}
 
@@ -119,9 +119,9 @@ public class MainActivity extends AppCompatActivity
 			case PERMISSION_REQUEST_EXTERNAL_STORAGE:
 				if (grantResults[0] == PackageManager.PERMISSION_GRANTED
 						&& grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-					Log.e(TAG, "Permission granted");
+					logD("Permission granted");
 				} else {
-					Log.e(TAG, "Permission always deny");
+					logD("Permission always deny");
 				}
 				break;
 		}
@@ -144,22 +144,22 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
+		logD("onCreate");
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		checkPermissionExternalStorage();
-		if (BuildConfig.DEBUG)
-			createAccessIntent();
+		createAccessIntent();
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		if (toolbar != null) {
-			toolbar.setOnClickListener(v -> onBackPressed());   // lamda()
-			Log.d(TAG, "TITLE:" + toolbar.getTitle().toString());
+			toolbar.setOnClickListener(v -> onBackPressed());
+//			toolbar.setOnLongClickListener(v -> onExitDialog());
+			logD("TITLE:" + toolbar.getTitle().toString());
 		} else {
-			Log.d(TAG, "TITLE:" + "toolbar is null");
+			logD("TITLE:" + "toolbar is null");
 		}
 
 //		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -195,13 +195,14 @@ public class MainActivity extends AppCompatActivity
 		if (navigationView != null) {
 			navigationView.setNavigationItemSelectedListener(MainActivity.this);
 			try {
-//				PackageInfo pi = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
-//				String s = "HI5 용접관리" + " (v" + pi.versionName + ") ";
-				String s = "HI5 용접관리" + " (v" + BuildConfig.VERSION_NAME + ") ";
-				View v = navigationView.getRootView();
-				TextView tvAppName = (TextView) v.findViewById(R.id.tvAppName);
-				Log.d(TAG, "App Name:" + s);
-				tvAppName.setText(s);
+				String s = getText(R.string.app_name) + " (v" + BuildConfig.VERSION_NAME + ") ";
+				logD("App Name:" + s);
+				View v = navigationView.getHeaderView(0);
+				if (v != null) {
+					TextView tvAppName = (TextView) v.findViewById(R.id.tvAppName);
+					if (tvAppName != null)
+						tvAppName.setText(s);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-		Log.d(TAG, "onSaveInstanceState");
+		logD("onSaveInstanceState");
 		super.onSaveInstanceState(outState, outPersistentState);
 	}
 
@@ -335,15 +336,16 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-	public void onExitDialog() {
+	public boolean onExitDialog() {
 		Helper.UiHelper.adMobExitDialog(this);
+		return true;
 		//super.onBackPressed();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.menu_main, menu);
 		return true;
 	}
 
@@ -463,7 +465,7 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public void onPathChanged(File path) {
-		Log.d(TAG, "onPathChanged");
+		logD("onPathChanged");
 		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) mViewPager.getAdapter())
 				.getItem(PagerAdapter.WORK_PATH_FRAGMENT);
 		if (fragment != null)
@@ -477,7 +479,7 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public void onSetWorkPath(String path) {
-		Log.d(TAG, "onSetWorkPath");
+		logD("onSetWorkPath");
 		Helper.Pref.setWorkPath(getContext(), path);
 
 		final int[] tabs = { PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT };
