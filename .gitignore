@@ -1,4 +1,6 @@
 .gradle
+.idea
+.navigation
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
