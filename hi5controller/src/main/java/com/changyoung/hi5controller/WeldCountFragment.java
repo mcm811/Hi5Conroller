@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -569,7 +570,8 @@ public class WeldCountFragment extends Fragment
 */
 
 			try {
-				logD(fileName);
+				logD(fileName + " " + Uri.fromFile(new File(fileName)).toString());
+
 				FileOutputStream fileOutputStream = new FileOutputStream(fileName, false);
 				OutputStreamWriter outputStreamReader = new OutputStreamWriter(fileOutputStream, "EUC-KR");
 				BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
