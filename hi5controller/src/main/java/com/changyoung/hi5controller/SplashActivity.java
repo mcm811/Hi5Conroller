@@ -56,6 +56,7 @@ public class SplashActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		try {
 //			checkRWPermission();
+//			Log.i(TAG, "Start SplashActivity");
 			Thread.sleep(1600);
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
