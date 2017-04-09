@@ -22,7 +22,7 @@
 	</style>
 
 	<style name="Theme.Splash" parent="android:Theme">
-		<item name="android:windowBackground">@drawable/splash_changyoung</item>
+		<item name="android:windowBackground">@drawable/splash_changyoung_blue</item>
 		<item name="android:windowNoTitle">true</item>
 	</style>
 

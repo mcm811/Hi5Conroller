@@ -1518,7 +1518,7 @@ public class WeldCountFragment extends Fragment
 
 			final String ttsMsg = mContext.getString(R.string.tts_begin_number);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null);
+				logD("TTS:" + mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null, null));
 			} else {
 				//noinspection deprecation
 				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
