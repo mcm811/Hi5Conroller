@@ -74,7 +74,7 @@ class Helper {
 		static OutputStream getWorkPathOutputStream(Context context, String path) throws IOException {
 			OutputStream outputStream = null;
 			try {
-				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 					File file = new File(path);
 					Log.e("HI5", "File.getName:" + file.getName());
 
@@ -650,7 +650,7 @@ class Helper {
 			return sdCardDirectory;
 		}
 
-		public static ArrayList<String> getExtSdCardPaths(Context con) {
+		public static ArrayList<String> getExtSdCardPaths(Context con) throws Exception {
 			ArrayList<String> paths = new ArrayList<String>();
 			File[] files = ContextCompat.getExternalFilesDirs(con, "external");
 			File firstFile = files[0];
@@ -678,28 +678,34 @@ class Helper {
 				return null;
 			}
 
-			String volumePath = UriHelper.getVolumePath(UriHelper.getVolumeIdFromTreeUri(treeUri), con);
-			if (volumePath == null) {
-				return File.separator;
-			}
-			if (volumePath.endsWith(File.separator)) {
-				volumePath = volumePath.substring(0, volumePath.length() - 1);
-			}
-
-			String documentPath = UriHelper.getDocumentPathFromTreeUri(treeUri);
-			if (documentPath.endsWith(File.separator)) {
-				documentPath = documentPath.substring(0, documentPath.length() - 1);
-			}
-
-			if (documentPath.length() > 0) {
-				if (documentPath.startsWith(File.separator)) {
-					return volumePath + documentPath;
-				} else {
-					return volumePath + File.separator + documentPath;
+			try {
+				String volumePath = UriHelper.getVolumePath(UriHelper.getVolumeIdFromTreeUri(treeUri), con);
+				if (volumePath == null) {
+					return File.separator;
 				}
-			} else {
-				return volumePath;
+				if (volumePath.endsWith(File.separator)) {
+					volumePath = volumePath.substring(0, volumePath.length() - 1);
+				}
+
+				String documentPath = UriHelper.getDocumentPathFromTreeUri(treeUri);
+				if (documentPath.endsWith(File.separator)) {
+					documentPath = documentPath.substring(0, documentPath.length() - 1);
+				}
+
+				if (documentPath.length() > 0) {
+					if (documentPath.startsWith(File.separator)) {
+						return volumePath + documentPath;
+					} else {
+						return volumePath + File.separator + documentPath;
+					}
+				} else {
+					return volumePath;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+
+			return null;
 		}
 
 		private static String getVolumePath(final String volumeId, Context con) {
@@ -710,10 +716,9 @@ class Helper {
 			try {
 				StorageManager mStorageManager =
 						(StorageManager) con.getSystemService(Context.STORAGE_SERVICE);
+				Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
 
 				Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-
-				Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
 				Method getUuid = storageVolumeClazz.getMethod("getUuid");
 				Method getPath = storageVolumeClazz.getMethod("getPath");
 				Method isPrimary = storageVolumeClazz.getMethod("isPrimary");
@@ -747,25 +752,31 @@ class Helper {
 
 		@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 		private static String getVolumeIdFromTreeUri(final Uri treeUri) {
-			final String docId = DocumentsContract.getTreeDocumentId(treeUri);
-			final String[] split = docId.split(":");
+			try {
+				final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+				final String[] split = docId.split(":");
 
-			if (split.length > 0) {
-				return split[0];
-			} else {
-				return null;
+				if (split.length > 0) {
+					return split[0];
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			return null;
 		}
 
 		@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 		private static String getDocumentPathFromTreeUri(final Uri treeUri) {
-			final String docId = DocumentsContract.getTreeDocumentId(treeUri);
-			final String[] split = docId.split(":");
-			if ((split.length >= 2) && (split[1] != null)) {
-				return split[1];
-			} else {
-				return File.separator;
+			try {
+				final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+				final String[] split = docId.split(":");
+				if ((split.length >= 2) && (split[1] != null)) {
+					return split[1];
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			return File.separator;
 		}
 
 		public static boolean deleteUri(Activity activity, Uri uri) throws IOException {
