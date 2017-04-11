@@ -1,7 +1,10 @@
 package com.changyoung.hi5controller;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,9 +12,11 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.DocumentsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -52,6 +57,7 @@ public class FileListFragment extends Fragment {
 	private RecyclerView mRecyclerView;
 	private FileListAdapter mAdapter;
 
+	private Uri dirUri;
 	private File dirPath;
 	private FileListObserver fileListObserver;
 	private LooperHandler looperHandler;
@@ -100,16 +106,24 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	private void setDirPath(File value) {
-		this.dirPath = value;
-	}
-
 	private void setDirPath(String value) {
 		this.dirPath = new File(value);
 	}
 
+	private void setDirPath(File value) {
+		this.dirPath = value;
+	}
+
 	public File getDirFile() {
 		return dirPath;
+	}
+
+	public Uri getDirUri() {
+		return dirUri;
+	}
+
+	public void setDirUri(Uri uri) {
+		this.dirUri = uri;
 	}
 
 	@Override
@@ -183,10 +197,10 @@ public class FileListFragment extends Fragment {
 			mAdapter.clear();
 			File[] files = dir.listFiles();
 			if (files != null) {
-				for (File item : files) {
-					if (item != null) {
-						if (item.isFile() || item.isDirectory()) {
-							mAdapter.add(item);
+				for (File file : files) {
+					if (file != null) {
+						if (file.isFile() || file.isDirectory()) {
+							mAdapter.add(file);
 						}
 					}
 				}
@@ -222,6 +236,69 @@ public class FileListFragment extends Fragment {
 		}
 
 		return getDirPath();
+	}
+
+	void refreshFilesList(Uri uri) {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//			uri = Uri.parse("content://com.android.externalstorage.documents/tree/A345-1F0E%3Ajob");
+			Log.e(TAG, uri.toString());
+
+			ContentResolver contentResolver = getActivity().getContentResolver();
+			Uri docUri = DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
+			Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
+			DocumentFile pickedTree = DocumentFile.fromTreeUri(getContext(), childrenUri);
+			for (DocumentFile file : pickedTree.listFiles()) {
+				Log.e(TAG, file.getUri().toString());
+			}
+
+			Cursor docCursor = contentResolver.query(docUri,
+					new String[]{
+							DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+							DocumentsContract.Document.COLUMN_MIME_TYPE,
+							DocumentsContract.Document.COLUMN_DOCUMENT_ID
+					},
+					null, null, null);
+			if (docCursor != null) {
+				try {
+					while (docCursor.moveToNext()) {
+						Log.e(TAG, "name =" + docCursor.getString(0)
+								+ ", mime=" + docCursor.getString(1)
+								+ ", id=" + docCursor.getString(2));
+//				    mCurrentDirectoryUri = uri;
+//				    mCurrentDirectoryTextView.setText(docCursor.getString(0));
+					}
+				} finally {
+//			    	closeQuietly(docCursor);
+					docCursor.close();
+				}
+			}
+
+			Cursor childCursor = contentResolver.query(childrenUri,
+					new String[]{
+							DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+							DocumentsContract.Document.COLUMN_MIME_TYPE,
+							DocumentsContract.Document.COLUMN_DOCUMENT_ID
+					}, null, null, null);
+			if (childCursor != null) {
+				try {
+//					List<DirectoryEntry> directoryEntries = new ArrayList<>();
+					while (childCursor.moveToNext()) {
+						Log.i(TAG, "name =" + childCursor.getString(0)
+								+ ", mime=" + childCursor.getString(1)
+								+ ", id=" + childCursor.getString(2));
+
+//				        DirectoryEntry entry = new DirectoryEntry();
+//				        entry.fileName = childCursor.getString(0);
+//				        entry.mimeType = childCursor.getString(1);
+//			        	directoryEntries.add(entry);
+					}
+//			        mAdapter.setDirectoryEntries(directoryEntries);
+//			        mAdapter.notifyDataSetChanged();
+				} finally {
+					childCursor.close();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -406,27 +483,27 @@ public class FileListFragment extends Fragment {
 	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		final List<File> mDataset;
 		@SuppressWarnings("unused")
-		protected Activity mActivity;
+		Activity mActivity;
 		Context mContext;
 
-		public FileListAdapter(Activity activity, List<File> dataset) {
+		FileListAdapter(Activity activity, List<File> dataset) {
 			mActivity = activity;
 			mDataset = dataset;
 		}
 
-		public void clear() {
+		void clear() {
 			mDataset.clear();
 		}
 
-		public void add(File item) {
+		void add(File item) {
 			mDataset.add(item);
 		}
 
-		public void insert(File item, @SuppressWarnings("SameParameterValue") int index) {
+		void insert(File item, @SuppressWarnings("SameParameterValue") int index) {
 			mDataset.add(index, item);
 		}
 
-		public void sort(Comparator<File> comparator) {
+		void sort(Comparator<File> comparator) {
 			//noinspection Java8ListSort
 			Collections.sort(mDataset, comparator);
 		}
@@ -510,15 +587,15 @@ public class FileListFragment extends Fragment {
 				String p = file.getParent();
 				if (p == null) {
 					fileName = ".";
-					fileImageResourceId = R.drawable.ic_android;
+					fileImageResourceId = R.drawable.ic_android_white;
 				} else {
 					fileName = file.getParentFile().getName() + "/..";
-					fileImageResourceId = R.drawable.ic_file_upload;
+					fileImageResourceId = R.drawable.ic_arrow_upward_white;
 				}
 			} else {
 				fileTime = Helper.TimeHelper.getLasModified(file);
 				fileName = file.getName();
-				fileImageResourceId = file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder_open;
+				fileImageResourceId = file.isFile() ? R.drawable.ic_description_white : R.drawable.ic_folder_white;
 			}
 
 			if (fileTime == null) {
@@ -539,14 +616,14 @@ public class FileListFragment extends Fragment {
 			return mDataset.size();
 		}
 
-		public class ViewHolder extends RecyclerView.ViewHolder {
-			public final View mItemView;
-			public final TextView mFileTimeTextView;
-			public final TextView mFileNameTextView;
-			public final ImageView mFileImageView;
-			public final FloatingActionButton mFileFab;
+		class ViewHolder extends RecyclerView.ViewHolder {
+			final View mItemView;
+			final TextView mFileTimeTextView;
+			final TextView mFileNameTextView;
+			final ImageView mFileImageView;
+			final FloatingActionButton mFileFab;
 
-			public ViewHolder(View itemView) {
+			ViewHolder(View itemView) {
 				super(itemView);
 				mItemView = itemView;
 				mFileTimeTextView = (TextView) itemView.findViewById(R.id.file_time);
@@ -558,7 +635,7 @@ public class FileListFragment extends Fragment {
 	}
 
 	private class LooperHandler extends Handler {
-		public LooperHandler(Looper looper) {
+		LooperHandler(Looper looper) {
 			super(looper);
 		}
 

@@ -123,7 +123,7 @@ public class BackupActivity extends AppCompatActivity
 			logD("onBackPressed()");
 		}
 
-		mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+		mFab = (FloatingActionButton) view.findViewById(R.id.fab_work_path_main);
 		if (mFab != null) {
 			mFab.setOnClickListener(new View.OnClickListener() {
 				private void animationFab() {
@@ -154,7 +154,7 @@ public class BackupActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_backup, menu);
+		getMenuInflater().inflate(R.menu.backup_menu, menu);
 		return true;
 	}
 
@@ -213,11 +213,11 @@ public class BackupActivity extends AppCompatActivity
 	@Override
 	public String refresh(int menuId) {
 		switch (menuId) {
-			case R.id.toolbar_backup_path_menu_home:
+			case R.id.nav_home:
 				if (!refresh(Helper.Pref.getBackupPath(getContext())))
 					show("백업 폴더가 없습니다");
 				break;
-			case R.id.toolbar_backup_path_menu_backup:
+			case R.id.nav_backup:
 				backup();
 				break;
 		}
@@ -225,10 +225,10 @@ public class BackupActivity extends AppCompatActivity
 		return null;
 	}
 
-	@Override
-	public View getFab() {
-		return mFab;
-	}
+//	@Override
+//	public View getFab() {
+//		return mFab;
+//	}
 
 	private String restore() {
 		String ret;

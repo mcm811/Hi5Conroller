@@ -3,6 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:background="@color/green_100"
              tools:context="com.changyoung.hi5controller.WeldConditionFragment">
 
 	<ImageView
@@ -60,14 +61,28 @@
 		android:layout_gravity="top">
 
 		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/weld_condition_fab"
+			android:id="@+id/fab_weld_condition_main"
 			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|start"
+			android:layout_margin="5dp"
+			android:src="@drawable/ic_view_module_white"
+			android:transitionName="@string/transitionNameFab"
+			app:backgroundTint="@color/green_A400"
+			app:elevation="6dp"
+			tools:targetApi="lollipop"/>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/fab_weld_condition_storage"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
 			android:layout_margin="5dp"
-			android:src="@drawable/ic_view_module_white_48dp"
-			android:transitionName="@string/transitionNameFab"
-			app:backgroundTint="@color/red_A200"
-			tools:targetApi="lollipop"/>
+			android:clickable="true"
+			android:focusable="true"
+			android:src="@drawable/ic_storage_white"
+			app:backgroundTint="@color/green_A400"
+			app:elevation="6dp"/>
+
 	</android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

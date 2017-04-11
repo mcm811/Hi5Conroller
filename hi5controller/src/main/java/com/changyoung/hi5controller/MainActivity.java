@@ -1,17 +1,15 @@
 package com.changyoung.hi5controller;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -30,15 +28,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-
-import static android.os.Build.VERSION_CODES.M;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener,
@@ -46,7 +39,10 @@ public class MainActivity extends AppCompatActivity
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
 	private final static String TAG = "HI5:MainActivity";
+
 	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
+	private final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
 	private DrawerLayout mDrawer;
@@ -64,10 +60,8 @@ public class MainActivity extends AppCompatActivity
 		return this;
 	}
 
-	@SuppressWarnings("EmptyMethod")
-	@TargetApi(25)
-	private void createAccessIntent() {
 /*
+	private void createAccessIntent() {
 		if (BuildConfig.DEBUG) {
 			try {
 				StorageManager sm = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
@@ -87,28 +81,30 @@ public class MainActivity extends AppCompatActivity
 				e.printStackTrace();
 			}
 		}
-*/
 	}
+*/
 
-	@TargetApi(M)
-	private void checkPermissionExternalStorage() {
-		int writeExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		int readExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-		logD("WRITE_EXTERNAL_STORAGE : " + writeExtPerm);
-		logD("READ_EXTERNAL_STORAGE : " + readExtPerm);
-
-		if (writeExtPerm != PackageManager.PERMISSION_GRANTED || readExtPerm != PackageManager.PERMISSION_GRANTED) {
-			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-				Toast.makeText(this, "Read/Write external storage", Toast.LENGTH_SHORT).show();
+	private void checkPermissionExternalStorageRecordAudio() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			int writeExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+			int readExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+			int recordAudioPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+			if (recordAudioPerm != PackageManager.PERMISSION_GRANTED
+					|| writeExtPerm != PackageManager.PERMISSION_GRANTED
+					|| readExtPerm != PackageManager.PERMISSION_GRANTED) {
+				if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+					Toast.makeText(this, "Read/Write external storage", Toast.LENGTH_SHORT).show();
+				}
+				ActivityCompat.requestPermissions(this,
+						new String[]{
+								Manifest.permission.WRITE_EXTERNAL_STORAGE,
+								Manifest.permission.READ_EXTERNAL_STORAGE,
+								Manifest.permission.RECORD_AUDIO
+						},
+						PERMISSION_REQUEST_EXTERNAL_STORAGE);
+			} else {
+				Log.e(TAG, "permission has been granted");
 			}
-			ActivityCompat.requestPermissions(this,
-					new String[]{
-							Manifest.permission.READ_EXTERNAL_STORAGE,
-							Manifest.permission.WRITE_EXTERNAL_STORAGE
-					},
-					PERMISSION_REQUEST_EXTERNAL_STORAGE);
-		} else {
-			logD("permission has been granted");
 		}
 	}
 
@@ -118,15 +114,39 @@ public class MainActivity extends AppCompatActivity
 	                                       @NonNull int[] grantResults) {
 		switch (requestCode) {
 			case PERMISSION_REQUEST_EXTERNAL_STORAGE:
-				if (grantResults[0] == PackageManager.PERMISSION_GRANTED
-						&& grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-					logD("Permission granted");
-				} else {
-					logD("Permission always deny");
+				if (grantResults.length > 0) {
+					if (grantResults[0] == PackageManager.PERMISSION_GRANTED
+							&& grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+						Log.e(TAG, "External storage permission granted");
+					} else {
+						Log.e(TAG, "External storage permission always deny");
+					}
+					if (grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+						Log.e(TAG, "Record audio permission granted");
+					} else {
+						Log.e(TAG, "Record audio permission always deny");
+					}
 				}
 				break;
 		}
 	}
+
+//	@Override
+//	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+//		int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+//		logD("onActivityResult");
+//		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+//			if (resultData != null) {
+//				Uri pickedDirUri = resultData.getData();
+//				if (pickedDirUri != null) {
+//					String path = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
+//					String uri = pickedDirUri.toString();
+//					onSetWorkUri(uri, path);
+//					show("경로 설정 완료: " + path);
+//				}
+//			}
+//		}
+//	}
 
 	private void show(String msg) {
 		try {
@@ -150,14 +170,12 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		checkPermissionExternalStorage();
-		createAccessIntent();
+		checkPermissionExternalStorageRecordAudio();
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		if (toolbar != null) {
 			toolbar.setOnClickListener(v -> onBackPressed());
-//			toolbar.setOnLongClickListener(v -> onExitDialog());
 			logD("TITLE:" + toolbar.getTitle().toString());
 		} else {
 			logD("TITLE:" + "toolbar is null");
@@ -177,6 +195,19 @@ public class MainActivity extends AppCompatActivity
 //				@Override
 //				public void onClick(View v) {
 //					startActivity(new Intent(MainActivity.this, BackupActivity.class));
+//				}
+//			});
+//		}
+
+//		FloatingActionButton mFabStorage = (FloatingActionButton) findViewById(R.id.fab_main_storage);
+//		if (mFabStorage != null) {
+//			mFabStorage.setOnClickListener(v -> {
+//				logD("FabStorage:Main");
+//				int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+//				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+//					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
+//					logD("FabStorage:Main:OPEN_DIRECTORY_REQUEST_CODE");
 //				}
 //			});
 //		}
@@ -250,19 +281,19 @@ public class MainActivity extends AppCompatActivity
 				mViewPager.setCurrentItem(tab.getPosition(), true);
 				mBackPressedCount = 0;
 				switch (tab.getPosition()) {
-					case PagerAdapter.WORK_PATH_FRAGMENT:
+					case PagerAdapter.WELD_COUNT_FRAGMENT:
 						toolBarLayoutColorId = R.color.tab1_tablayout_background;
 						toolBarColorId = R.color.tab1_actionbar_background;
 						tabLayoutColorId = R.color.tab1_tablayout_background;
 						tabIndicatorColorId = R.color.tab1_tabindicator_background;
 						break;
-					case PagerAdapter.WELD_COUNT_FRAGMENT:
+					case PagerAdapter.WELD_CONDITION_FRAGMENT:
 						toolBarLayoutColorId = R.color.tab2_tablayout_background;
 						toolBarColorId = R.color.tab2_actionbar_background;
 						tabLayoutColorId = R.color.tab2_tablayout_background;
 						tabIndicatorColorId = R.color.tab2_tabindicator_background;
 						break;
-					case PagerAdapter.WELD_CONDITION_FRAGMENT:
+					case PagerAdapter.WORK_PATH_FRAGMENT:
 						toolBarLayoutColorId = R.color.tab3_tablayout_background;
 						toolBarColorId = R.color.tab3_actionbar_background;
 						tabLayoutColorId = R.color.tab3_tablayout_background;
@@ -339,13 +370,12 @@ public class MainActivity extends AppCompatActivity
 
 	private void onExitDialog() {
 		Helper.UiHelper.adMobExitDialog(this);
-		//super.onBackPressed();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_main, menu);
+		getMenuInflater().inflate(R.menu.main_toolbar_menu, menu);
 		return true;
 	}
 
@@ -355,76 +385,76 @@ public class MainActivity extends AppCompatActivity
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		mBackPressedCount = 0;
-		int id = item.getItemId();
 
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
-			show(getResources().getString(R.string.action_settings));
-			return true;
-		}
-		if (id == R.id.action_backup) {
-			final FloatingActionButton fab = (FloatingActionButton) getFab();
-			if (fab != null && android.os.Build.VERSION.SDK_INT
-					>= android.os.Build.VERSION_CODES.LOLLIPOP) {
-				if (mTabLayout.getSelectedTabPosition() == PagerAdapter.WORK_PATH_FRAGMENT) {
-					ActivityOptions options = ActivityOptions
-							.makeSceneTransitionAnimation(this, fab, "fab");
-					startActivity(new Intent(this, BackupActivity.class), options.toBundle());
-				} else {
-					final Intent intent = new Intent(this, BackupActivity.class);
-					final ActivityOptions options = ActivityOptions
-							.makeSceneTransitionAnimation(this, fab, "fab");
-					TranslateAnimation translateAnimation = new TranslateAnimation(
-							TranslateAnimation.RELATIVE_TO_SELF, 0f,
-							TranslateAnimation.ABSOLUTE, (mTabLayout.getRight() - fab.getRight()) - fab.getLeft(),
-							TranslateAnimation.RELATIVE_TO_SELF, 0f,
-							TranslateAnimation.RELATIVE_TO_SELF, 0f);
-					translateAnimation.setDuration(400);
-					translateAnimation.setInterpolator(new DecelerateInterpolator());
-					translateAnimation.setAnimationListener(new Animation.AnimationListener() {
-						@Override
-						public void onAnimationStart(Animation animation) {
-
-						}
-
-						@Override
-						public void onAnimationEnd(Animation animation) {
-							startActivity(intent, options.toBundle());
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-
-						}
-					});
-					fab.startAnimation(translateAnimation);
-				}
-			} else {
+		switch (item.getItemId()) {
+			case R.id.action_main_toolbar_exit:
+				onExitDialog();
+//				finish();
+				break;
+			case R.id.action_main_toolbar_restore:
+//				final FloatingActionButton fab = (FloatingActionButton) getFab();
+//				if (fab != null && android.os.Build.VERSION.SDK_INT
+//						>= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//					if (mTabLayout.getSelectedTabPosition() == PagerAdapter.WORK_PATH_FRAGMENT) {
+//						ActivityOptions options = ActivityOptions
+//								.makeSceneTransitionAnimation(this, fab, "fab");
+//						startActivity(new Intent(this, BackupActivity.class), options.toBundle());
+//					} else {
+//						final Intent intent = new Intent(this, BackupActivity.class);
+//						final ActivityOptions options = ActivityOptions
+//								.makeSceneTransitionAnimation(this, fab, "fab");
+//						TranslateAnimation translateAnimation = new TranslateAnimation(
+//								TranslateAnimation.RELATIVE_TO_SELF, 0f,
+//								TranslateAnimation.ABSOLUTE, (mTabLayout.getRight() - fab.getRight()) - fab.getLeft(),
+//								TranslateAnimation.RELATIVE_TO_SELF, 0f,
+//								TranslateAnimation.RELATIVE_TO_SELF, 0f);
+//						translateAnimation.setDuration(400);
+//						translateAnimation.setInterpolator(new DecelerateInterpolator());
+//						translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+//							@Override
+//							public void onAnimationStart(Animation animation) {
+//
+//							}
+//
+//							@Override
+//							public void onAnimationEnd(Animation animation) {
+//								startActivity(intent, options.toBundle());
+//							}
+//
+//							@Override
+//							public void onAnimationRepeat(Animation animation) {
+//
+//							}
+//						});
+//						fab.startAnimation(translateAnimation);
+//					}
+//				} else {
+//					startActivity(new Intent(this, BackupActivity.class));
+//				}
 				startActivity(new Intent(this, BackupActivity.class));
-			}
-			return true;
+				break;
+			case R.id.action_main_toolbar_backup:
+				String ret = Helper.FileHelper.backup(getContext(), mTabLayout);
+				if (ret != null)
+					show(ret);
+				break;
 		}
-//		if (id == R.id.action_exit) {
-//			finish();
-//			return true;
-//		}
 
 		return super.onOptionsItemSelected(item);
 	}
 
-	private View getFab() {
-		View fab = null;
-		try {
-			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
-					.getItem(mTabLayout.getSelectedTabPosition());
-			if (refresh != null)
-				fab = refresh.getFab();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return fab;
-	}
+//	private View getFab() {
+//		View fab = null;
+//		try {
+//			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+//					.getItem(mTabLayout.getSelectedTabPosition());
+//			if (refresh != null)
+//				fab = refresh.getFab();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return fab;
+//	}
 
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -432,10 +462,14 @@ public class MainActivity extends AppCompatActivity
 
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
+		logD("ID:" + id);
+
 		if (id == R.id.nav_weld_count) {
 			mViewPager.setCurrentItem(PagerAdapter.WELD_COUNT_FRAGMENT, true);
 		} else if (id == R.id.nav_weld_condition) {
 			mViewPager.setCurrentItem(PagerAdapter.WELD_CONDITION_FRAGMENT, true);
+		} else if (id == R.id.nav_home) {
+			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_storage) {
 			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_sdcard) {
@@ -447,15 +481,17 @@ public class MainActivity extends AppCompatActivity
 		} else if (id == R.id.nav_backup) {
 			startActivity(new Intent(MainActivity.this, BackupActivity.class));
 		} else if (id == R.id.nav_exit) {
-			finish();
+			onExitDialog();
+//			finish();
 		}
 		mDrawer.closeDrawer(GravityCompat.START);
 
 		try {
 			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
 					.getItem(mTabLayout.getSelectedTabPosition());
-			if (refresh != null)
+			if (refresh != null) {
 				show(refresh.refresh(id));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -474,7 +510,12 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public String onGetWorkPath() {
-		return Helper.Pref.getWorkPath(getContext());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Uri uri = Uri.parse(onGetWorkUri());
+			return Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+		} else {
+			return Helper.Pref.getWorkPath(getContext());
+		}
 	}
 
 	@Override
@@ -482,7 +523,34 @@ public class MainActivity extends AppCompatActivity
 		logD("onSetWorkPath");
 		Helper.Pref.setWorkPath(getContext(), path);
 
-		final int[] tabs = { PagerAdapter.WELD_COUNT_FRAGMENT, PagerAdapter.WELD_CONDITION_FRAGMENT };
+		final int[] tabs = {
+				PagerAdapter.WELD_COUNT_FRAGMENT,
+				PagerAdapter.WELD_CONDITION_FRAGMENT,
+				PagerAdapter.WORK_PATH_FRAGMENT
+		};
+		for (int tab : tabs) {
+			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
+			if (refresh != null)
+				refresh.refresh(true);
+		}
+	}
+
+	@Override
+	public String onGetWorkUri() {
+		return Helper.Pref.getWorkUri(getContext());
+	}
+
+	@Override
+	public void onSetWorkUri(String uri, String path) {
+		logD("onSetWorkUri");
+		Helper.Pref.setWorkUri(getContext(), uri);
+		Helper.Pref.setWorkPath(getContext(), path);
+
+		final int[] tabs = {
+				PagerAdapter.WELD_COUNT_FRAGMENT,
+				PagerAdapter.WELD_CONDITION_FRAGMENT,
+				PagerAdapter.WORK_PATH_FRAGMENT
+		};
 		for (int tab : tabs) {
 			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
 			if (refresh != null)
@@ -491,9 +559,9 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public static class PagerAdapter extends FragmentStatePagerAdapter {
-		final static int WORK_PATH_FRAGMENT = 0;
-		final static int WELD_COUNT_FRAGMENT = 1;
-		final static int WELD_CONDITION_FRAGMENT = 2;
+		final static int WELD_COUNT_FRAGMENT = 0;
+		final static int WELD_CONDITION_FRAGMENT = 1;
+		final static int WORK_PATH_FRAGMENT = 2;
 		final static int NUM_OF_TABS = 3;
 
 		private final Context mContext;
@@ -514,16 +582,15 @@ public class MainActivity extends AppCompatActivity
 		public Fragment getItem(int position) {
 			if (mFragments[position] == null) {
 				switch (position) {
-					case WORK_PATH_FRAGMENT:
-						mFragments[position] = new WorkPathFragment();
-						break;
 					case WELD_COUNT_FRAGMENT:
 						mFragments[position] = new WeldCountFragment();
 						break;
 					case WELD_CONDITION_FRAGMENT:
 						mFragments[position] = new WeldConditionFragment();
 						break;
-
+					case WORK_PATH_FRAGMENT:
+						mFragments[position] = new WorkPathFragment();
+						break;
 				}
 			}
 			return mFragments[position];
@@ -532,12 +599,12 @@ public class MainActivity extends AppCompatActivity
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case WORK_PATH_FRAGMENT:
-					return mContext.getResources().getString(R.string.work_path_fragment);
 				case WELD_COUNT_FRAGMENT:
 					return mContext.getResources().getString(R.string.weld_count_fragment);
 				case WELD_CONDITION_FRAGMENT:
 					return mContext.getResources().getString(R.string.weld_condition_fragment);
+				case WORK_PATH_FRAGMENT:
+					return mContext.getResources().getString(R.string.work_path_fragment);
 			}
 			return super.getPageTitle(position);
 		}

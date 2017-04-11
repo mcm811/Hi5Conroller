@@ -1,7 +1,10 @@
 package com.changyoung.hi5controller;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,21 +24,24 @@ import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
+ * Activities that contain this mFileListFragment must implement the
  * {@link OnWorkPathListener} interface
  * to handle interaction events.
  * Use the {@link WorkPathFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * create an instance of this mFileListFragment.
  */
 public class WorkPathFragment extends Fragment implements Refresh {
 	private static final String TAG = "HI5:WorkPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
-	private FileListFragment fragment;
+	private static final String ARG_WORK_URI = "workUri";
+	private FileListFragment mFileListFragment;
 	private View mView;
 	private String mWorkPath;
-	private FloatingActionButton mFab;
+	private String mWorkUri;
+	private FloatingActionButton mFabMain;
 
 	private OnWorkPathListener mListener;
+	private int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 
 	public WorkPathFragment() {
 		// Required empty public constructor
@@ -43,25 +49,41 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 	/**
 	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
+	 * this mFileListFragment using the provided parameters.
 	 *
 	 * @param workPath Parameter 1.
-	 * @return A new instance of fragment WorkPathFragment.
+	 * @return A new instance of mFileListFragment WorkPathFragment.
 	 */
 	@SuppressWarnings("unused")
-	public static WorkPathFragment newInstance(String workPath) {
+	public static WorkPathFragment newInstance(String workPath, String workUri) {
 		WorkPathFragment fragment = new WorkPathFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_WORK_PATH, workPath);
+		args.putString(ARG_WORK_URI, workUri);
 		fragment.setArguments(args);
 		return fragment;
 	}
 
-/*
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+		logD("onActivityResult");
+		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			if (resultData != null) {
+				Uri pickedDirUri = resultData.getData();
+				if (pickedDirUri != null) {
+					mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
+					mWorkUri = pickedDirUri.toString();
+					onSetWorkUri(mWorkUri, mWorkPath);
+					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
+					if (etPath != null) {
+						etPath.setText(mWorkPath);
+						logD("etPath:" + mWorkPath);
+					}
+					show("경로 설정 완료: " + mWorkPath);
+				}
+			}
+		}
 	}
-*/
 
 	private void logD(String msg) {
 		try {
@@ -74,12 +96,17 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	@Override
 	public void refresh(boolean forced) {
 		try {
-			if (forced && isAdded()) {
-				EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
-				FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-				etPath.setText(onGetWorkPath());
-				workPathFragment.refreshFilesList(etPath.getText().toString());
-			}
+			mWorkUri = onGetWorkUri();
+			mWorkPath = onGetWorkPath();
+			logD("[refresh]:" + mWorkPath);
+
+			EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
+			if (etPath != null)
+				etPath.setText(mWorkPath);
+
+			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+			if (workPathFragment != null)
+				workPathFragment.refreshFilesList(mWorkPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -108,36 +135,36 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	public String refresh(int menuId) {
 		String ret = null;
 		switch (menuId) {
-			case R.id.toolbar_work_path_menu_home:
+			case R.id.nav_home:
 				if (!refresh(onGetWorkPath()))
 					ret = "경로 이동 실패: " + onGetWorkPath();
 				break;
 			case R.id.nav_storage:
-			case R.id.toolbar_work_path_menu_storage:
 				if (!refresh(Helper.Pref.STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
-			case R.id.toolbar_work_path_menu_sdcard:
 				if (!refresh(Helper.Pref.EXTERNAL_STORAGE_PATH))
 					ret = "경로 이동 실패: " + Helper.Pref.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
-			case R.id.toolbar_work_path_menu_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
 					File dir = new File(Helper.Pref.STORAGE_PATH);
-					for (File file : dir.listFiles()) {
-						if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
-							try {
-								for (File subItem : file.listFiles()) {
-									if (subItem.exists() && refresh(file.getPath())) {
-										ret = null;
-										break;
+					File[] dirs = dir.listFiles();
+					if (dirs != null) {
+						for (File file : dirs) {
+							if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
+								try {
+									for (File subItem : file.listFiles()) {
+										if (subItem.exists() && refresh(file.getPath())) {
+											ret = null;
+											break;
+										}
 									}
+								} catch (NullPointerException e) {
+									Log.i(TAG, e.getLocalizedMessage());
 								}
-							} catch (NullPointerException e) {
-								Log.i(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
@@ -147,23 +174,47 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				}
 				break;
 			case R.id.nav_usbstorage:
-			case R.id.toolbar_work_path_menu_usbstorage:
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
 					File dir = new File(Helper.Pref.STORAGE_PATH);
 					Log.i(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
-					for (File file : dir.listFiles()) {
-						if (file.getName().toLowerCase().startsWith("usb")) {
-							try {
-								for (File subItem : file.listFiles()) {
-									if (subItem.exists() && refresh(file.getPath())) {
-										Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
-										ret = null;
-										break;
+					File[] dirs = dir.listFiles();
+					if (dirs != null) {
+						for (File file : dirs) {
+							if (file.getName().toLowerCase().startsWith("usb")) {
+								try {
+									File[] filteredFiles = file.listFiles();
+									if (filteredFiles != null) {
+										for (File subItem : filteredFiles) {
+											if (subItem.exists() && refresh(file.getPath())) {
+												Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
+												ret = null;
+												break;
+											}
+										}
+									}
+								} catch (NullPointerException e) {
+									Log.i(TAG, e.getLocalizedMessage());
+								}
+							}
+						}
+						if (ret != null) {
+							for (File file : dirs) {
+								String filename = file.getName();
+								if (!filename.equalsIgnoreCase("emulated")
+										&& !filename.equalsIgnoreCase("enc_emulated")
+										&& !filename.equalsIgnoreCase("self")) {
+									File[] filteredFiles = file.listFiles();
+									if (filteredFiles != null) {
+										for (File subItem : filteredFiles) {
+											if (subItem.exists() && refresh(file.getPath())) {
+												Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
+												ret = null;
+												break;
+											}
+										}
 									}
 								}
-							} catch (NullPointerException e) {
-								Log.i(TAG, e.getLocalizedMessage());
 							}
 						}
 					}
@@ -178,7 +229,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 	@Override
 	public String onBackPressedFragment() {
-		return isAdded() ? fragment.refreshParent() : null;
+		return isAdded() ? mFileListFragment.refreshParent() : null;
 	}
 
 	@Override
@@ -200,33 +251,37 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 	public void onPathChanged(String path) {
 		try {
-			if (isAdded()) {
+			if (isAdded()) {    // Return true if the mFileListFragment is currently added to its activity.
 				mWorkPath = onGetWorkPath();
 				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 				etPath.setText(path);
-				FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
-				if (mWorkPath.compareTo(path) == 0) {
-					fab.setImageResource(R.drawable.ic_archive_white);
-				} else {
-					fab.setImageResource(R.drawable.ic_done_white);
-				}
+//				FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_main);
+//				if (fab != null) {
+//					if (mWorkPath.compareTo(path) == 0) {
+//						fab.setImageResource(R.drawable.ic_archive_white);
+//					} else {
+//						fab.setImageResource(R.drawable.ic_done_white);
+//					}
+//				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public View getFab() {
-		return mFab;
-	}
+//	public View getFab() {
+//		return mFabMain;
+//	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			mWorkPath = getArguments().getString(ARG_WORK_PATH);
+			mWorkPath = getArguments().getString(ARG_WORK_URI);
 		} else {
 			mWorkPath = onGetWorkPath();
+			mWorkUri = onGetWorkUri();
 		}
 	}
 
@@ -237,18 +292,18 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		mView = inflater.inflate(R.layout.fragment_work_path, container, false);
 
 		String path = mWorkPath;
-		fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-		if (fragment == null) {
-			Log.i(TAG, "fragment == null");
-			fragment = FileListFragment.newInstance(path);
+		mFileListFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+		if (mFileListFragment == null) {
+			Log.i(TAG, "mFileListFragment == null");
+			mFileListFragment = FileListFragment.newInstance(path);
 			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-			transaction.replace(R.id.work_path_fragment, fragment);
+			transaction.replace(R.id.work_path_fragment, mFileListFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
 		}
 
-		fragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
-		fragment.refreshFilesList(path);
+		mFileListFragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
+		mFileListFragment.refreshFilesList(path);
 		@SuppressLint("CutPasteId") EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
 		etPath.setOnFocusChangeListener((v, hasFocus) -> {
@@ -275,27 +330,32 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			return false;
 		});
 
-		FloatingActionButton mHomeFab = (FloatingActionButton) mView.findViewById(R.id.home_fab);
-		if (mHomeFab != null) {
-			mHomeFab.setOnClickListener(v -> {
-				show(refresh(R.id.toolbar_work_path_menu_home));
-				logD("HomeFab");
+		FloatingActionButton mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_home);
+		if (mFabHome != null) {
+			mFabHome.setOnClickListener(v -> {
+				show(refresh(R.id.nav_home));
+				logD("FabHome");
 			});
 		}
 
-		FloatingActionButton mUsbFab = (FloatingActionButton) mView.findViewById(R.id.usb_fab);
-		if (mUsbFab != null) {
-			mUsbFab.setOnClickListener(v -> {
-				show(refresh(R.id.nav_usbstorage));
-				logD("UsbFab");
+		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_storage);
+		if (mFabStorage != null) {
+			mFabStorage.setOnClickListener(v -> {
+				logD("FabStorage");
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
+					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
+				} else {
+					show(refresh(R.id.nav_usbstorage));
+				}
 			});
-
 		}
 
-		mFab = (FloatingActionButton) mView.findViewById(R.id.fab);
-		if (mFab != null) {
+		mFabMain = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_main);
+		if (mFabMain != null) {
 			//noinspection SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue
-			mFab.setOnClickListener(new View.OnClickListener() {
+			mFabMain.setOnClickListener(new View.OnClickListener() {
 				private void scaleAnimationFab(@SuppressWarnings("SameParameterValue") final float from, @SuppressWarnings("SameParameterValue") final float to) {
 					ScaleAnimation shrink = new ScaleAnimation(from, to, from, to,
 							Animation.RELATIVE_TO_SELF, 0.5f,
@@ -315,7 +375,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 									Animation.RELATIVE_TO_SELF, 0.5f);
 							expand.setDuration(250);
 							expand.setInterpolator(new DecelerateInterpolator());
-							mFab.startAnimation(expand);
+							mFabMain.startAnimation(expand);
 						}
 
 						@Override
@@ -323,7 +383,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 
 						}
 					});
-					mFab.startAnimation(shrink);
+					mFabMain.startAnimation(shrink);
 				}
 
 				@Override
@@ -386,6 +446,13 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		frameLayout.addView(adView, frameLayout.getChildCount() - 1);
 */
 
+/*
+		NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+		if (navigationView != null) {
+			navigationView.setNavigationItemSelectedListener(WorkPathFragment.this);
+		}
+*/
+
 		return mView;
 	}
 
@@ -398,6 +465,19 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	private String onGetWorkPath() {
 		if (mListener != null) {
 			return mListener.onGetWorkPath();
+		}
+		return null;
+	}
+
+	private void onSetWorkUri(String uri, String path) {
+		if (mListener != null) {
+			mListener.onSetWorkUri(uri, path);
+		}
+	}
+
+	private String onGetWorkUri() {
+		if (mListener != null) {
+			return mListener.onGetWorkUri();
 		}
 		return null;
 	}
@@ -420,12 +500,12 @@ public class WorkPathFragment extends Fragment implements Refresh {
 		mListener = null;
 		mView = null;
 		mWorkPath = null;
-		fragment = null;
+		mFileListFragment = null;
 	}
 
 	/**
 	 * This interface must be implemented by activities that contain this
-	 * fragment to allow an interaction in this fragment to be communicated
+	 * mFileListFragment to allow an interaction in this mFileListFragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
 	 * <p/>
@@ -435,7 +515,10 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
-
 		void onSetWorkPath(String path);
+
+		String onGetWorkUri();
+
+		void onSetWorkUri(String uri, String path);
 	}
 }

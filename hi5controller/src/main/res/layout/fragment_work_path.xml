@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
 	android:id="@+id/frame_layout"
-	xmlns:ads="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:background="@color/blue_100"
 	tools:context="com.changyoung.hi5controller.WorkPathFragment">
 
 	<LinearLayout
@@ -74,43 +74,46 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
+		<!--
+				<android.support.design.widget.FloatingActionButton
+					android:id="@+id/fab_work_path_main"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="bottom|start"
+					android:layout_margin="5dp"
+					android:src="@drawable/ic_done_white"
+					android:transitionName="@string/transitionNameFab"
+					app:backgroundTint="@color/blue_A400"
+					app:elevation="6dp"
+					tools:ignore="UnusedAttribute"/>
+		-->
+
 		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab"
+			android:id="@+id/fab_work_path_home"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|start"
-			android:layout_margin="5dp"
-			android:src="@drawable/ic_done_white"
-			android:transitionName="@string/transitionNameFab"
-			ads:backgroundTint="@color/red_A200"
-			app:borderWidth="0dp"
-			app:elevation="6dp"
-			tools:ignore="UnusedAttribute"/>
-
-		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/usb_fab"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
 			android:layout_marginBottom="5dp"
-			android:layout_marginEnd="80dp"
-			android:clickable="true"
-			android:focusable="true"
-			android:src="@drawable/ic_usb_white"
-			ads:backgroundTint="@color/green_A200"
-			ads:elevation="6dp"/>
-
-		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/home_fab"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
-			android:layout_margin="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
 			android:clickable="true"
 			android:focusable="true"
 			android:src="@drawable/ic_home_white"
-			ads:backgroundTint="@color/light_blue_A200"
-			ads:elevation="6dp"/>
+			app:backgroundTint="@color/blue_A400"
+			app:elevation="6dp"/>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/fab_work_path_storage"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_margin="5dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:src="@drawable/ic_storage_white"
+			app:backgroundTint="@color/blue_A400"
+			app:elevation="6dp"/>
 	</android.support.design.widget.CoordinatorLayout>
 
 </FrameLayout>

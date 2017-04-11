@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -56,8 +57,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,13 +85,14 @@ public class WeldConditionFragment extends Fragment
 	private Snackbar snackbar;
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mSqueezeForceRecyclerView;
-	private FloatingActionButton mFab;
-	private int mFabImageId = R.drawable.ic_view_module_white_48dp;
+	private FloatingActionButton mFabMain;
+	private int mFabImageId = R.drawable.ic_view_module_white;
 	private WeldConditionSqueezeForceAdapter mSqueezeForceAdapter;
 
 	private LooperHandler looperHandler;
 	private WeldConditionObserver observer;
 	private TextToSpeech mTts;
+	private SpeechRecognizer mRecognizer;
 
 	private int mLastPosition = 0;
 	private boolean mSaveFlag;
@@ -140,6 +142,26 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+		int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+		logD("onActivityResult");
+		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			if (resultData != null) {
+				Uri pickedDirUri = resultData.getData();
+				if (pickedDirUri != null) {
+					String path = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
+					String uri = pickedDirUri.toString();
+					onSetWorkUri(uri, path);
+					FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+					if (workPathFragment != null)
+						workPathFragment.refreshFilesList(path);
+					show("경로 설정 완료: " + path);
+				}
+			}
+		}
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// onCreated -> onCreatedView -> onActivityCreated
 		logD("onCreated");
@@ -164,8 +186,8 @@ public class WeldConditionFragment extends Fragment
 			refresher.setRefreshing(false);
 		});
 
-		mFab = (FloatingActionButton) mView.findViewById(R.id.weld_condition_fab);
-		mFab.setOnClickListener(v -> {
+		mFabMain = (FloatingActionButton) mView.findViewById(R.id.fab_weld_condition_main);
+		mFabMain.setOnClickListener(v -> {
 			if (mSaveFlag) {
 				mSaveFlag = false;
 				setImageFab();
@@ -177,11 +199,26 @@ public class WeldConditionFragment extends Fragment
 				mAdapter.showEditorDialog(0);
 			}
 		});
-		mFab.setOnLongClickListener(v -> {
+		mFabMain.setOnLongClickListener(v -> {
 			Helper.UiHelper.textViewActivity(getActivity(), "ROBOT.SWD",
 					Helper.FileHelper.readFileString(onGetWorkPath()));
 			return true;
 		});
+
+		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_condition_storage);
+		if (mFabStorage != null) {
+			mFabStorage.setOnClickListener(v -> {
+				logD("FabStorage");
+				int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
+					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
+				} else {
+					show(refresh(R.id.nav_usbstorage));
+				}
+			});
+		}
 
 		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
 		mRecyclerView.setHasFixedSize(true);
@@ -201,9 +238,14 @@ public class WeldConditionFragment extends Fragment
 		looperHandler = new LooperHandler(Looper.getMainLooper());
 		observer = new WeldConditionObserver(onGetWorkPath(), looperHandler);
 		observer.startWatching();
-		mTts = new TextToSpeech(getContext(), status -> {
-		});
-//		mTts.setLanguage(Locale.KOREAN);
+
+		try {
+			mTts = new TextToSpeech(getContext(), status -> {
+			});
+//			mTts.setLanguage(Locale.KOREAN);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return mView;
 	}
@@ -242,14 +284,27 @@ public class WeldConditionFragment extends Fragment
 		snackbar = null;
 		getLoaderManager().destroyLoader(0);
 		looperHandler = null;
+		if (mTts != null) {
+			mTts.shutdown();
+			mTts = null;
+		}
+		if (mRecognizer != null) {
+			mRecognizer.stopListening();
+			mRecognizer.destroy();
+			mRecognizer = null;
+		}
 	}
 
 	@Override
 	public void refresh(boolean forced) {
 		try {
 			if (isAdded()) {
-				logD("refresh: restartLoader");
+				logD("refresh:restartLoader:" + onGetWorkPath());
 				getLoaderManager().restartLoader(0, null, this);
+				if (observer != null) {
+					observer.stopWatching();
+					observer = null;
+				}
 				observer = new WeldConditionObserver(onGetWorkPath(), looperHandler);
 				observer.startWatching();
 			}
@@ -294,10 +349,12 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
+/*
 	@Override
 	public View getFab() {
-		return mFab;
+		return mFabMain;
 	}
+*/
 
 	private void setCheckedItemSnackbar() {
 		try {
@@ -354,14 +411,14 @@ public class WeldConditionFragment extends Fragment
 		else if (mAdapter.getItemCount() == 0)
 			fabImageId = R.drawable.ic_refresh_white;
 		else if (mAdapter.getSelectedItemCount() == 0) {
-			fabImageId = R.drawable.ic_view_module_white_48dp;
+			fabImageId = R.drawable.ic_view_module_white;
 			fabDelay = 350;
 		}
 		if (fabImageId == mFabImageId)
 			return;
 		mFabImageId = fabImageId;
 
-		mFab.clearAnimation();
+		mFabMain.clearAnimation();
 		final RotateAnimation animation = new RotateAnimation(0f, 180f,
 				Animation.RELATIVE_TO_SELF, 0.5f,
 				Animation.RELATIVE_TO_SELF, 0.5f);
@@ -377,7 +434,7 @@ public class WeldConditionFragment extends Fragment
 			public void onAnimationEnd(Animation animation) {
 				try {
 					if (isAdded())
-						mFab.setImageResource(mFabImageId);
+						mFabMain.setImageResource(mFabImageId);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -386,7 +443,7 @@ public class WeldConditionFragment extends Fragment
 						Animation.RELATIVE_TO_SELF, 0.5f);
 				expand.setDuration(350);
 				expand.setInterpolator(new DecelerateInterpolator());
-				mFab.startAnimation(expand);
+				mFabMain.startAnimation(expand);
 			}
 
 			@Override
@@ -394,12 +451,31 @@ public class WeldConditionFragment extends Fragment
 
 			}
 		});
-		mFab.postDelayed(() -> mFab.startAnimation(animation), fabDelay);
+		mFabMain.postDelayed(() -> mFabMain.startAnimation(animation), fabDelay);
+	}
+
+	private void onSetWorkPath(String path) {
+		if (mListener != null) {
+			mListener.onSetWorkPath(path);
+		}
 	}
 
 	private String onGetWorkPath() {
 		if (mListener != null) {
-			return mListener.onGetWorkPath() + "/ROBOT.SWD";
+			return mListener.onGetWorkPath();
+		}
+		return null;
+	}
+
+	private void onSetWorkUri(String uri, String path) {
+		if (mListener != null) {
+			mListener.onSetWorkUri(uri, path);
+		}
+	}
+
+	private String onGetWorkUri() {
+		if (mListener != null) {
+			return mListener.onGetWorkUri();
 		}
 		return null;
 	}
@@ -448,6 +524,12 @@ public class WeldConditionFragment extends Fragment
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+
+		void onSetWorkPath(String path);
+
+		String onGetWorkUri();
+
+		void onSetWorkUri(String uri, String path);
 	}
 
 	@SuppressWarnings("unused")
@@ -924,8 +1006,8 @@ public class WeldConditionFragment extends Fragment
 			File file = new File(path);
 			observer.stopWatching();
 			try {
-				FileInputStream fileInputStream = new FileInputStream(path);
-				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
+				FileInputStream inputStream = new FileInputStream(path);
+				InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "EUC-KR");
 				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
 				String rowString;
@@ -951,17 +1033,17 @@ public class WeldConditionFragment extends Fragment
 				}
 				bufferedReader.close();
 				inputStreamReader.close();
-				fileInputStream.close();
+				inputStream.close();
 
-				FileOutputStream fileOutputStream = new FileOutputStream(path);
-				OutputStreamWriter outputStreamReader = new OutputStreamWriter(fileOutputStream, "EUC-KR");
+				OutputStream outputStream = Helper.Pref.getWorkPathOutputStream(getActivity(), path);
+				OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream, "EUC-KR");
 				BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
 
 				bufferedWriter.write(sb.toString());
 
 				bufferedWriter.close();
 				outputStreamReader.close();
-				fileOutputStream.close();
+				outputStream.close();
 
 				ret = "저장 완료: " + file.getName();
 			} catch (FileNotFoundException e) {
@@ -1317,73 +1399,93 @@ public class WeldConditionFragment extends Fragment
 				mTts.speak(ttsMsg, TextToSpeech.QUEUE_FLUSH, null);
 			}
 
-			new Handler().postDelayed(() -> {
-				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-				intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
-				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+			intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
+			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+			intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getContext().getString(R.string.tts_squeeze_force_value));
 
-				SpeechRecognizer mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
-				mRecognizer.setRecognitionListener(new RecognitionListener() {
-					@Override
-					public void onReadyForSpeech(Bundle params) {
+			mRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
+			mRecognizer.setRecognitionListener(new RecognitionListener() {
+				@Override
+				public void onReadyForSpeech(Bundle params) {
 
-					}
+				}
 
-					@Override
-					public void onBeginningOfSpeech() {
+				@Override
+				public void onBeginningOfSpeech() {
 
-					}
+				}
 
-					@Override
-					public void onRmsChanged(float rmsDB) {
+				@Override
+				public void onRmsChanged(float rmsDB) {
 
-					}
+				}
 
-					@Override
-					public void onBufferReceived(byte[] buffer) {
+				@Override
+				public void onBufferReceived(byte[] buffer) {
 
-					}
+				}
 
-					@Override
-					public void onEndOfSpeech() {
+				@Override
+				public void onEndOfSpeech() {
 
-					}
+				}
 
-					@Override
-					public void onError(int error) {
+				@Override
+				public void onError(int error) {
+//					try {
+//						Thread.sleep(5000);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//					logD("MicResult:Fail: " + error);
+//					mRecognizer.startListening(intent);
+				}
 
-					}
-
-					@Override
-					public void onResults(Bundle results) {
-						String key = SpeechRecognizer.RESULTS_RECOGNITION;
-						ArrayList<String> list = results.getStringArrayList(key);
-						if (list != null) {
-							for (String item : list) {
-								try {
-									//noinspection ConstantConditions
-									tilList.get(2).getEditText()
-											.setText(String.valueOf(Integer.parseInt(item)));
-									break;
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+				@Override
+				public void onResults(Bundle results) {
+					String key = SpeechRecognizer.RESULTS_RECOGNITION;
+					ArrayList<String> list = results.getStringArrayList(key);
+					int num = -1;
+					if (list != null) {
+						for (String item : list) {
+							logD("MicResult:" + item);
+							try {
+								num = Integer.parseInt(item);
+								break;
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 					}
-
-					@Override
-					public void onPartialResults(Bundle partialResults) {
-
+					if (num != -1) {
+						try {
+							tilList.get(2).getEditText().setText(Integer.toString(num));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						logD("MicResult:Fail");
+						mRecognizer.startListening(intent);
 					}
+				}
 
-					@Override
-					public void onEvent(int eventType, Bundle params) {
+				@Override
+				public void onPartialResults(Bundle partialResults) {
 
-					}
-				});
-				mRecognizer.startListening(intent);
-			}, 2500);
+				}
+
+				@Override
+				public void onEvent(int eventType, Bundle params) {
+
+				}
+			});
+			new Handler().postDelayed(() -> mRecognizer.startListening(intent), 1500);
 		}
 
 		@Override
@@ -1398,7 +1500,7 @@ public class WeldConditionFragment extends Fragment
 					mLastPosition = position;
 				//noinspection ResourceAsColor
 				holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
-						? ContextCompat.getColor(mContext, R.color.tab3_textview_background)
+						? ContextCompat.getColor(mContext, R.color.tab2_textview_background)
 						: Color.TRANSPARENT);
 				setCheckedItemSnackbar();
 				setImageFab();
@@ -1470,8 +1572,8 @@ public class WeldConditionFragment extends Fragment
 			WeldConditionItem item = mDataset.get(position);
 			//noinspection ResourceAsColor
 			holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
-					? ContextCompat.getColor(mContext,
-					R.color.tab3_textview_background) : Color.TRANSPARENT);
+					? ContextCompat.getColor(mContext, R.color.tab2_textview_background)
+					: Color.TRANSPARENT);
 			for (int i = 0; i < holder.tvList.size(); i++) {
 				holder.tvList.get(i).setText(item.get(i));
 			}

@@ -1,5 +1,7 @@
 package com.changyoung.hi5controller;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
@@ -7,11 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.storage.StorageManager;
+import android.provider.DocumentsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,6 +42,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,9 +62,51 @@ class Helper {
 		final static String STORAGE_PATH = "/storage";
 		final static String PACKAGE_NAME = "com.changyoung.hi5controller";
 		final static String WORK_PATH_KEY = "work_path";
+		final static String WORK_URI_KEY = "work_uri";
 		final static String BACKUP_PATH_KEY = "backup_path";
 		final static String ORDER_TYPE_KEY = "order_type";
 		final static String LAYOUT_TYPE_KEY = "layout_type";
+
+		static String getWorkUri(Context context) {
+			return getPath(context, WORK_URI_KEY);
+		}
+
+		static OutputStream getWorkPathOutputStream(Context context, String path) throws IOException {
+			OutputStream outputStream = null;
+			try {
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					File file = new File(path);
+					Log.e("HI5", "File.getName:" + file.getName());
+
+					Uri wu = Uri.parse(getPath(context, WORK_URI_KEY));
+					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(wu, DocumentsContract.getTreeDocumentId(wu));
+
+					DocumentFile pickedTree = DocumentFile.fromTreeUri(context, childDocUri);
+					for (DocumentFile docFile : pickedTree.listFiles()) {
+						try {
+							if (docFile.getName().equalsIgnoreCase(file.getName())) {
+								outputStream = context.getContentResolver().openOutputStream(docFile.getUri());
+								Log.e("HI5", "docFile.getName:" + docFile.getName());
+								break;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				} else {
+					outputStream = new FileOutputStream(path, false);
+					Log.e("HI5", "FileOutputStream:" + path);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return outputStream;
+		}
+
+		static void setWorkUri(Context context, String value) {
+			setPath(context, WORK_URI_KEY, value);
+		}
 
 		static String getWorkPath(Context context) {
 			return getPath(context, WORK_PATH_KEY);
@@ -170,11 +223,22 @@ class Helper {
 		}
 
 		@SuppressWarnings("unused")
-		public static void delete(String path, boolean recursive) {
-			delete(new File(path), recursive);
+		public static void delete(Activity activity, String path, boolean recursive) throws IOException {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				delete(new File(path), recursive);
+			} else {
+				Uri uri = UriHelper.getWorkPathFileUri(activity, path);
+				if (uri != null) {
+					if (recursive) {
+						UriHelper.deleteTreeUri(activity, uri);
+					} else {
+						UriHelper.deleteUri(activity, uri);
+					}
+				}
+			}
 		}
 
-		static void delete(File dir, boolean recursive) {
+		static void delete(File dir, boolean recursive) throws IOException {
 			if (dir.isDirectory() && recursive) {
 				for (File file : dir.listFiles()) {
 					delete(file, true);
@@ -269,7 +333,7 @@ class Helper {
 
 	public static class UiHelper {
 		static void textViewActivity(Activity context, String title, String text) {
-			Intent intent = new Intent(context, TextScrollingActivity.class);
+			Intent intent = new Intent(context, TextViewerctivity.class);
 			intent.putExtra("title", title);
 			intent.putExtra("text", text);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -433,7 +497,7 @@ class Helper {
 			super.onPreExecute();
 		}
 
-		private String asyncTaskCopy(File source, File dest) {
+		private String asyncTaskCopy(File source, File dest) throws IOException {
 			if (source.isFile()) {
 				if (!dest.exists() && !dest.mkdirs())
 					return "대상 폴더 생성 실패";
@@ -472,34 +536,46 @@ class Helper {
 			return String.format("%s 완료: %s", msg, dest.getName());
 		}
 
-		private void searchFile(List<File> deleteList, File dir) {
+		private void searchFile(List<File> deleteList, File dir) throws IOException {
 			if (dir.isDirectory()) {
-				for (File file : dir.listFiles()) {
-					searchFile(deleteList, file);
+				File[] dirs = dir.listFiles();
+				if (dirs != null) {
+					for (File file : dirs) {
+						searchFile(deleteList, file);
+					}
 				}
 			}
 			deleteList.add(dir);
 		}
 
-		private String asyncTaskDelete(File dir) {
-			List<File> deleteList = new ArrayList<>();
-			searchFile(deleteList, dir);
-			publishProgress("max", String.valueOf(deleteList.size()));
-			long sleepTime = BASE_SLEEP_TIME / deleteList.size();
+		private String asyncTaskDelete(File dir) throws IOException {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				List<File> deleteList = new ArrayList<>();
+				searchFile(deleteList, dir);
+				publishProgress("max", String.valueOf(deleteList.size()));
+				long sleepTime = BASE_SLEEP_TIME / deleteList.size();
 
-			for (int i = 0, deleteListSize = deleteList.size(); i < deleteListSize; i++) {
-				File file = deleteList.get(i);
-				publishProgress("progress", String.valueOf(i),
-						String.format("%s %s 중", file.getName(), msg));
-				//noinspection ResultOfMethodCallIgnored
-				file.delete();
-//				DocumentsContract.deleteDocument(context.getContentResolver(), file.toURI());
-				if (deleteListSize < 20) {
-					try {
-						Thread.sleep(sleepTime);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				for (int i = 0, deleteListSize = deleteList.size(); i < deleteListSize; i++) {
+					File file = deleteList.get(i);
+					publishProgress("progress", String.valueOf(i),
+							String.format("%s %s 중", file.getName(), msg));
+					//noinspection ResultOfMethodCallIgnored
+					file.delete();
+					if (deleteListSize < 20) {
+						try {
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
+				}
+			} else {
+				try {
+					Uri uri = UriHelper.getWorkPathFileUri((Activity) mContext, dir.getPath());
+					if (uri != null)
+						UriHelper.deleteTreeUri((Activity) mContext, uri);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			return "삭제 완료: " + dir.getName();
@@ -507,12 +583,16 @@ class Helper {
 
 		@Override
 		protected String doInBackground(File... params) {
-			if (msg.equals("백업") || msg.equals("복원")) {
-				if (params.length != 2) return "인수 오류";
-				return asyncTaskCopy(params[0], params[1]);
-			} else if (msg.equals("삭제")) {
-				if (params.length != 1) return "인수 오류";
-				return asyncTaskDelete(params[0]);
+			try {
+				if (msg.equals("백업") || msg.equals("복원")) {
+					if (params.length != 2) return "인수 오류";
+					return asyncTaskCopy(params[0], params[1]);
+				} else if (msg.equals("삭제")) {
+					if (params.length != 1) return "인수 오류";
+					return asyncTaskDelete(params[0]);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			return null;
 		}
@@ -541,6 +621,206 @@ class Helper {
 //				msg.obj = null;
 //				handler.sendMessage(msg);
 //			}
+		}
+	}
+
+	@SuppressLint("NewApi")
+	public static final class UriHelper {
+
+		private static final String PRIMARY_VOLUME_NAME = "primary";
+		static String TAG = "TAG";
+
+		public static boolean isKitkat() {
+			return Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
+		}
+
+		public static boolean isAndroid5() {
+			return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+		}
+
+		@NonNull
+		public static String getSdCardPath() {
+			String sdCardDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+			try {
+				sdCardDirectory = new File(sdCardDirectory).getCanonicalPath();
+			} catch (IOException ioe) {
+				Log.e(TAG, "Could not get SD directory", ioe);
+			}
+			return sdCardDirectory;
+		}
+
+		public static ArrayList<String> getExtSdCardPaths(Context con) {
+			ArrayList<String> paths = new ArrayList<String>();
+			File[] files = ContextCompat.getExternalFilesDirs(con, "external");
+			File firstFile = files[0];
+			for (File file : files) {
+				if (file != null && !file.equals(firstFile)) {
+					int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+					if (index < 0) {
+						Log.w("", "Unexpected external file dir: " + file.getAbsolutePath());
+					} else {
+						String path = file.getAbsolutePath().substring(0, index);
+						try {
+							path = new File(path).getCanonicalPath();
+						} catch (IOException e) {
+							// Keep non-canonical path.
+						}
+						paths.add(path);
+					}
+				}
+			}
+			return paths;
+		}
+
+		public static String getFullPathFromTreeUri(final Uri treeUri, Context con) {
+			if (treeUri == null) {
+				return null;
+			}
+
+			String volumePath = UriHelper.getVolumePath(UriHelper.getVolumeIdFromTreeUri(treeUri), con);
+			if (volumePath == null) {
+				return File.separator;
+			}
+			if (volumePath.endsWith(File.separator)) {
+				volumePath = volumePath.substring(0, volumePath.length() - 1);
+			}
+
+			String documentPath = UriHelper.getDocumentPathFromTreeUri(treeUri);
+			if (documentPath.endsWith(File.separator)) {
+				documentPath = documentPath.substring(0, documentPath.length() - 1);
+			}
+
+			if (documentPath.length() > 0) {
+				if (documentPath.startsWith(File.separator)) {
+					return volumePath + documentPath;
+				} else {
+					return volumePath + File.separator + documentPath;
+				}
+			} else {
+				return volumePath;
+			}
+		}
+
+		private static String getVolumePath(final String volumeId, Context con) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+				return null;
+			}
+
+			try {
+				StorageManager mStorageManager =
+						(StorageManager) con.getSystemService(Context.STORAGE_SERVICE);
+
+				Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+
+				Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+				Method getUuid = storageVolumeClazz.getMethod("getUuid");
+				Method getPath = storageVolumeClazz.getMethod("getPath");
+				Method isPrimary = storageVolumeClazz.getMethod("isPrimary");
+				Object result = getVolumeList.invoke(mStorageManager);
+
+				final int length = Array.getLength(result);
+				for (int i = 0; i < length; i++) {
+					Object storageVolumeElement = Array.get(result, i);
+					String uuid = (String) getUuid.invoke(storageVolumeElement);
+					Boolean primary = (Boolean) isPrimary.invoke(storageVolumeElement);
+
+					// primary volume?
+					if (primary && PRIMARY_VOLUME_NAME.equals(volumeId)) {
+						return (String) getPath.invoke(storageVolumeElement);
+					}
+
+					// other volumes?
+					if (uuid != null) {
+						if (uuid.equals(volumeId)) {
+							return (String) getPath.invoke(storageVolumeElement);
+						}
+					}
+				}
+
+				// not found.
+				return null;
+			} catch (Exception ex) {
+				return null;
+			}
+		}
+
+		@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+		private static String getVolumeIdFromTreeUri(final Uri treeUri) {
+			final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+			final String[] split = docId.split(":");
+
+			if (split.length > 0) {
+				return split[0];
+			} else {
+				return null;
+			}
+		}
+
+		@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+		private static String getDocumentPathFromTreeUri(final Uri treeUri) {
+			final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+			final String[] split = docId.split(":");
+			if ((split.length >= 2) && (split[1] != null)) {
+				return split[1];
+			} else {
+				return File.separator;
+			}
+		}
+
+		public static boolean deleteUri(Activity activity, Uri uri) throws IOException {
+			return DocumentsContract.deleteDocument(activity.getContentResolver(), uri);
+		}
+
+		public static void deleteTreeUri(Activity activity, Uri uri) throws IOException {
+			try {
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
+					DocumentFile pickedTree = DocumentFile.fromTreeUri(activity, childDocUri);
+					for (DocumentFile docFile : pickedTree.listFiles()) {
+						try {
+							if (docFile.isDirectory()) {
+								deleteTreeUri(activity, docFile.getUri());
+							} else {
+								deleteUri(activity, docFile.getUri());
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		static Uri getWorkPathFileUri(Activity activity, String path) throws IOException {
+			Uri uri = null;
+			try {
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					File file = new File(path);
+					Log.e("HI5", "File.getName:" + file.getName());
+
+					Uri wu = Uri.parse(Pref.getPath(activity, Pref.WORK_URI_KEY));
+					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(wu, DocumentsContract.getTreeDocumentId(wu));
+
+					DocumentFile pickedTree = DocumentFile.fromTreeUri(activity, childDocUri);
+					for (DocumentFile docFile : pickedTree.listFiles()) {
+						try {
+							if (docFile.getName().equalsIgnoreCase(file.getName())) {
+								uri = docFile.getUri();
+								break;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return uri;
 		}
 	}
 }

@@ -6,8 +6,8 @@
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
 	<string name="action_settings">설정</string>
-	<string name="action_backup">백업 / 복원</string>
-	<string name="action_restore" tools:ignore="UnusedResources">복원</string>
+	<string name="action_backup">백업 (Backup)</string>
+	<string name="action_restore" tools:ignore="UnusedResources">복원 (Restore)</string>
 	<string name="action_exit" tools:ignore="UnusedResources">종료</string>
 	<string name="action_done" tools:ignore="UnusedResources">완료</string>
 
@@ -68,7 +68,7 @@
 	<string name="weld_condition_dialog_title2">선택 범위:</string>;
 	<string name="weld_condition_dialog_title1">선택 항목:</string>;
 
-	<string name="title_activity_backup">@string/action_backup</string>
+	<string name="title_activity_backup">@string/action_restore</string>
 	<string name="title_activity_text_scrolling">텍스트 뷰어</string>
 	<!-- -
 		This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.

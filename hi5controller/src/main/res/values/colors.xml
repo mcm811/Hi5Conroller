@@ -5,15 +5,15 @@
 	<color name="colorAccent">@color/blue_A200</color>
 
     <color name="red_50" tools:ignore="UnusedResources">#FFEBEE</color>
-    <color name="red_100">#FFCDD2</color>
-    <color name="red_200">#EF9A9A</color>
+	<color name="red_100">#ffcdd2</color>
+	<color name="red_200">#ef9a9a</color>
     <color name="red_300" tools:ignore="UnusedResources">#E57373</color>
     <color name="red_400" tools:ignore="UnusedResources">#EF5350</color>
     <color name="red_500">#F44336</color>
     <color name="red_600" tools:ignore="UnusedResources">#E53935</color>
     <color name="red_700">#D32F2F</color>
     <color name="red_800" tools:ignore="UnusedResources">#C62828</color>
-    <color name="red_900" tools:ignore="UnusedResources">#B71C1C</color>
+	<color name="red_900" tools:ignore="UnusedResources">#b71c1c</color>
     <color name="red_A100" tools:ignore="UnusedResources">#FF8A80</color>
     <color name="red_A200">#FF5252</color>
     <color name="red_A400" tools:ignore="UnusedResources">#FF1744</color>
@@ -53,7 +53,7 @@
     <color name="green_100" tools:ignore="UnusedResources">#C8E6C9</color>
     <color name="green_200">#A5D6A7</color>
     <color name="green_300" tools:ignore="UnusedResources">#81C784</color>
-    <color name="green_400" tools:ignore="UnusedResources">#66BB6A</color>
+	<color name="green_400" tools:ignore="UnusedResources">#66bb6a</color>
     <color name="green_500">#4CAF50</color>
     <color name="green_600" tools:ignore="UnusedResources">#43A047</color>
     <color name="green_700">#388E3C</color>
@@ -172,13 +172,13 @@
     <color name="amber_400" tools:ignore="UnusedResources">#FFCA28</color>
     <color name="amber_500" tools:ignore="UnusedResources">#FFC107</color>
     <color name="amber_600" tools:ignore="UnusedResources">#FFB300</color>
-    <color name="amber_700" tools:ignore="UnusedResources">#FFA000</color>
+	<color name="amber_700" tools:ignore="UnusedResources">#ffa000</color>
     <color name="amber_800" tools:ignore="UnusedResources">#FF8F00</color>
     <color name="amber_900" tools:ignore="UnusedResources">#FF6F00</color>
     <color name="amber_A100" tools:ignore="UnusedResources">#FFE57F</color>
     <color name="amber_A200" tools:ignore="UnusedResources">#FFD740</color>
     <color name="amber_A400" tools:ignore="UnusedResources">#FFC400</color>
-    <color name="amber_A700" tools:ignore="UnusedResources">#FFAB00</color>
+	<color name="amber_A700" tools:ignore="UnusedResources">#ffab00</color>
 
     <color name="brown_50" tools:ignore="UnusedResources">#EFEBE9</color>
     <color name="brown_100" tools:ignore="UnusedResources">#D7CCC8</color>
@@ -213,7 +213,7 @@
     <color name="blue_400" tools:ignore="UnusedResources">#42a5f5</color>
     <color name="blue_500">#2196F3</color>
     <color name="blue_600" tools:ignore="UnusedResources">#1E88E5</color>
-    <color name="blue_700">#1976D2</color>
+	<color name="blue_700">#1976d2</color>
     <color name="blue_800" tools:ignore="UnusedResources">#1565C0</color>
     <color name="blue_900" tools:ignore="UnusedResources">#0D47A1</color>
     <color name="blue_A100" tools:ignore="UnusedResources">#82B1FF</color>
@@ -289,20 +289,20 @@
     <color name="my_white" tools:ignore="UnusedResources">#FFFFFF</color>
 
     <!--500 700 200 100-->
-	<color name="tab1_actionbar_background">@color/blue_500</color>
-	<color name="tab1_tablayout_background">@color/blue_700</color>
-	<color name="tab1_tabindicator_background">@color/blue_200</color>
-    <color name="tab1_textview_background" tools:ignore="UnusedResources">@color/blue_100</color>
+	<color name="tab1_actionbar_background">@color/red_500</color>
+	<color name="tab1_tablayout_background">@color/red_700</color>
+	<color name="tab1_tabindicator_background">@color/red_200</color>
+	<color name="tab1_textview_background" tools:ignore="UnusedResources">@color/red_100</color>
 
 	<color name="tab2_actionbar_background">@color/green_500</color>
 	<color name="tab2_tablayout_background">@color/green_700</color>
 	<color name="tab2_tabindicator_background">@color/green_200</color>
-    <color name="tab2_textview_background" tools:ignore="UnusedResources">@color/green_100</color>
+	<color name="tab2_textview_background" tools:ignore="UnusedResources">@color/green_300</color>
 
-	<color name="tab3_actionbar_background">@color/red_500</color>
-	<color name="tab3_tablayout_background">@color/red_700</color>
-	<color name="tab3_tabindicator_background">@color/red_200</color>
-	<color name="tab3_textview_background">@color/red_100</color>
+	<color name="tab3_actionbar_background">@color/blue_500</color>
+	<color name="tab3_tablayout_background">@color/blue_700</color>
+	<color name="tab3_tabindicator_background">@color/blue_200</color>
+	<color name="tab3_textview_background">@color/blue_300</color>
 
     <color name="tab4_actionbar_background" tools:ignore="UnusedResources">@color/deep_purple_500
     </color>
@@ -311,13 +311,13 @@
     <color name="tab4_tabindicator_background" tools:ignore="UnusedResources">
         @color/deep_purple_200
     </color>
-    <color name="tab4_textview_background" tools:ignore="UnusedResources">@color/deep_purple_100
+	<color name="tab4_textview_background" tools:ignore="UnusedResources">@color/deep_purple_300
     </color>
 
     <color name="tab5_actionbar_background" tools:ignore="UnusedResources">@color/green_500</color>
     <color name="tab5_tablayout_background" tools:ignore="UnusedResources">@color/green_700</color>
     <color name="tab5_tabindicator_background" tools:ignore="UnusedResources">@color/green_200
     </color>
-    <color name="tab5_textview_background" tools:ignore="UnusedResources">@color/green_100</color>
+	<color name="tab5_textview_background" tools:ignore="UnusedResources">@color/green_300</color>
 
 </resources>
