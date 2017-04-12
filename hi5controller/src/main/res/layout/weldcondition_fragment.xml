@@ -3,7 +3,6 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:background="@color/green_100"
              tools:context="com.changyoung.hi5controller.WeldConditionFragment">
 
 	<ImageView
@@ -33,9 +32,15 @@
 
 		<include
 			android:id="@+id/list_title"
-			layout="@layout/view_holder_title_weld_condition"
+			layout="@layout/weldcondition_view_holder_title"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="0.5dp"
+			android:background="@color/toolbarOutlineColor"
+			/>
 
 		<android.support.v4.widget.SwipeRefreshLayout
 			android:id="@+id/srl"
@@ -49,7 +54,7 @@
 				android:paddingEnd="2dp"
 				android:paddingStart="2dp"
 				android:scrollbars="vertical"
-				tools:listitem="@layout/view_holder_item_weld_condition"/>
+				tools:listitem="@layout/weldcondition_view_holder_item"/>
 
 		</android.support.v4.widget.SwipeRefreshLayout>
 	</LinearLayout>
@@ -67,8 +72,9 @@
 			android:layout_gravity="bottom|start"
 			android:layout_margin="5dp"
 			android:src="@drawable/ic_view_module_white"
+			android:tint="@android:color/white"
 			android:transitionName="@string/transitionNameFab"
-			app:backgroundTint="@color/green_A400"
+			app:backgroundTint="@color/fabBackgroundTiltColor"
 			app:elevation="6dp"
 			tools:targetApi="lollipop"/>
 
@@ -81,7 +87,8 @@
 			android:clickable="true"
 			android:focusable="true"
 			android:src="@drawable/ic_storage_white"
-			app:backgroundTint="@color/green_A400"
+			android:tint="@android:color/white"
+			app:backgroundTint="@color/fabBackgroundTiltColor"
 			app:elevation="6dp"/>
 
 	</android.support.design.widget.CoordinatorLayout>

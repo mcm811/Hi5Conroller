@@ -4,24 +4,34 @@
                                                  xmlns:tools="http://schemas.android.com/tools"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
+                                                 android:elevation="6dp"
                                                  android:fitsSystemWindows="true"
+                                                 android:isScrollContainer="true"
                                                  tools:context=".MainActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:theme="@style/AppTheme.AppBarOverlay">
+		android:isScrollContainer="true"
+		android:theme="@style/AppTheme.AppBarOverlay"
+		app:elevation="6dp">
 
 		<android.support.v7.widget.Toolbar
-			android:id="@+id/toolbar"
+			android:id="@+id/appbar_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
-			android:background="?attr/colorPrimary"
+			android:elevation="6dp"
 			app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="0.5dp"
+			android:background="@color/toolbarOutlineColor"
+			/>
 
 	</android.support.design.widget.AppBarLayout>
 
-	<include layout="@layout/content_main"/>
+	<include layout="@layout/main_activity_content"/>
 
 	<!--
 		<android.support.design.widget.FloatingActionButton

@@ -143,21 +143,26 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-		int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+		final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 		logD("onActivityResult");
-		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-			if (resultData != null) {
-				Uri pickedDirUri = resultData.getData();
-				if (pickedDirUri != null) {
-					String path = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
-					String uri = pickedDirUri.toString();
-					onSetWorkUri(uri, path);
-					FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-					if (workPathFragment != null)
-						workPathFragment.refreshFilesList(path);
-					show("경로 설정 완료: " + path);
+		switch (requestCode) {
+			case OPEN_DIRECTORY_REQUEST_CODE:
+				if (resultCode == Activity.RESULT_OK) {
+					if (resultData != null) {
+						Uri uri = resultData.getData();
+						if (uri != null) {
+							getContext().getContentResolver().takePersistableUriPermission(uri,
+									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							onSetWorkUri(uri.toString(), path);
+							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+							if (workPathFragment != null)
+								workPathFragment.refreshFilesList(path);
+							show("경로 설정 완료: " + path);
+						}
+					}
 				}
-			}
+				break;
 		}
 	}
 
@@ -178,7 +183,7 @@ public class WeldConditionFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		logD("onCreatedView");
-		mView = inflater.inflate(R.layout.fragment_weld_condition, container, false);
+		mView = inflater.inflate(R.layout.weldcondition_fragment, container, false);
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		refresher.setOnRefreshListener(() -> {
@@ -212,6 +217,10 @@ public class WeldConditionFragment extends Fragment
 				int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+					intent.setFlags(flags);
 					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
@@ -1082,7 +1091,7 @@ public class WeldConditionFragment extends Fragment
 				mLastPosition = position;
 
 			@SuppressLint("InflateParams")            final View dialogView = LayoutInflater.from(getContext())
-					.inflate(R.layout.dialog_weld_condition_editor, null);
+					.inflate(R.layout.weldcondition_editor_dialog, null);
 			final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 			dialogBuilder.setView(dialogView);
 
@@ -1492,7 +1501,7 @@ public class WeldConditionFragment extends Fragment
 		public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.view_holder_item_weld_condition, parent, false);
+					.inflate(R.layout.weldcondition_view_holder_item, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(v14 -> {
 				final int position = (int) v14.getTag();
@@ -1500,7 +1509,7 @@ public class WeldConditionFragment extends Fragment
 					mLastPosition = position;
 				//noinspection ResourceAsColor
 				holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
-						? ContextCompat.getColor(mContext, R.color.tab2_textview_background)
+						? ContextCompat.getColor(mContext, R.color.weldConditionSelectedItem)
 						: Color.TRANSPARENT);
 				setCheckedItemSnackbar();
 				setImageFab();
@@ -1572,7 +1581,7 @@ public class WeldConditionFragment extends Fragment
 			WeldConditionItem item = mDataset.get(position);
 			//noinspection ResourceAsColor
 			holder.mItemView.setBackgroundColor(mSelectedItems.get(position, false)
-					? ContextCompat.getColor(mContext, R.color.tab2_textview_background)
+					? ContextCompat.getColor(mContext, R.color.weldConditionSelectedItem)
 					: Color.TRANSPARENT);
 			for (int i = 0; i < holder.tvList.size(); i++) {
 				holder.tvList.get(i).setText(item.get(i));
@@ -1622,7 +1631,7 @@ public class WeldConditionFragment extends Fragment
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.view_holder_item_weld_condition_squeeze_force, parent, false);
+					.inflate(R.layout.weldcondition_squeeze_force_view_holder_item, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.editText.setOnFocusChangeListener((v12, hasFocus) -> {
 				try {
@@ -1697,7 +1706,7 @@ public class WeldConditionFragment extends Fragment
 
 			@SuppressLint("InflateParams")
 			View dialogView = LayoutInflater.from(getContext())
-					.inflate(R.layout.dialog_weld_condition_squeeze_force_editor, null);
+					.inflate(R.layout.weldcondition_squeeze_force_editor_dialog, null);
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 			dialogBuilder.setView(dialogView);
 

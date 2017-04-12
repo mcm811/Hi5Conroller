@@ -14,13 +14,13 @@
 		android:id="@+id/statusText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_marginBottom="10dp"
 		android:layout_marginEnd="20dp"
 		android:layout_marginStart="20dp"
+		android:layout_marginTop="10dp"
 		android:text="@string/title_selected_item"
 		android:textColor="@color/blue_500"
-		android:textStyle="bold"
-		android:layout_marginTop="10dp"
-		android:layout_marginBottom="10dp"/>
+		android:textStyle="bold"/>
 
 	<android.support.design.widget.TextInputLayout
 		android:id="@+id/textInputLayout1"
@@ -33,16 +33,16 @@
 			android:id="@+id/etOutputData"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
 			android:focusable="false"
 			android:focusableInTouchMode="false"
 			android:gravity="center"
 			android:hint="@string/Editor_OutputData"
 			android:inputType="none"
 			android:selectAllOnFocus="true"
+			android:textColor="@color/blue_500"
 			android:textStyle="bold"
-			android:visibility="visible"
-			android:background="@android:color/transparent"
-			android:textColor="@color/blue_500"/>
+			android:visibility="visible"/>
 	</android.support.design.widget.TextInputLayout>
 
 	<SeekBar
@@ -95,8 +95,8 @@
 					android:inputType="number"
 					android:selectAllOnFocus="true"
 					android:textColor="@color/pink_A200"
-					android:textStyle="bold"
-					android:textSize="14sp"/>
+					android:textSize="14sp"
+					android:textStyle="bold"/>
 			</android.support.design.widget.TextInputLayout>
 		</TableRow>
 

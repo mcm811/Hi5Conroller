@@ -16,9 +16,8 @@
 		android:layout_height="30dip"
 		android:layout_gravity="center"
 		android:alpha="0.8"
-		android:background="@color/blue_400"
+		android:background="@android:color/white"
 		android:contentDescription="@string/file_icon_image"
-		android:foregroundTint="@color/blue_200"
 		android:scaleType="center"
 		android:src="@drawable/ic_description_white"
 		tools:ignore="UnusedAttribute"/>
@@ -30,11 +29,10 @@
 		android:layout_gravity="center"
 		android:layout_margin="5dp"
 		android:alpha="0.8"
-		android:foregroundTint="@color/blue_200"
 		android:rotation="0"
 		android:scaleType="center"
 		android:src="@drawable/ic_description_white"
-		app:backgroundTint="@color/blue_400"
+		app:backgroundTint="@android:color/white"
 		tools:ignore="UnusedAttribute"/>
 
 	<TextView

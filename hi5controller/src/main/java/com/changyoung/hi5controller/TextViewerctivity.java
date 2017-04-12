@@ -17,7 +17,7 @@ public class TextViewerctivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_text_viewer);
+		setContentView(R.layout.text_viewer_activity);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.text_scroll_toolbar);
 		setSupportActionBar(toolbar);
 

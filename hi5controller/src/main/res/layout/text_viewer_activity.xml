@@ -6,14 +6,14 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	app:statusBarBackground="@color/amber_A700"
+	app:statusBarBackground="@color/light_blue_A700"
 	tools:context="com.changyoung.hi5controller.TextViewerctivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/app_bar"
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/app_bar_height"
-		android:background="@color/amber_400"
+		android:background="@color/light_blue_A400"
 		android:fitsSystemWindows="true"
 		android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -22,7 +22,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:fitsSystemWindows="true"
-			app:contentScrim="@color/amber_500"
+			app:contentScrim="@color/light_blue_A700"
 			app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
 			<android.support.v7.widget.Toolbar
@@ -35,7 +35,7 @@
 		</android.support.design.widget.CollapsingToolbarLayout>
 	</android.support.design.widget.AppBarLayout>
 
-	<include layout="@layout/content_text_viewer"/>
+	<include layout="@layout/text_viewer_content"/>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/fab_work_path_main"
@@ -43,7 +43,8 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/fab_margin"
 		android:src="@drawable/ic_done_white"
-		app:backgroundTint="@color/amber_A700"
+		android:tint="@android:color/white"
+		app:backgroundTint="@color/fabBackgroundTiltColor"
 		app:layout_anchor="@id/app_bar"
 		app:layout_anchorGravity="bottom|end"/>
 

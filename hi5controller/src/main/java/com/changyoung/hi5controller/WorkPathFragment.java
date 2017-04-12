@@ -34,14 +34,13 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	private static final String TAG = "HI5:WorkPathFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
+	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 	private FileListFragment mFileListFragment;
 	private View mView;
 	private String mWorkPath;
 	private String mWorkUri;
 	private FloatingActionButton mFabMain;
-
 	private OnWorkPathListener mListener;
-	private int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 
 	public WorkPathFragment() {
 		// Required empty public constructor
@@ -67,6 +66,29 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 		logD("onActivityResult");
+		switch (requestCode) {
+			case OPEN_DIRECTORY_REQUEST_CODE:
+				if (resultCode == Activity.RESULT_OK) {
+					if (resultData != null) {
+						Uri uri = resultData.getData();
+						if (uri != null) {
+							getContext().getContentResolver().takePersistableUriPermission(uri,
+									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							mWorkUri = uri.toString();
+							onSetWorkUri(mWorkUri, mWorkPath);
+							EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
+							if (etPath != null) {
+								etPath.setText(mWorkPath);
+								logD("etPath:" + mWorkPath);
+							}
+							show("경로 설정 완료: " + mWorkPath);
+						}
+					}
+				}
+				break;
+		}
+
 		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
 			if (resultData != null) {
 				Uri pickedDirUri = resultData.getData();
@@ -100,9 +122,11 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			mWorkPath = onGetWorkPath();
 			logD("[refresh]:" + mWorkPath);
 
-			EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
-			if (etPath != null)
-				etPath.setText(mWorkPath);
+			if (mView != null) {
+				EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
+				if (etPath != null)
+					etPath.setText(mWorkPath);
+			}
 
 			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 			if (workPathFragment != null)
@@ -289,7 +313,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
-		mView = inflater.inflate(R.layout.fragment_work_path, container, false);
+		mView = inflater.inflate(R.layout.workpath_fragment, container, false);
 
 		String path = mWorkPath;
 		mFileListFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
@@ -344,7 +368,10 @@ public class WorkPathFragment extends Fragment implements Refresh {
 				logD("FabStorage");
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
+					int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+					intent.setFlags(flags);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
 					show(refresh(R.id.nav_usbstorage));
@@ -515,6 +542,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+
 		void onSetWorkPath(String path);
 
 		String onGetWorkUri();

@@ -4,8 +4,8 @@
        tools:ignore="UnusedResources">
     <gradient
 	    android:angle="135"
-	    android:centerColor="@color/red_300"
-	    android:endColor="@color/red_900"
-	    android:startColor="@color/red_100"
+	    android:centerColor="@color/blue_300"
+	    android:endColor="@color/blue_900"
+	    android:startColor="@color/blue_100"
 	    android:type="linear" />
 </shape>

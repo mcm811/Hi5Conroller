@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -43,6 +42,7 @@ public class MainActivity extends AppCompatActivity
 	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
 	private final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 
+	Toolbar mAppbarToolbar;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
 	private DrawerLayout mDrawer;
@@ -168,17 +168,17 @@ public class MainActivity extends AppCompatActivity
 		logD("onCreate");
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main_activity);
 
 		checkPermissionExternalStorageRecordAudio();
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		if (toolbar != null) {
-			toolbar.setOnClickListener(v -> onBackPressed());
-			logD("TITLE:" + toolbar.getTitle().toString());
+		mAppbarToolbar = (Toolbar) findViewById(R.id.appbar_toolbar);
+		setSupportActionBar(mAppbarToolbar);
+		if (mAppbarToolbar != null) {
+			mAppbarToolbar.setOnClickListener(v -> onBackPressed());
+			logD("TITLE:" + mAppbarToolbar.getTitle().toString());
 		} else {
-			logD("TITLE:" + "toolbar is null");
+			logD("TITLE:" + "mAppbarToolbar is null");
 		}
 
 //		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
 		mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (mDrawer != null) {
 			ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-					MainActivity.this, mDrawer, toolbar,
+					MainActivity.this, mDrawer, mAppbarToolbar,
 					R.string.navigation_drawer_open,
 					R.string.navigation_drawer_close);
 			//noinspection deprecation
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
 		if (navigationView != null) {
 			navigationView.setNavigationItemSelectedListener(MainActivity.this);
 			try {
-				String s = getText(R.string.app_name) + " (v" + BuildConfig.VERSION_NAME + ") ";
+				String s = getText(R.string.app_name) + " (v" + BuildConfig.VERSION_NAME + ")";
 				logD("App Name:" + s);
 				View v = navigationView.getHeaderView(0);
 				if (v != null) {
@@ -253,6 +253,24 @@ public class MainActivity extends AppCompatActivity
 		}
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 		mTabLayout.setupWithViewPager(mViewPager);
+
+		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+			@Override
+			public void onTabSelected(TabLayout.Tab tab) {
+				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+			}
+
+			@Override
+			public void onTabUnselected(TabLayout.Tab tab) {
+				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+			}
+
+			@Override
+			public void onTabReselected(TabLayout.Tab tab) {
+				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+			}
+		});
+/*
 		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			final CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -332,6 +350,7 @@ public class MainActivity extends AppCompatActivity
 
 			}
 		});
+*/
 	}
 
 	@Override
@@ -388,8 +407,8 @@ public class MainActivity extends AppCompatActivity
 
 		switch (item.getItemId()) {
 			case R.id.action_main_toolbar_exit:
-				onExitDialog();
-//				finish();
+//				onExitDialog();
+				finish();
 				break;
 			case R.id.action_main_toolbar_restore:
 //				final FloatingActionButton fab = (FloatingActionButton) getFab();
@@ -481,8 +500,8 @@ public class MainActivity extends AppCompatActivity
 		} else if (id == R.id.nav_backup) {
 			startActivity(new Intent(MainActivity.this, BackupActivity.class));
 		} else if (id == R.id.nav_exit) {
-			onExitDialog();
-//			finish();
+//			onExitDialog();
+			finish();
 		}
 		mDrawer.closeDrawer(GravityCompat.START);
 
@@ -510,12 +529,25 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public String onGetWorkPath() {
+		String path;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			Uri uri = Uri.parse(onGetWorkUri());
-			return Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+			path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
 		} else {
-			return Helper.Pref.getWorkPath(getContext());
+			path = Helper.Pref.getWorkPath(getContext());
 		}
+
+		try {
+			File file = new File(path);
+			if (file.getName().length() > 0) {
+				String s = getText(R.string.app_name) + " (" + file.getName() + ")";
+				mAppbarToolbar.setTitle(s);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return path;
 	}
 
 	@Override
@@ -555,6 +587,17 @@ public class MainActivity extends AppCompatActivity
 			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
 			if (refresh != null)
 				refresh.refresh(true);
+		}
+
+		try {
+			File file = new File(path);
+			if (file.getName().length() > 0) {
+//				String s = getText(R.string.app_name) + " (" + file.getName() + ")";
+				String s = file.getName();
+				mAppbarToolbar.setTitle(s);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

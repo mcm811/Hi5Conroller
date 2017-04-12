@@ -7,11 +7,12 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
+	android:isScrollContainer="true"
 	tools:context=".MainActivity"
 	tools:openDrawer="start">
 
 	<include
-		layout="@layout/app_bar_main"
+		layout="@layout/main_activity_appbar"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
@@ -20,9 +21,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 		android:layout_gravity="start"
-		android:background="@color/red_100"
 		android:fitsSystemWindows="true"
-		app:headerLayout="@layout/nav_header_main"
-		app:menu="@menu/nav_bar_menu"/>
+		app:headerLayout="@layout/main_activity_navigation"
+		app:menu="@menu/navigation_menu"/>
 
 </android.support.v4.widget.DrawerLayout>

@@ -48,7 +48,7 @@ public class BackupActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_backup);
+		setContentView(R.layout.backup_activity);
 		BackupActivity view = this;
 
 		String path = Helper.Pref.getBackupPath(getContext());

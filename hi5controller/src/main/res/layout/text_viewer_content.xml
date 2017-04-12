@@ -10,7 +10,7 @@
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	app:layout_scrollFlags="scroll"
 	tools:context="com.changyoung.hi5controller.TextViewerctivity"
-	tools:showIn="@layout/activity_text_viewer">
+	tools:showIn="@layout/text_viewer_activity">
 
 	<TextView
 		android:id="@+id/text_scrolling_textView"

@@ -147,21 +147,26 @@ public class WeldCountFragment extends Fragment
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-		int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+		final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 		logD("onActivityResult");
-		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-			if (resultData != null) {
-				Uri pickedDirUri = resultData.getData();
-				if (pickedDirUri != null) {
-					String path = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
-					String uri = pickedDirUri.toString();
-					onSetWorkUri(uri, path);
-					FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-					if (workPathFragment != null)
-						workPathFragment.refreshFilesList(path);
-					show("경로 설정 완료: " + path);
+		switch (requestCode) {
+			case OPEN_DIRECTORY_REQUEST_CODE:
+				if (resultCode == Activity.RESULT_OK) {
+					if (resultData != null) {
+						Uri uri = resultData.getData();
+						if (uri != null) {
+							getContext().getContentResolver().takePersistableUriPermission(uri,
+									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							onSetWorkUri(uri.toString(), path);
+							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+							if (workPathFragment != null)
+								workPathFragment.refreshFilesList(path);
+							show("경로 설정 완료: " + path);
+						}
+					}
 				}
-			}
+				break;
 		}
 	}
 
@@ -174,8 +179,9 @@ public class WeldCountFragment extends Fragment
 //		} else {
 //			mWorkPath = onGetWorkPath();
 //		}
-		mOrderType = Helper.Pref.getInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
 		mLayoutType = Helper.Pref.getInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, LAYOUT_TYPE_GRID);
+		mOrderType = Helper.Pref.getInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
+		logD("OrderType:" + mOrderType);
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -183,7 +189,7 @@ public class WeldCountFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		logD("onCreateView");
-		mView = inflater.inflate(R.layout.fragment_weld_count, container, false);
+		mView = inflater.inflate(R.layout.weldcount_fragment, container, false);
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		refresher.setOnRefreshListener(() -> {
@@ -198,6 +204,10 @@ public class WeldCountFragment extends Fragment
 				int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+					intent.setFlags(flags);
 					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
@@ -209,9 +219,11 @@ public class WeldCountFragment extends Fragment
 		mFabSort = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_sort);
 		mFabSort.setOnClickListener(new View.OnClickListener() {
 			private void startOnClickAnimationFab() {
-				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 180f : 0f;
-				final float toDegree = (fromDegree + 180f) % (360f * 2f);
-				logD(String.format(Locale.KOREA, "from: %.0f, to: %.0f", fromDegree, toDegree));
+				final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
+				final float toDegree = (fromDegree + 180f) % 360f;
+				logD(String.format(Locale.KOREA, "type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
+				mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+				Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
 				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
 						Animation.RELATIVE_TO_SELF, 0.5f,
 						Animation.RELATIVE_TO_SELF, 0.5f);
@@ -234,10 +246,7 @@ public class WeldCountFragment extends Fragment
 
 					@Override
 					public void onAnimationEnd(Animation animation) {
-						mOrderType = mOrderType == ORDER_TYPE_ASCEND ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
 						mAdapter.sortName(mOrderType);
-						Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
-
 						AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 						expand.setDuration(100);
 						expand.setInterpolator(new DecelerateInterpolator());
@@ -260,9 +269,9 @@ public class WeldCountFragment extends Fragment
 		});
 		mFabSort.setOnLongClickListener(new View.OnLongClickListener() {
 			private void startOnLongClickAnimationFab() {
-				final float fromDegree = mOrderType == ORDER_TYPE_ASCEND ? 180f : 0f;
-				final float toDegree = (fromDegree + 360f) % (360f * 2f);
-				logD(String.format(Locale.KOREA, "from: %.0f, to: %.0f", fromDegree, toDegree));
+				final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
+				final float toDegree = ((fromDegree + 180) % (360f * 4f)) * 2;
+				logD(String.format(Locale.KOREA, "LongClick_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
 				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
 						Animation.RELATIVE_TO_SELF, 0.5f,
 						Animation.RELATIVE_TO_SELF, 0.5f);
@@ -344,6 +353,13 @@ public class WeldCountFragment extends Fragment
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			mTts.speak("우측하단 버튼을 눌러 작업경로를 설정하세요", TextToSpeech.QUEUE_FLUSH, null, null);
+		} else {
+			//noinspection deprecation
+			mTts.speak("우측하단 버튼을 눌러 작업경로를 설정하세요", TextToSpeech.QUEUE_FLUSH, null);
+		}
+
 
 		return mView;
 	}
@@ -475,8 +491,8 @@ public class WeldCountFragment extends Fragment
 		mAdapter.setData(data, mOrderType);
 		if (mFabSort != null) {
 			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
-			final float toDegree = (fromDegree + 180f) % (360f * 2f);
-			logD(String.format(Locale.KOREA, "from: %.0f, to: %.0f", fromDegree, toDegree));
+			final float toDegree = ((fromDegree + 180f) % (360f * 4)) * 2;
+			logD(String.format(Locale.KOREA, "LoadFinished_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
 			final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
 					Animation.RELATIVE_TO_SELF, 0.5f,
 					Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1478,7 +1494,7 @@ public class WeldCountFragment extends Fragment
 
 			@SuppressLint("InflateParams")
 			View dialogView = LayoutInflater.from(mContext)
-					.inflate(R.layout.dialog_weld_count_file_editor, null);
+					.inflate(R.layout.weldcount_file_editor_dialog, null);
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
 			dialogBuilder.setView(dialogView);
 
@@ -1684,7 +1700,7 @@ public class WeldCountFragment extends Fragment
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.view_holder_item_weld_count, parent, false);
+					.inflate(R.layout.weldcount_view_holder_item, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(v1 -> {
 				final int position = (int) v1.getTag();
@@ -1866,7 +1882,7 @@ public class WeldCountFragment extends Fragment
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.view_holder_item_weld_count_file_editor, parent, false);
+					.inflate(R.layout.weldcount_file_editor_view_holder_item, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.editText.setOnFocusChangeListener((v1, hasFocus) -> {
 				try {

@@ -44,7 +44,7 @@
 			android:layout_marginEnd="10dp"
 			android:layout_marginStart="10dp"
 			android:layout_weight="1"
-			tools:layout="@layout/fragment_file_list"/>
+			tools:layout="@layout/workpath_filelist_fragment"/>
 
 		<!--
 				<android.support.v7.widget.Toolbar
@@ -85,6 +85,7 @@
 			android:layout_gravity="bottom|end"
 			android:layout_margin="5dp"
 			android:src="@drawable/ic_settings_backup_restore_white"
+			android:tint="@android:color/white"
 			android:transitionName="@string/transitionNameFab"
 			app:backgroundTint="@color/blue_A200"
 			app:borderWidth="0dp"

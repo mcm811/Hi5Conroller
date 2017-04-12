@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-	<color name="colorPrimary">@color/blue_500</color>
-	<color name="colorPrimaryDark">@color/blue_700</color>
-	<color name="colorAccent">@color/blue_A200</color>
+    <!--<color name="colorPrimary">@color/grey_50</color>-->
+    <!--<color name="colorPrimaryDark">@color/grey_900</color>-->
+    <color name="colorAccent">@color/light_blue_A200</color>
+
+    <color name="moveTextColor">@color/red_A200</color>
+    <color name="cnTextColor">@color/light_blue_A200</color>
+
+    <color name="tabLayoutColor">@color/light_blue_A200</color>
+    <color name="fabBackgroundTiltColor">@color/light_blue_A200</color>
+    <color name="weldConditionSelectedItem">@color/grey_300</color>
+    <color name="toolbarOutlineColor">@color/grey_600</color>
 
     <color name="red_50" tools:ignore="UnusedResources">#FFEBEE</color>
 	<color name="red_100">#ffcdd2</color>
@@ -171,7 +179,7 @@
     <color name="amber_300" tools:ignore="UnusedResources">#FFD54F</color>
     <color name="amber_400" tools:ignore="UnusedResources">#FFCA28</color>
     <color name="amber_500" tools:ignore="UnusedResources">#FFC107</color>
-    <color name="amber_600" tools:ignore="UnusedResources">#FFB300</color>
+    <color name="amber_600" tools:ignore="UnusedResources">#ffb300</color>
 	<color name="amber_700" tools:ignore="UnusedResources">#ffa000</color>
     <color name="amber_800" tools:ignore="UnusedResources">#FF8F00</color>
     <color name="amber_900" tools:ignore="UnusedResources">#FF6F00</color>
@@ -268,10 +276,10 @@
 
     <color name="grey_50" tools:ignore="UnusedResources">#FAFAFA</color>
     <color name="grey_100" tools:ignore="UnusedResources">#F5F5F5</color>
-    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_200">#eeeeee</color>
     <color name="grey_300" tools:ignore="UnusedResources">#E0E0E0</color>
-    <color name="grey_400" tools:ignore="UnusedResources">#BDBDBD</color>
-    <color name="grey_500" tools:ignore="UnusedResources">#9E9E9E</color>
+    <color name="grey_400" tools:ignore="UnusedResources">#bdbdbd</color>
+    <color name="grey_500" tools:ignore="UnusedResources">#9e9e9e</color>
     <color name="grey_600" tools:ignore="UnusedResources">#757575</color>
     <color name="grey_700" tools:ignore="UnusedResources">#616161</color>
     <color name="grey_800" tools:ignore="UnusedResources">#424242</color>
@@ -289,10 +297,10 @@
     <color name="my_white" tools:ignore="UnusedResources">#FFFFFF</color>
 
     <!--500 700 200 100-->
-	<color name="tab1_actionbar_background">@color/red_500</color>
-	<color name="tab1_tablayout_background">@color/red_700</color>
-	<color name="tab1_tabindicator_background">@color/red_200</color>
-	<color name="tab1_textview_background" tools:ignore="UnusedResources">@color/red_100</color>
+    <color name="tab1_actionbar_background">@color/grey_50</color>
+    <color name="tab1_tablayout_background">@color/grey_900</color>
+    <color name="tab1_tabindicator_background">@color/grey_200</color>
+    <color name="tab1_textview_background" tools:ignore="UnusedResources">@color/grey_100</color>
 
 	<color name="tab2_actionbar_background">@color/green_500</color>
 	<color name="tab2_tablayout_background">@color/green_700</color>
