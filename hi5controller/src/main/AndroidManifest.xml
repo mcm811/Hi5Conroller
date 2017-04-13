@@ -63,7 +63,7 @@
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
 			android:theme="@android:style/Theme.Translucent"/>
 		<activity
-			android:name=".TextViewerctivity"
+			android:name=".TextViewerActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:label="@string/title_activity_text_scrolling"
 			android:parentActivityName=".MainActivity"

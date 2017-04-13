@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-public class TextViewerctivity extends AppCompatActivity {
+public class TextViewerActivity extends AppCompatActivity {
 /*
 	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
@@ -21,7 +21,7 @@ public class TextViewerctivity extends AppCompatActivity {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.text_scroll_toolbar);
 		setSupportActionBar(toolbar);
 
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_work_path_main);
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_workpath_main);
 		if (fab != null) {
 			fab.setOnClickListener(view -> finish());
 		}

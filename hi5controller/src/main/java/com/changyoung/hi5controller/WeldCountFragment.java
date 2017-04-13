@@ -90,6 +90,7 @@ public class WeldCountFragment extends Fragment
 	private RecyclerView mFileRecyclerView;
 	private WeldCountFileEditorAdapter mFileAdapter;
 	private FloatingActionButton mFabSort;
+	private FloatingActionButton mFabStorage;
 
 	private LooperHandler looperHandler;
 	private WeldCountObserver observer;
@@ -155,10 +156,17 @@ public class WeldCountFragment extends Fragment
 					if (resultData != null) {
 						Uri uri = resultData.getData();
 						if (uri != null) {
-							getContext().getContentResolver().takePersistableUriPermission(uri,
-									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							Activity activity = getActivity();
+
+							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
+
+							final int takeFlags = resultData.getFlags() & rwFlags;
+							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
 							onSetWorkUri(uri.toString(), path);
+
 							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 							if (workPathFragment != null)
 								workPathFragment.refreshFilesList(path);
@@ -197,7 +205,7 @@ public class WeldCountFragment extends Fragment
 			refresher.setRefreshing(false);
 		});
 
-		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_storage);
+		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
@@ -501,6 +509,20 @@ public class WeldCountFragment extends Fragment
 			animation.setInterpolator(new AccelerateDecelerateInterpolator());
 			mFabSort.startAnimation(animation);
 		}
+
+		if (mFabStorage != null) {
+			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
+			final float toDegree = ((fromDegree + 180f) % (360f * 4)) * 2;
+			logD(String.format(Locale.KOREA, "LoadFinished_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
+			final RotateAnimation animation = new RotateAnimation(toDegree, fromDegree,
+					Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			animation.setDuration(500);
+			animation.setFillAfter(true);
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			mFabStorage.startAnimation(animation);
+		}
+
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
 		if (mView != null) {

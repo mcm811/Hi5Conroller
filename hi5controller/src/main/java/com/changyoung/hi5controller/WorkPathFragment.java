@@ -40,6 +40,8 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	private String mWorkPath;
 	private String mWorkUri;
 	private FloatingActionButton mFabMain;
+	private FloatingActionButton mFabHome;
+	private FloatingActionButton mFabStorage;
 	private OnWorkPathListener mListener;
 
 	public WorkPathFragment() {
@@ -72,11 +74,18 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					if (resultData != null) {
 						Uri uri = resultData.getData();
 						if (uri != null) {
-							getContext().getContentResolver().takePersistableUriPermission(uri,
-									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-							mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							Activity activity = getActivity();
+
+							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
+
+							final int takeFlags = resultData.getFlags() & rwFlags;
+							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+							mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
 							mWorkUri = uri.toString();
 							onSetWorkUri(mWorkUri, mWorkPath);
+
 							EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 							if (etPath != null) {
 								etPath.setText(mWorkPath);
@@ -87,23 +96,6 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					}
 				}
 				break;
-		}
-
-		if (requestCode == OPEN_DIRECTORY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-			if (resultData != null) {
-				Uri pickedDirUri = resultData.getData();
-				if (pickedDirUri != null) {
-					mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
-					mWorkUri = pickedDirUri.toString();
-					onSetWorkUri(mWorkUri, mWorkPath);
-					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-					if (etPath != null) {
-						etPath.setText(mWorkPath);
-						logD("etPath:" + mWorkPath);
-					}
-					show("경로 설정 완료: " + mWorkPath);
-				}
-			}
 		}
 	}
 
@@ -354,7 +346,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			return false;
 		});
 
-		FloatingActionButton mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_home);
+		mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_home);
 		if (mFabHome != null) {
 			mFabHome.setOnClickListener(v -> {
 				show(refresh(R.id.nav_home));
@@ -362,7 +354,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			});
 		}
 
-		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_storage);
+		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
@@ -379,7 +371,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 			});
 		}
 
-		mFabMain = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_main);
+		mFabMain = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_main);
 		if (mFabMain != null) {
 			//noinspection SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue,SameParameterValue
 			mFabMain.setOnClickListener(new View.OnClickListener() {

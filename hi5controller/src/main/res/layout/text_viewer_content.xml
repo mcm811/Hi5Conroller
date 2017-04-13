@@ -9,7 +9,7 @@
 	android:scrollbars="horizontal|vertical"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	app:layout_scrollFlags="scroll"
-	tools:context="com.changyoung.hi5controller.TextViewerctivity"
+	tools:context="com.changyoung.hi5controller.TextViewerActivity"
 	tools:showIn="@layout/text_viewer_activity">
 
 	<TextView

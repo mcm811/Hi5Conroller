@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -86,6 +87,7 @@ public class WeldConditionFragment extends Fragment
 	@SuppressWarnings("FieldCanBeLocal")
 	private RecyclerView mSqueezeForceRecyclerView;
 	private FloatingActionButton mFabMain;
+	private FloatingActionButton mFabStorage;
 	private int mFabImageId = R.drawable.ic_view_module_white;
 	private WeldConditionSqueezeForceAdapter mSqueezeForceAdapter;
 
@@ -151,10 +153,17 @@ public class WeldConditionFragment extends Fragment
 					if (resultData != null) {
 						Uri uri = resultData.getData();
 						if (uri != null) {
-							getContext().getContentResolver().takePersistableUriPermission(uri,
-									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							Activity activity = getActivity();
+
+							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
+
+							final int takeFlags = resultData.getFlags() & rwFlags;
+							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
 							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
 							onSetWorkUri(uri.toString(), path);
+
 							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
 							if (workPathFragment != null)
 								workPathFragment.refreshFilesList(path);
@@ -210,7 +219,7 @@ public class WeldConditionFragment extends Fragment
 			return true;
 		});
 
-		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_condition_storage);
+		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_condition_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
@@ -513,6 +522,26 @@ public class WeldConditionFragment extends Fragment
 			}
 		}
 		setCheckedItem(true);
+
+		if (mFabMain != null) {
+			final RotateAnimation animation = new RotateAnimation(0, 180 * 3,
+					Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			animation.setDuration(500);
+			animation.setFillAfter(true);
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			mFabMain.startAnimation(animation);
+		}
+
+		if (mFabStorage != null) {
+			final RotateAnimation animation = new RotateAnimation(180 * 3, 0,
+					Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			animation.setDuration(500);
+			animation.setFillAfter(true);
+			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+			mFabStorage.startAnimation(animation);
+		}
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class BackupActivity extends AppCompatActivity
 			logD("onBackPressed()");
 		}
 
-		mFab = (FloatingActionButton) view.findViewById(R.id.fab_work_path_main);
+		mFab = (FloatingActionButton) view.findViewById(R.id.fab_workpath_main);
 		if (mFab != null) {
 			mFab.setOnClickListener(new View.OnClickListener() {
 				private void animationFab() {

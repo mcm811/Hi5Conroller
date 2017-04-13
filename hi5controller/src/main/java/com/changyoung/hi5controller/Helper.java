@@ -333,7 +333,7 @@ class Helper {
 
 	public static class UiHelper {
 		static void textViewActivity(Activity context, String title, String text) {
-			Intent intent = new Intent(context, TextViewerctivity.class);
+			Intent intent = new Intent(context, TextViewerActivity.class);
 			intent.putExtra("title", title);
 			intent.putExtra("text", text);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
