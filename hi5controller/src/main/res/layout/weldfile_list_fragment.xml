@@ -10,7 +10,7 @@
 	android:orientation="vertical"
 	android:paddingLeft="0dp"
 	android:paddingRight="0dp"
-	tools:context="com.changyoung.hi5controller.FileListFragment">
+	tools:context="com.changyoung.hi5controller.WeldFileListFragment">
 
 	<android.support.v4.widget.SwipeRefreshLayout
 		android:id="@+id/srl"

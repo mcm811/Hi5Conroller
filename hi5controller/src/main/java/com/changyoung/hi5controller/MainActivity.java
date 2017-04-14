@@ -34,7 +34,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener,
-		FileListFragment.OnPathChangedListener, WeldFileFragment.OnWorkPathListener,
+		WeldFileListFragment.OnPathChangedListener, WeldFileFragment.OnWorkPathListener,
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
 	private final static String TAG = "HI5:MainActivity";

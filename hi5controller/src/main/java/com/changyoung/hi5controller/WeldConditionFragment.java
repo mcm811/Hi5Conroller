@@ -164,7 +164,7 @@ public class WeldConditionFragment extends Fragment
 							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
 							onSetWorkUri(uri.toString(), path);
 
-							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+							WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
 							if (workPathFragment != null)
 								workPathFragment.refreshFilesList(path);
 							show("경로 설정 완료: " + path);

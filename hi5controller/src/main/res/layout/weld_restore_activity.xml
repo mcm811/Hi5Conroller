@@ -38,7 +38,7 @@
 
 		<fragment
 			android:id="@+id/backup_path_fragment"
-			class="com.changyoung.hi5controller.FileListFragment"
+			class="com.changyoung.hi5controller.WeldFileListFragment"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_marginEnd="10dp"

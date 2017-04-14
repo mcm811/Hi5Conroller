@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class WeldRestoreActivity extends AppCompatActivity
-		implements Refresh, FileListFragment.OnPathChangedListener {
+		implements Refresh, WeldFileListFragment.OnPathChangedListener {
 	private final static String TAG = "HI5:WeldRestoreActivity";
 	private int mBackPressedCount;
 
@@ -52,7 +52,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		WeldRestoreActivity view = this;
 
 		String path = Helper.Pref.getBackupPath(getContext());
-		final FileListFragment fragment = (FileListFragment)
+		final WeldFileListFragment fragment = (WeldFileListFragment)
 				getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		if (fragment != null) {
 			fragment.refreshFilesList(path);
@@ -182,7 +182,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		try {
 			if (forced) {
 				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
-				final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+				final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 				if (etPath != null) {
 					etPath.setText(Helper.Pref.getBackupPath(getContext()));
 					fragment.refreshFilesList(etPath.getText().toString());
@@ -199,7 +199,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 			try {
 				File dir = new File(path);
 				if (dir.isDirectory()) {
-					final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+					final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 					fragment.refreshFilesList(dir);
 				}
 				return true;
@@ -235,7 +235,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		boolean sourceChecked = false;
 
 		try {
-			final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+			final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 			File source = fragment.getDirFile();
 			File dest = new File(Helper.Pref.getWorkPath(getContext()));
 			if (source.equals(dest))
@@ -284,7 +284,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 
 	@Override
 	public String onBackPressedFragment() {
-		final FileListFragment fragment = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
+		final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		return fragment.refreshParent();
 	}
 

@@ -79,7 +79,7 @@ public class WeldCountFragment extends Fragment
 
 	private static final int LAYOUT_TYPE_LINEAR = 0;
 	private static final int LAYOUT_TYPE_GRID = 1;
-	private static final int LAYOUT_TYPE_STAGGERRED = 2;
+//	private static final int LAYOUT_TYPE_STAGGERRED = 2;
 
 	private View mView;
 	private RecyclerView mRecyclerView;
@@ -168,7 +168,7 @@ public class WeldCountFragment extends Fragment
 							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
 							onSetWorkUri(uri.toString(), path);
 
-							FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+							WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
 							if (workPathFragment != null)
 								workPathFragment.refreshFilesList(path);
 							show("경로 설정 완료: " + path);

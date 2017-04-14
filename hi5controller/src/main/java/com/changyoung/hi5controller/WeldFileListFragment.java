@@ -41,14 +41,14 @@ import java.util.List;
  * Activities that contain this fragment must implement the
  * {@link OnPathChangedListener} interface
  * to handle interaction events.
- * Use the {@link FileListFragment#newInstance} factory method to
+ * Use the {@link WeldFileListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FileListFragment extends Fragment {
+public class WeldFileListFragment extends Fragment {
 	private static final int MSG_REFRESH_DIR = 0;
 	private static final int MSG_REFRESH_PARENT_DIR = 1;
 
-	private static final String TAG = "HI5:FileListFragment";
+	private static final String TAG = "WeldFileListFragment";
 	private static final String ARG_DIR_PATH = "dirPath";
 	public View snackbarView;
 	private View mView;
@@ -62,7 +62,7 @@ public class FileListFragment extends Fragment {
 	private FileListObserver fileListObserver;
 	private LooperHandler looperHandler;
 
-	public FileListFragment() {
+	public WeldFileListFragment() {
 		// Required empty public constructor
 	}
 
@@ -71,10 +71,10 @@ public class FileListFragment extends Fragment {
 	 * this fragment using the provided parameters.
 	 *
 	 * @param path Parameter 1.
-	 * @return A new instance of fragment FileListFragment.
+	 * @return A new instance of fragment WeldFileListFragment.
 	 */
-	public static FileListFragment newInstance(String path) {
-		FileListFragment fragment = new FileListFragment();
+	public static WeldFileListFragment newInstance(String path) {
+		WeldFileListFragment fragment = new WeldFileListFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_DIR_PATH, path);
 		fragment.setArguments(args);
@@ -83,7 +83,7 @@ public class FileListFragment extends Fragment {
 
 	private static void logD(String msg) {
 		try {
-			Log.i(TAG, msg);
+			Log.i("HI5", TAG + ":" + msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,12 +106,12 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	private void setDirPath(String value) {
-		this.dirPath = new File(value);
-	}
-
 	private void setDirPath(File value) {
 		this.dirPath = value;
+	}
+
+	private void setDirPath(String value) {
+		this.dirPath = new File(value);
 	}
 
 	public File getDirFile() {

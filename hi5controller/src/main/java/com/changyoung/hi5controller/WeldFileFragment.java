@@ -24,18 +24,18 @@ import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this mFileListFragment must implement the
+ * Activities that contain this mWeldFileListFragment must implement the
  * {@link OnWorkPathListener} interface
  * to handle interaction events.
  * Use the {@link WeldFileFragment#newInstance} factory method to
- * create an instance of this mFileListFragment.
+ * create an instance of this mWeldFileListFragment.
  */
 public class WeldFileFragment extends Fragment implements Refresh {
 	private static final String TAG = "HI5:WeldFileFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
 	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
-	private FileListFragment mFileListFragment;
+	private WeldFileListFragment mWeldFileListFragment;
 	private View mView;
 	private String mWorkPath;
 	private String mWorkUri;
@@ -50,10 +50,10 @@ public class WeldFileFragment extends Fragment implements Refresh {
 
 	/**
 	 * Use this factory method to create a new instance of
-	 * this mFileListFragment using the provided parameters.
+	 * this mWeldFileListFragment using the provided parameters.
 	 *
 	 * @param workPath Parameter 1.
-	 * @return A new instance of mFileListFragment WeldFileFragment.
+	 * @return A new instance of mWeldFileListFragment WeldFileFragment.
 	 */
 	@SuppressWarnings("unused")
 	public static WeldFileFragment newInstance(String workPath, String workUri) {
@@ -120,9 +120,11 @@ public class WeldFileFragment extends Fragment implements Refresh {
 					etPath.setText(mWorkPath);
 			}
 
-			FileListFragment workPathFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-			if (workPathFragment != null)
-				workPathFragment.refreshFilesList(mWorkPath);
+			if (!isDetached()) {
+				WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
+				if (workPathFragment != null)
+					workPathFragment.refreshFilesList(mWorkPath);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,8 +136,11 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			try {
 				File dir = new File(path);
 				if (dir.isDirectory()) {
-					FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-					fragment.refreshFilesList(dir);
+					if (!isDetached()) {
+						WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
+						if (workPathFragment != null)
+							workPathFragment.refreshFilesList(dir);
+					}
 				}
 				return true;
 			} catch (Exception e) {
@@ -245,7 +250,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 
 	@Override
 	public String onBackPressedFragment() {
-		return isAdded() ? mFileListFragment.refreshParent() : null;
+		return isAdded() ? mWeldFileListFragment.refreshParent() : null;
 	}
 
 	@Override
@@ -267,7 +272,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 
 	public void onPathChanged(String path) {
 		try {
-			if (isAdded()) {    // Return true if the mFileListFragment is currently added to its activity.
+			if (isAdded()) {    // Return true if the mWeldFileListFragment is currently added to its activity.
 				mWorkPath = onGetWorkPath();
 				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 				etPath.setText(path);
@@ -308,22 +313,22 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		mView = inflater.inflate(R.layout.weldfile_fragment, container, false);
 
 		String path = mWorkPath;
-		mFileListFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
-		if (mFileListFragment == null) {
-			Log.i(TAG, "mFileListFragment == null");
-			mFileListFragment = FileListFragment.newInstance(path);
+		mWeldFileListFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
+		if (mWeldFileListFragment == null) {
+			Log.i(TAG, "mWeldFileListFragment == null");
+			mWeldFileListFragment = WeldFileListFragment.newInstance(path);
 			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-			transaction.replace(R.id.work_path_fragment, mFileListFragment);
+			transaction.replace(R.id.weldfile_fragment, mWeldFileListFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
 		}
 
-		mFileListFragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
-		mFileListFragment.refreshFilesList(path);
+		mWeldFileListFragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
+		mWeldFileListFragment.refreshFilesList(path);
 		@SuppressLint("CutPasteId") EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
 		etPath.setOnFocusChangeListener((v, hasFocus) -> {
-			FileListFragment fragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
+			WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
 			@SuppressLint("CutPasteId") EditText etPath1 = (EditText) mView.findViewById(R.id.etWorkPath);
 			try {
 				File file = new File(etPath1.getText().toString());
@@ -410,8 +415,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 				public void onClick(View v) {
 					scaleAnimationFab(1.0f, 1.5f);
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
-					FileListFragment fragment = (FileListFragment) getChildFragmentManager()
-							.findFragmentById(R.id.work_path_fragment);
+					WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager()
+							.findFragmentById(R.id.weldfile_fragment);
 					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
@@ -520,12 +525,12 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		mListener = null;
 		mView = null;
 		mWorkPath = null;
-		mFileListFragment = null;
+		mWeldFileListFragment = null;
 	}
 
 	/**
 	 * This interface must be implemented by activities that contain this
-	 * mFileListFragment to allow an interaction in this mFileListFragment to be communicated
+	 * mWeldFileListFragment to allow an interaction in this mWeldFileListFragment to be communicated
 	 * to the activity and potentially other fragments contained in that
 	 * activity.
 	 * <p/>
