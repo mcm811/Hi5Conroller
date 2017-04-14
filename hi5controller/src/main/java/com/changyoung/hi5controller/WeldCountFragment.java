@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +31,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +83,8 @@ public class WeldCountFragment extends Fragment
 
 	private View mView;
 	private RecyclerView mRecyclerView;
-	private RecyclerView.LayoutManager mLayoutManager;
+	private RecyclerView.LayoutManager mLinearLayoutManager;
+	private RecyclerView.LayoutManager mGridLayoutManager;
 	private WeldCountAdapter mAdapter;
 
 	@SuppressWarnings("FieldCanBeLocal")
@@ -98,7 +99,7 @@ public class WeldCountFragment extends Fragment
 	private SpeechRecognizer mRecognizer;
 
 	private int mOrderType = ORDER_TYPE_ASCEND;
-	private int mLayoutType = LAYOUT_TYPE_GRID;
+	private int mLayoutType = LAYOUT_TYPE_LINEAR;
 
 	//	private String mWorkPath;
 
@@ -187,9 +188,28 @@ public class WeldCountFragment extends Fragment
 //		} else {
 //			mWorkPath = onGetWorkPath();
 //		}
-		mLayoutType = Helper.Pref.getInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, LAYOUT_TYPE_GRID);
+		mLayoutType = Helper.Pref.getInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, LAYOUT_TYPE_LINEAR);
 		mOrderType = Helper.Pref.getInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
 		logD("OrderType:" + mOrderType);
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		switch (newConfig.orientation) {
+			case Configuration.ORIENTATION_PORTRAIT:
+				logD("Set Orientation: PORTRAIT LinearLayout");
+				mRecyclerView.setLayoutManager(mLinearLayoutManager);
+				mLayoutType = LAYOUT_TYPE_LINEAR;
+				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+				break;
+			case Configuration.ORIENTATION_LANDSCAPE:
+				logD("Set Orientation: GidLayout");
+				mRecyclerView.setLayoutManager(mGridLayoutManager);
+				mLayoutType = LAYOUT_TYPE_GRID;
+				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+				break;
+		}
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -225,130 +245,146 @@ public class WeldCountFragment extends Fragment
 		}
 
 		mFabSort = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_sort);
-		mFabSort.setOnClickListener(new View.OnClickListener() {
-			private void startOnClickAnimationFab() {
-				final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
-				final float toDegree = (fromDegree + 180f) % 360f;
-				logD(String.format(Locale.KOREA, "type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
-				mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
-				Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
-				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
-						Animation.RELATIVE_TO_SELF, 0.5f,
-						Animation.RELATIVE_TO_SELF, 0.5f);
-				animation.setDuration(500);
-				animation.setFillAfter(true);
-				animation.setInterpolator(new AccelerateDecelerateInterpolator());
-				mFabSort.startAnimation(animation);
-			}
+		if (mFabSort != null) {
+			mFabSort.setOnClickListener(new View.OnClickListener() {
+				private void startOnClickAnimationFab() {
+					final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
+					final float toDegree = (fromDegree + 180f) % 360f;
+					mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+					Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
+					final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
+							Animation.RELATIVE_TO_SELF, 0.5f,
+							Animation.RELATIVE_TO_SELF, 0.5f);
+					animation.setDuration(500);
+					animation.setFillAfter(true);
+					animation.setInterpolator(new AccelerateDecelerateInterpolator());
+					mFabSort.startAnimation(animation);
+					logD("OrderType:" + mOrderType);
+					logD(String.format(Locale.KOREA, "FabSort from: %.0f, to: %.0f", fromDegree, toDegree));
+				}
 
-			private void startOnClickAnimationRecyclerView() {
-				mRecyclerView.clearAnimation();
-				AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
-				animation.setDuration(400);
-				animation.setInterpolator(new AccelerateInterpolator());
-				animation.setAnimationListener(new Animation.AnimationListener() {
-					@Override
-					public void onAnimationStart(Animation animation) {
+				private void startOnClickAnimationRecyclerView() {
+					mRecyclerView.clearAnimation();
+					AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
+					animation.setDuration(400);
+					animation.setInterpolator(new AccelerateInterpolator());
+					animation.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationStart(Animation animation) {
 
-					}
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						mAdapter.sortName(mOrderType);
-						AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
-						expand.setDuration(100);
-						expand.setInterpolator(new DecelerateInterpolator());
-						mRecyclerView.startAnimation(expand);
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-
-					}
-				});
-				mRecyclerView.startAnimation(animation);
-			}
-
-			@Override
-			public void onClick(View v) {
-				startOnClickAnimationFab();
-				startOnClickAnimationRecyclerView();
-			}
-		});
-		mFabSort.setOnLongClickListener(new View.OnLongClickListener() {
-			private void startOnLongClickAnimationFab() {
-				final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
-				final float toDegree = ((fromDegree + 180) % (360f * 4f)) * 2;
-				logD(String.format(Locale.KOREA, "LongClick_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
-				final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
-						Animation.RELATIVE_TO_SELF, 0.5f,
-						Animation.RELATIVE_TO_SELF, 0.5f);
-				animation.setDuration(500);
-				animation.setFillAfter(true);
-				animation.setInterpolator(new AccelerateDecelerateInterpolator());
-				mFabSort.startAnimation(animation);
-			}
-
-			private void startOnLongClickAnimationRecyclerView() {
-				mRecyclerView.clearAnimation();
-				AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
-				animation.setDuration(400);
-				animation.setInterpolator(new AccelerateInterpolator());
-				animation.setAnimationListener(new Animation.AnimationListener() {
-					@Override
-					public void onAnimationStart(Animation animation) {
-
-					}
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						if (mLayoutManager instanceof GridLayoutManager) {
-							mLayoutType = LAYOUT_TYPE_STAGGERRED;
-							mLayoutManager = new StaggeredGridLayoutManager(2,
-									StaggeredGridLayoutManager.VERTICAL);
-						} else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
-							mLayoutType = LAYOUT_TYPE_LINEAR;
-							mLayoutManager = new LinearLayoutManager(getContext());
-						} else if (mLayoutManager instanceof LinearLayoutManager) {
-							mLayoutType = LAYOUT_TYPE_GRID;
-							mLayoutManager = new GridLayoutManager(getContext(), 2);
 						}
-						mRecyclerView.setLayoutManager(mLayoutManager);
-						Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
 
-						AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
-						expand.setDuration(100);
-						expand.setInterpolator(new DecelerateInterpolator());
-						mRecyclerView.startAnimation(expand);
-					}
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							mAdapter.sortName(mOrderType);
+							AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
+							expand.setDuration(100);
+							expand.setInterpolator(new DecelerateInterpolator());
+							mRecyclerView.startAnimation(expand);
+						}
 
-					@Override
-					public void onAnimationRepeat(Animation animation) {
+						@Override
+						public void onAnimationRepeat(Animation animation) {
 
-					}
-				});
-				mRecyclerView.startAnimation(animation);
-			}
+						}
+					});
+					mRecyclerView.startAnimation(animation);
+				}
 
-			@Override
-			public boolean onLongClick(View v) {
-				startOnLongClickAnimationFab();
-				startOnLongClickAnimationRecyclerView();
-				return true;
-			}
-		});
+				@Override
+				public void onClick(View v) {
+					startOnClickAnimationFab();
+					startOnClickAnimationRecyclerView();
+				}
+			});
+/*
+			mFabSort.setOnLongClickListener(new View.OnLongClickListener() {
+				private void startOnLongClickAnimationFab() {
+					final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
+					final float toDegree = ((fromDegree + 180) % (360f * 4f)) * 2;
+					final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
+							Animation.RELATIVE_TO_SELF, 0.5f,
+							Animation.RELATIVE_TO_SELF, 0.5f);
+					animation.setDuration(500);
+					animation.setFillAfter(true);
+					animation.setInterpolator(new AccelerateDecelerateInterpolator());
+					mFabSort.startAnimation(animation);
+					logD(String.format(Locale.KOREA, "LongClick_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
+				}
+
+				private void startOnLongClickAnimationRecyclerView() {
+					mRecyclerView.clearAnimation();
+					AlphaAnimation animation = new AlphaAnimation(1.0f, 0.5f);
+					animation.setDuration(400);
+					animation.setInterpolator(new AccelerateInterpolator());
+					animation.setAnimationListener(new Animation.AnimationListener() {
+						@Override
+						public void onAnimationStart(Animation animation) {
+
+						}
+
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							if (mLayoutManager instanceof GridLayoutManager) {
+								mLayoutType = LAYOUT_TYPE_STAGGERRED;
+								mLayoutManager = new StaggeredGridLayoutManager(2,
+										StaggeredGridLayoutManager.VERTICAL);
+							} else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+								mLayoutType = LAYOUT_TYPE_LINEAR;
+								mLayoutManager = new LinearLayoutManager(getContext());
+							} else if (mLayoutManager instanceof LinearLayoutManager) {
+								mLayoutType = LAYOUT_TYPE_GRID;
+								mLayoutManager = new GridLayoutManager(getContext(), 2);
+							}
+							mRecyclerView.setLayoutManager(mLayoutManager);
+							Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+
+							AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
+							expand.setDuration(100);
+							expand.setInterpolator(new DecelerateInterpolator());
+							mRecyclerView.startAnimation(expand);
+						}
+
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+
+						}
+					});
+					mRecyclerView.startAnimation(animation);
+				}
+
+				@Override
+				public boolean onLongClick(View v) {
+					startOnLongClickAnimationFab();
+					startOnLongClickAnimationRecyclerView();
+					return true;
+				}
+			});
+*/
+		}
 
 		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
-		mRecyclerView.setHasFixedSize(true);
-		if (mLayoutType == LAYOUT_TYPE_LINEAR)
-			mLayoutManager = new LinearLayoutManager(getContext());
-		else if (mLayoutType == LAYOUT_TYPE_GRID)
-			mLayoutManager = new GridLayoutManager(getContext(), 2);
-		else if (mLayoutType == LAYOUT_TYPE_STAGGERRED)
-			mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new WeldCountAdapter(getActivity(), mFabSort, new ArrayList<>());
-		mRecyclerView.setAdapter(mAdapter);
+		if (mRecyclerView != null) {
+			mRecyclerView.setHasFixedSize(true);
+/*
+			if (mLayoutType == LAYOUT_TYPE_LINEAR)
+				mLayoutManager = new LinearLayoutManager(getContext());
+			else if (mLayoutType == LAYOUT_TYPE_GRID)
+				mLayoutManager = new GridLayoutManager(getContext(), 2);
+			else if (mLayoutType == LAYOUT_TYPE_STAGGERRED)
+				mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+*/
+			final int orientation = getResources().getConfiguration().orientation;
+			mLinearLayoutManager = new LinearLayoutManager(getContext());
+			mGridLayoutManager = new GridLayoutManager(getContext(), 2);
+			if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+				mRecyclerView.setLayoutManager(mLinearLayoutManager);
+			} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				mRecyclerView.setLayoutManager(mGridLayoutManager);
+			}
+			mAdapter = new WeldCountAdapter(getActivity(), mFabSort, new ArrayList<>());
+			mRecyclerView.setAdapter(mAdapter);
+		}
 
 		looperHandler = new LooperHandler(Looper.getMainLooper());
 		observer = new WeldCountObserver(onGetWorkPath(), looperHandler);
@@ -495,12 +531,11 @@ public class WeldCountFragment extends Fragment
 
 	@Override
 	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
-		logD(String.format(Locale.KOREA, "id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
+		logD(String.format(Locale.KOREA, "onLoadFinished: id:%d, size:%d", loader.getId(), data.size()));
 		mAdapter.setData(data, mOrderType);
 		if (mFabSort != null) {
-			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
-			final float toDegree = ((fromDegree + 180f) % (360f * 4)) * 2;
-			logD(String.format(Locale.KOREA, "LoadFinished_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
+			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
+			final float toDegree = ((fromDegree + 180f) % 360f) + 360 * 2;
 			final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
 					Animation.RELATIVE_TO_SELF, 0.5f,
 					Animation.RELATIVE_TO_SELF, 0.5f);
@@ -508,12 +543,13 @@ public class WeldCountFragment extends Fragment
 			animation.setFillAfter(true);
 			animation.setInterpolator(new AccelerateDecelerateInterpolator());
 			mFabSort.startAnimation(animation);
+			logD("OrderType:" + mOrderType);
+			logD(String.format(Locale.KOREA, "LoadFinished: from: %.0f, to: %.0f", fromDegree, toDegree));
 		}
 
 		if (mFabStorage != null) {
-			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
-			final float toDegree = ((fromDegree + 180f) % (360f * 4)) * 2;
-			logD(String.format(Locale.KOREA, "LoadFinished_type:%d, from: %.0f, to: %.0f", mOrderType, fromDegree, toDegree));
+			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
+			final float toDegree = ((fromDegree + 180f) % 360f) + 360 * 2;
 			final RotateAnimation animation = new RotateAnimation(toDegree, fromDegree,
 					Animation.RELATIVE_TO_SELF, 0.5f,
 					Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1848,9 +1884,9 @@ public class WeldCountFragment extends Fragment
 				super(itemView);
 				mItemView = itemView;
 				tvFileName = (TextView) itemView.findViewById(R.id.tvFileName);
-				tvTime = (TextView) itemView.findViewById(R.id.tvTime);
-				tvSize = (TextView) itemView.findViewById(R.id.tvSize);
-				tvCount = (TextView) itemView.findViewById(R.id.tvCount);
+				tvTime = (TextView) itemView.findViewById(R.id.tvFileTime);
+				tvSize = (TextView) itemView.findViewById(R.id.tvFileSize);
+				tvCount = (TextView) itemView.findViewById(R.id.tvJobCount);
 				tvPreview = (TextView) itemView.findViewById(R.id.tvPreview);
 				tvCN = (TextView) itemView.findViewById(R.id.tvCN);
 				tvMove = (TextView) itemView.findViewById(R.id.tvMove);

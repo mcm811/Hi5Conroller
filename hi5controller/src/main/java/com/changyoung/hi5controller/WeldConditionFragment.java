@@ -88,7 +88,7 @@ public class WeldConditionFragment extends Fragment
 	private RecyclerView mSqueezeForceRecyclerView;
 	private FloatingActionButton mFabMain;
 	private FloatingActionButton mFabStorage;
-	private int mFabImageId = R.drawable.ic_view_module_white;
+	private int mFabImageId = R.drawable.ic_view_module;
 	private WeldConditionSqueezeForceAdapter mSqueezeForceAdapter;
 
 	private LooperHandler looperHandler;
@@ -423,13 +423,13 @@ public class WeldConditionFragment extends Fragment
 
 	private void setImageFab() {
 		long fabDelay = 0;
-		int fabImageId = R.drawable.ic_edit_white;
+		int fabImageId = R.drawable.ic_edit;
 		if (mSaveFlag)
-			fabImageId = R.drawable.ic_save_white;
+			fabImageId = R.drawable.ic_save;
 		else if (mAdapter.getItemCount() == 0)
-			fabImageId = R.drawable.ic_refresh_white;
+			fabImageId = R.drawable.ic_refresh;
 		else if (mAdapter.getSelectedItemCount() == 0) {
-			fabImageId = R.drawable.ic_view_module_white;
+			fabImageId = R.drawable.ic_view_module;
 			fabDelay = 350;
 		}
 		if (fabImageId == mFabImageId)
@@ -506,7 +506,7 @@ public class WeldConditionFragment extends Fragment
 
 	@Override
 	public void onLoadFinished(Loader<List<WeldConditionItem>> loader, List<WeldConditionItem> data) {
-		logD(String.format(Locale.KOREA, "id:%d, onLoadFinished() size:%d", loader.getId(), data.size()));
+		logD(String.format(Locale.KOREA, "onLoadFinished: id:%d, size:%d", loader.getId(), data.size()));
 		mAdapter.setData(data);
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
@@ -524,7 +524,7 @@ public class WeldConditionFragment extends Fragment
 		setCheckedItem(true);
 
 		if (mFabMain != null) {
-			final RotateAnimation animation = new RotateAnimation(0, 180 * 3,
+			final RotateAnimation animation = new RotateAnimation(0, 360 * 2,
 					Animation.RELATIVE_TO_SELF, 0.5f,
 					Animation.RELATIVE_TO_SELF, 0.5f);
 			animation.setDuration(500);
@@ -534,7 +534,7 @@ public class WeldConditionFragment extends Fragment
 		}
 
 		if (mFabStorage != null) {
-			final RotateAnimation animation = new RotateAnimation(180 * 3, 0,
+			final RotateAnimation animation = new RotateAnimation(360 * 2, 0,
 					Animation.RELATIVE_TO_SELF, 0.5f,
 					Animation.RELATIVE_TO_SELF, 0.5f);
 			animation.setDuration(500);
@@ -1097,9 +1097,9 @@ public class WeldConditionFragment extends Fragment
 		@SuppressWarnings("UnusedParameters")
 		private void showEditorDialog(int position) {
 			final String dialog_title1 = getContext()
-					.getString(R.string.weld_condition_dialog_title1) + " ";
+					.getString(R.string.weldcondition_dialog_title1) + " ";
 			final String dialog_title2 = getContext()
-					.getString(R.string.weld_condition_dialog_title2) + " ";
+					.getString(R.string.weldcondition_dialog_title2) + " ";
 
 			if (snackbar != null) {
 				snackbar.dismiss();

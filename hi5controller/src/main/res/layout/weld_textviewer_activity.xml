@@ -7,7 +7,7 @@
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
 	app:statusBarBackground="@color/light_blue_A700"
-	tools:context="com.changyoung.hi5controller.TextViewerActivity">
+	tools:context="com.changyoung.hi5controller.WeldTextViewerActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/app_bar"
@@ -15,7 +15,7 @@
 		android:layout_height="@dimen/app_bar_height"
 		android:background="@color/light_blue_A400"
 		android:fitsSystemWindows="true"
-		android:theme="@style/AppTheme.AppBarOverlay">
+		android:theme="@style/AppTheme.AppBarOverlay.Dark">
 
 		<android.support.design.widget.CollapsingToolbarLayout
 			android:id="@+id/toolbar_layout"
@@ -30,19 +30,19 @@
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				app:layout_collapseMode="pin"
-				app:popupTheme="@style/AppTheme.PopupOverlay"/>
+				app:popupTheme="@style/AppTheme.PopupOverlay.Dark"/>
 
 		</android.support.design.widget.CollapsingToolbarLayout>
 	</android.support.design.widget.AppBarLayout>
 
-	<include layout="@layout/text_viewer_content"/>
+	<include layout="@layout/weld_textviewer_content"/>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/fab_workpath_main"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/fab_margin"
-		android:src="@drawable/ic_done_white"
+		android:src="@drawable/ic_done"
 		android:tint="@android:color/white"
 		app:backgroundTint="@color/fabBackgroundTiltColor"
 		app:layout_anchor="@id/app_bar"

@@ -6,7 +6,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="com.changyoung.hi5controller.BackupActivity">
+	tools:context="com.changyoung.hi5controller.WeldRestoreActivity">
 
 	<LinearLayout
 		android:id="@+id/backup_path_layout"
@@ -44,7 +44,7 @@
 			android:layout_marginEnd="10dp"
 			android:layout_marginStart="10dp"
 			android:layout_weight="1"
-			tools:layout="@layout/workpath_filelist_fragment"/>
+			tools:layout="@layout/weldfile_list_fragment"/>
 
 		<!--
 				<android.support.v7.widget.Toolbar
@@ -84,7 +84,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
 			android:layout_margin="5dp"
-			android:src="@drawable/ic_settings_backup_restore_white"
+			android:src="@drawable/ic_settings_backup_restore"
 			android:tint="@android:color/white"
 			android:transitionName="@string/transitionNameFab"
 			app:backgroundTint="@color/blue_A200"

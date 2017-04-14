@@ -4,15 +4,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/nav_header_height"
                 android:background="@drawable/navigation_background_gradient"
-                android:elevation="6dp"
                 android:gravity="bottom"
                 android:orientation="vertical"
-                android:paddingBottom="15dp"
-                android:paddingEnd="@dimen/activity_horizontal_margin"
-                android:paddingStart="10dp"
-                android:paddingTop="@dimen/activity_vertical_margin"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                android:weightSum="1"
                 tools:targetApi="lollipop">
 
 	<ImageView
@@ -22,7 +16,7 @@
 		android:layout_alignParentStart="true"
 		android:layout_alignWithParentIfMissing="false"
 		android:layout_centerVertical="true"
-		android:layout_marginStart="0dp"
+		android:layout_marginStart="10dp"
 		android:contentDescription="@string/hi5_weld_management"
 		android:paddingTop="@dimen/nav_header_vertical_spacing"
 		android:src="@drawable/industrial_robot_black"/>
@@ -44,5 +38,12 @@
 		android:layout_alignBottom="@+id/imageView"
 		android:layout_alignStart="@+id/tvAppName"
 		android:text="@string/changyoung_robot"/>
+
+	<View
+		android:id="@+id/view_dummy"
+		android:layout_width="match_parent"
+		android:layout_height="0.5dp"
+		android:layout_alignParentBottom="true"
+		android:background="@color/toolbarOutlineColor"/>
 
 </RelativeLayout>

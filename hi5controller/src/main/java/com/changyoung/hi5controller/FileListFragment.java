@@ -106,12 +106,12 @@ public class FileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	private void setDirPath(File value) {
-		this.dirPath = value;
-	}
-
 	private void setDirPath(String value) {
 		this.dirPath = new File(value);
+	}
+
+	private void setDirPath(File value) {
+		this.dirPath = value;
 	}
 
 	public File getDirFile() {
@@ -140,7 +140,7 @@ public class FileListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		mView = inflater.inflate(R.layout.workpath_filelist_fragment, container, false);
+		mView = inflater.inflate(R.layout.weldfile_list_fragment, container, false);
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		if (refresher != null) {
@@ -519,7 +519,7 @@ public class FileListFragment extends Fragment {
 		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			mContext = parent.getContext();
 			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.workpath_filelist_view_holder_item, parent, false);
+					.inflate(R.layout.weldfile_list_view_holder_item, parent, false);
 			// set the view's size, margins, paddings and layout parameters
 			final ViewHolder holder = new ViewHolder(v);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -587,15 +587,15 @@ public class FileListFragment extends Fragment {
 				String p = file.getParent();
 				if (p == null) {
 					fileName = ".";
-					fileImageResourceId = R.drawable.ic_android_white;
+					fileImageResourceId = R.drawable.ic_android;
 				} else {
 					fileName = file.getParentFile().getName() + "/..";
-					fileImageResourceId = R.drawable.ic_arrow_upward_white;
+					fileImageResourceId = R.drawable.ic_arrow_upward;
 				}
 			} else {
 				fileTime = Helper.TimeHelper.getLasModified(file);
 				fileName = file.getName();
-				fileImageResourceId = file.isFile() ? R.drawable.ic_description_white : R.drawable.ic_folder_white;
+				fileImageResourceId = file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder;
 			}
 
 			if (fileTime == null) {

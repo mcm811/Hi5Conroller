@@ -34,7 +34,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener,
-		FileListFragment.OnPathChangedListener, WorkPathFragment.OnWorkPathListener,
+		FileListFragment.OnPathChangedListener, WeldFileFragment.OnWorkPathListener,
 		WeldCountFragment.OnWorkPathListener, WeldConditionFragment.OnWorkPathListener {
 
 	private final static String TAG = "HI5:MainActivity";
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity
 //			findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
 //				@Override
 //				public void onClick(View v) {
-//					startActivity(new Intent(MainActivity.this, BackupActivity.class));
+//					startActivity(new Intent(MainActivity.this, WeldRestoreActivity.class));
 //				}
 //			});
 //		}
@@ -417,9 +417,9 @@ public class MainActivity extends AppCompatActivity
 //					if (mTabLayout.getSelectedTabPosition() == PagerAdapter.WORK_PATH_FRAGMENT) {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(this, fab, "fab");
-//						startActivity(new Intent(this, BackupActivity.class), options.toBundle());
+//						startActivity(new Intent(this, WeldRestoreActivity.class), options.toBundle());
 //					} else {
-//						final Intent intent = new Intent(this, BackupActivity.class);
+//						final Intent intent = new Intent(this, WeldRestoreActivity.class);
 //						final ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(this, fab, "fab");
 //						TranslateAnimation translateAnimation = new TranslateAnimation(
@@ -448,9 +448,9 @@ public class MainActivity extends AppCompatActivity
 //						fab.startAnimation(translateAnimation);
 //					}
 //				} else {
-//					startActivity(new Intent(this, BackupActivity.class));
+//					startActivity(new Intent(this, WeldRestoreActivity.class));
 //				}
-				startActivity(new Intent(this, BackupActivity.class));
+				startActivity(new Intent(this, WeldRestoreActivity.class));
 				break;
 			case R.id.action_main_toolbar_backup:
 				String ret = Helper.FileHelper.backup(getContext(), mTabLayout);
@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity
 		} else if (id == R.id.nav_usbstorage) {
 			mViewPager.setCurrentItem(PagerAdapter.WORK_PATH_FRAGMENT, true);
 		} else if (id == R.id.nav_backup) {
-			startActivity(new Intent(MainActivity.this, BackupActivity.class));
+			startActivity(new Intent(MainActivity.this, WeldRestoreActivity.class));
 		} else if (id == R.id.nav_exit) {
 //			onExitDialog();
 			finish();
@@ -521,7 +521,7 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onPathChanged(File path) {
 		logD("onPathChanged");
-		WorkPathFragment fragment = (WorkPathFragment) ((PagerAdapter) mViewPager.getAdapter())
+		WeldFileFragment fragment = (WeldFileFragment) ((PagerAdapter) mViewPager.getAdapter())
 				.getItem(PagerAdapter.WORK_PATH_FRAGMENT);
 		if (fragment != null)
 			fragment.onPathChanged(path.getPath());
@@ -632,7 +632,7 @@ public class MainActivity extends AppCompatActivity
 						mFragments[position] = new WeldConditionFragment();
 						break;
 					case WORK_PATH_FRAGMENT:
-						mFragments[position] = new WorkPathFragment();
+						mFragments[position] = new WeldFileFragment();
 						break;
 				}
 			}
@@ -643,11 +643,11 @@ public class MainActivity extends AppCompatActivity
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
 				case WELD_COUNT_FRAGMENT:
-					return mContext.getResources().getString(R.string.weld_count_fragment);
+					return mContext.getResources().getString(R.string.weldcount_fragment);
 				case WELD_CONDITION_FRAGMENT:
-					return mContext.getResources().getString(R.string.weld_condition_fragment);
+					return mContext.getResources().getString(R.string.weldcondition_fragment);
 				case WORK_PATH_FRAGMENT:
-					return mContext.getResources().getString(R.string.work_path_fragment);
+					return mContext.getResources().getString(R.string.weldfile_fragment);
 			}
 			return super.getPageTitle(position);
 		}

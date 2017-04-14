@@ -27,11 +27,11 @@ import java.io.File;
  * Activities that contain this mFileListFragment must implement the
  * {@link OnWorkPathListener} interface
  * to handle interaction events.
- * Use the {@link WorkPathFragment#newInstance} factory method to
+ * Use the {@link WeldFileFragment#newInstance} factory method to
  * create an instance of this mFileListFragment.
  */
-public class WorkPathFragment extends Fragment implements Refresh {
-	private static final String TAG = "HI5:WorkPathFragment";
+public class WeldFileFragment extends Fragment implements Refresh {
+	private static final String TAG = "HI5:WeldFileFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
 	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
@@ -44,7 +44,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	private FloatingActionButton mFabStorage;
 	private OnWorkPathListener mListener;
 
-	public WorkPathFragment() {
+	public WeldFileFragment() {
 		// Required empty public constructor
 	}
 
@@ -53,11 +53,11 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	 * this mFileListFragment using the provided parameters.
 	 *
 	 * @param workPath Parameter 1.
-	 * @return A new instance of mFileListFragment WorkPathFragment.
+	 * @return A new instance of mFileListFragment WeldFileFragment.
 	 */
 	@SuppressWarnings("unused")
-	public static WorkPathFragment newInstance(String workPath, String workUri) {
-		WorkPathFragment fragment = new WorkPathFragment();
+	public static WeldFileFragment newInstance(String workPath, String workUri) {
+		WeldFileFragment fragment = new WeldFileFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_WORK_PATH, workPath);
 		args.putString(ARG_WORK_URI, workUri);
@@ -305,7 +305,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
-		mView = inflater.inflate(R.layout.workpath_fragment, container, false);
+		mView = inflater.inflate(R.layout.weldfile_fragment, container, false);
 
 		String path = mWorkPath;
 		mFileListFragment = (FileListFragment) getChildFragmentManager().findFragmentById(R.id.work_path_fragment);
@@ -364,6 +364,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 					flags |= Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 					intent.setFlags(flags);
+					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
 					show(refresh(R.id.nav_usbstorage));
@@ -418,7 +419,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 						if (mWorkPath.compareTo(path) == 0) {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
-//						startActivity(new Intent(getContext(), BackupActivity.class), options.toBundle());
+//						startActivity(new Intent(getContext(), WeldRestoreActivity.class), options.toBundle());
 							String ret = Helper.FileHelper.backup(getContext(),
 									mView.findViewById(R.id.coordinator_layout));
 							if (ret != null)
@@ -468,7 +469,7 @@ public class WorkPathFragment extends Fragment implements Refresh {
 /*
 		NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
 		if (navigationView != null) {
-			navigationView.setNavigationItemSelectedListener(WorkPathFragment.this);
+			navigationView.setNavigationItemSelectedListener(WeldFileFragment.this);
 		}
 */
 

@@ -43,14 +43,14 @@
 	<string name="View" tools:ignore="UnusedResources">보기</string>
 	<string name="Edit" tools:ignore="UnusedResources">수정</string>
 
-	<string name="work_path_fragment">작업 경로</string>
-	<string name="weld_count_fragment">용접 카운트</string>
-	<string name="weld_condition_fragment">용접 조건</string>
-	<string name="backup_path_fragment" tools:ignore="UnusedResources">백업</string>
-	<string name="text_view_fragment" tools:ignore="UnusedResources">파일 보기</string>
+	<string name="weldcount_fragment">용접 카운트</string>
+	<string name="weldcondition_fragment">용접 조건</string>
+	<string name="weldfile_fragment">용접 파일</string>
+	<string name="restore_fragment" tools:ignore="UnusedResources">복원</string>
+	<string name="textviewer_fragment" tools:ignore="UnusedResources">파일 보기</string>
 
-	<string name="nav_weld_count">용접 카운트</string>
-	<string name="nav_weld_condition">용접 조건</string>
+	<string name="nav_weldcount">용접 카운트</string>
+	<string name="nav_weldcondition">용접 조건</string>
 	<string name="nav_path_settings">이동</string>
 	<string name="nav_storage">저장소</string>
 	<string name="nav_sdcard">내부 저장소</string>
@@ -65,11 +65,11 @@
 	<string name="nav_done">완료</string>
 
 	<!-- WeldConditionFragment -->
-	<string name="weld_condition_dialog_title2">선택 범위:</string>;
-	<string name="weld_condition_dialog_title1">선택 항목:</string>;
+	<string name="weldcondition_dialog_title2">선택 범위:</string>;
+	<string name="weldcondition_dialog_title1">선택 항목:</string>;
 
-	<string name="title_activity_backup">@string/action_restore</string>
-	<string name="title_activity_text_scrolling">텍스트 뷰어</string>
+	<string name="title_restore_activity">@string/action_restore</string>
+	<string name="title_textviewer_activity">텍스트 뷰어</string>
 	<!-- -
 		This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
 		For more information, see https://support.google.com/admob/answer/3052638

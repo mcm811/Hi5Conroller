@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.changyoung.hi5controller.BackupActivity">
+      tools:context="com.changyoung.hi5controller.WeldRestoreActivity">
 
 	<item
 		android:id="@+id/action_done"
-		android:icon="@drawable/ic_done_white"
+		android:icon="@drawable/ic_done"
 		android:orderInCategory="101"
 		android:title="@string/nav_done"
 		app:showAsAction="always"/>

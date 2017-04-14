@@ -19,7 +19,7 @@
 		android:background="@android:color/white"
 		android:contentDescription="@string/file_icon_image"
 		android:scaleType="center"
-		android:src="@drawable/ic_description_white"
+		android:src="@drawable/ic_description"
 		tools:ignore="UnusedAttribute"/>
 
 	<android.support.design.widget.FloatingActionButton
@@ -31,7 +31,7 @@
 		android:alpha="0.8"
 		android:rotation="0"
 		android:scaleType="center"
-		android:src="@drawable/ic_description_white"
+		android:src="@drawable/ic_description"
 		app:backgroundTint="@android:color/white"
 		tools:ignore="UnusedAttribute"/>
 

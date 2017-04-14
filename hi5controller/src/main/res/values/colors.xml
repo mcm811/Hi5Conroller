@@ -11,6 +11,7 @@
     <color name="fabBackgroundTiltColor">@color/light_blue_A200</color>
     <color name="weldConditionSelectedItem">@color/grey_300</color>
     <color name="toolbarOutlineColor">@color/grey_600</color>
+    <color name="iconColor">@color/light_blue_A200</color>
 
     <color name="red_50" tools:ignore="UnusedResources">#FFEBEE</color>
 	<color name="red_100">#ffcdd2</color>

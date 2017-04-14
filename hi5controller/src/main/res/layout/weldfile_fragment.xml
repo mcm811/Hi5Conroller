@@ -6,7 +6,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="com.changyoung.hi5controller.WorkPathFragment">
+	tools:context="com.changyoung.hi5controller.WeldFileFragment">
 
 	<LinearLayout
 		android:id="@+id/work_path_layout"
@@ -48,7 +48,7 @@
 			android:layout_marginEnd="10dp"
 			android:layout_marginStart="10dp"
 			android:layout_weight="1"
-			tools:layout="@layout/workpath_filelist_fragment"/>
+			tools:layout="@layout/weldfile_list_fragment"/>
 
 		<!--
 				<android.support.v7.widget.Toolbar
@@ -97,14 +97,14 @@
 			android:id="@+id/fab_workpath_home"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|start"
+			android:layout_gravity="bottom|end"
 			android:layout_marginBottom="5dp"
-			android:layout_marginEnd="5dp"
+			android:layout_marginEnd="70dp"
 			android:layout_marginStart="5dp"
 			android:layout_marginTop="5dp"
 			android:clickable="true"
 			android:focusable="true"
-			android:src="@drawable/ic_home_white"
+			android:src="@drawable/ic_home"
 			android:tint="@android:color/white"
 			app:backgroundTint="@color/fabBackgroundTiltColor"
 			app:elevation="6dp"/>
@@ -117,7 +117,7 @@
 			android:layout_margin="5dp"
 			android:clickable="true"
 			android:focusable="true"
-			android:src="@drawable/ic_storage_white"
+			android:src="@drawable/ic_storage"
 			android:tint="@android:color/white"
 			app:backgroundTint="@color/fabBackgroundTiltColor"
 			app:elevation="6dp"/>

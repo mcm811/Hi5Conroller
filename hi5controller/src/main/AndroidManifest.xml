@@ -49,9 +49,9 @@
 			android:value="@integer/google_play_services_version"/>
 
 		<activity
-			android:name=".BackupActivity"
+			android:name=".WeldRestoreActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
-			android:label="@string/title_activity_backup"
+			android:label="@string/title_restore_activity"
 			android:parentActivityName=".MainActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
@@ -63,9 +63,9 @@
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
 			android:theme="@android:style/Theme.Translucent"/>
 		<activity
-			android:name=".TextViewerActivity"
+			android:name=".WeldTextViewerActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
-			android:label="@string/title_activity_text_scrolling"
+			android:label="@string/title_textviewer_activity"
 			android:parentActivityName=".MainActivity"
 			android:theme="@style/AppTheme.NoActionBar">
 			<meta-data

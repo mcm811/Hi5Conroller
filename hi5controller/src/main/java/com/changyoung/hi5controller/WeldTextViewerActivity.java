@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-public class TextViewerActivity extends AppCompatActivity {
+public class WeldTextViewerActivity extends AppCompatActivity {
 /*
 	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
@@ -17,7 +17,7 @@ public class TextViewerActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.text_viewer_activity);
+		setContentView(R.layout.weld_textviewer_activity);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.text_scroll_toolbar);
 		setSupportActionBar(toolbar);
 

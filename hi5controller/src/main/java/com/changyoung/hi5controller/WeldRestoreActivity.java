@@ -22,9 +22,9 @@ import com.google.android.gms.ads.AdView;
 import java.io.File;
 import java.io.IOException;
 
-public class BackupActivity extends AppCompatActivity
+public class WeldRestoreActivity extends AppCompatActivity
 		implements Refresh, FileListFragment.OnPathChangedListener {
-	private final static String TAG = "HI5:BackupActivity";
+	private final static String TAG = "HI5:WeldRestoreActivity";
 	private int mBackPressedCount;
 
 	private FloatingActionButton mFab;
@@ -37,19 +37,19 @@ public class BackupActivity extends AppCompatActivity
 		}
 	}
 
-	private BackupActivity getContext() {
+	private WeldRestoreActivity getContext() {
 		return this;
 	}
 
-	private BackupActivity getActivity() {
+	private WeldRestoreActivity getActivity() {
 		return this;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.backup_activity);
-		BackupActivity view = this;
+		setContentView(R.layout.weld_restore_activity);
+		WeldRestoreActivity view = this;
 
 		String path = Helper.Pref.getBackupPath(getContext());
 		final FileListFragment fragment = (FileListFragment)
