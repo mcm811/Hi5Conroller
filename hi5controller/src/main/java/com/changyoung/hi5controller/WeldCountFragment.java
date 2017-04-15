@@ -707,7 +707,8 @@ public class WeldCountFragment extends Fragment
 			jobInfo = saveFile(getPath(), jobList, activity);
 		}
 
-		private JobInfo saveFile(String fileName, List<Job> items, Activity activity) {
+		private JobInfo
+		saveFile(String fileName, List<Job> items, Activity activity) {
 			try {
 				logD("fileName:" + fileName);
 				OutputStream outputStream = Helper.Pref.getWorkPathOutputStream(activity, fileName);
@@ -815,6 +816,21 @@ public class WeldCountFragment extends Fragment
 			if (sb.length() > 0)
 				sb.insert(0, "MV: ");
 			return sb.toString();
+		}
+
+		void updateAFromMoveList(String value) {
+			Job prevJob = null;
+			for (Job job : jobList) {
+				if (prevJob != null && job.isSpot()) {
+					String mv = prevJob.getA();
+					if (mv != null) {
+						if (!mv.contains("A=0")) {
+							prevJob.setA(value);
+						}
+					}
+				}
+				prevJob = job;
+			}
 		}
 
 //		public void updateCN(Integer start) {
@@ -1018,6 +1034,11 @@ public class WeldCountFragment extends Fragment
 					return ((MoveJob) row).getA();
 				else
 					return null;
+			}
+
+			public void setA(String value) {
+				if (getRowType() == JOB_MOVE)
+					((MoveJob) row).setA(value);
 			}
 
 			Integer getRowType() {
@@ -1302,6 +1323,17 @@ public class WeldCountFragment extends Fragment
 						}
 					}
 					return null;
+				}
+
+				public void setA(String value) {
+					for (JobValue s : mJobValueList) {
+						if (s.equalType("A")) {
+							logD("Step:" + getStep() + " value:" + s.getValue());
+							s.setValue(value);
+							logD("Step:" + getStep() + " value:" + s.getValue());
+							Update();
+						}
+					}
 				}
 
 				String getStep() {
@@ -1644,6 +1676,18 @@ public class WeldCountFragment extends Fragment
 			dialogBuilder.setPositiveButton("저장", (dialog, which) -> {
 				if (weldCountFile.getJobInfo().getTotal() > 0) {
 					observer.stopWatching();
+//					mFileAdapter.updateFile("0");       // A=0
+					mFileAdapter.saveFile();
+					observer.startWatching();
+					mAdapter.notifyDataSetChanged();
+					show("저장 완료: " + mFileAdapter.getName());
+				}
+			});
+
+			dialogBuilder.setNeutralButton("저장(A=0)", (dialog, which) -> {
+				if (weldCountFile.getJobInfo().getTotal() > 0) {
+					observer.stopWatching();
+					mFileAdapter.updateFile("0");       // A=0
 					mFileAdapter.saveFile();
 					observer.startWatching();
 					mAdapter.notifyDataSetChanged();
@@ -1921,6 +1965,10 @@ public class WeldCountFragment extends Fragment
 
 		public String getName() {
 			return mFile.getName();
+		}
+
+		void updateFile(String value) {
+			mFile.updateAFromMoveList(value);
 		}
 
 		void saveFile() {
