@@ -52,7 +52,23 @@
 		android:elevation="6dp">
 
 		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab_weld_count_sort"
+			android:id="@+id/fab_weldcount_update"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_marginBottom="5dp"
+			android:layout_marginEnd="140dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:src="@drawable/ic_error_outline"
+			android:tint="@android:color/white"
+			app:backgroundTint="@color/red_A200"
+			app:elevation="6dp"/>
+
+		<android.support.design.widget.FloatingActionButton
+			android:id="@+id/fab_weldcount_sort"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"
@@ -68,7 +84,7 @@
 			app:elevation="6dp"/>
 
 		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab_weld_count_storage"
+			android:id="@+id/fab_weldcount_storage"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom|end"

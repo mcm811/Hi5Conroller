@@ -71,7 +71,7 @@ public class WeldCountFragment extends Fragment
 
 	private static final int MSG_REFRESH = 0;
 
-	private static final String ARG_WORK_PATH = "workPath";
+	//	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "HI5:WeldCountFrag";
 
 	private static final int ORDER_TYPE_ASCEND = 0;
@@ -85,12 +85,11 @@ public class WeldCountFragment extends Fragment
 	private RecyclerView mRecyclerView;
 	private RecyclerView.LayoutManager mLinearLayoutManager;
 	private RecyclerView.LayoutManager mGridLayoutManager;
-	private WeldCountAdapter mAdapter;
+	private WeldCountAdapter mWeldCountAdapter;
 
-	@SuppressWarnings("FieldCanBeLocal")
-	private RecyclerView mFileRecyclerView;
-	private WeldCountFileEditorAdapter mFileAdapter;
+	private WeldCountFileEditorAdapter mWeldCountFileEditorAdapter;
 	private FloatingActionButton mFabSort;
+	private FloatingActionButton mFabUpdate;
 	private FloatingActionButton mFabStorage;
 
 	private LooperHandler looperHandler;
@@ -117,14 +116,7 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @param workPath Parameter 1.
-	 * @return A new instance of fragment WeldCountFragment.
-	 */
-	@SuppressWarnings("unused")
+/*
 	public WeldCountFragment newInstance(String workPath) {
 		WeldCountFragment fragment = new WeldCountFragment();
 		Bundle args = new Bundle();
@@ -132,37 +124,24 @@ public class WeldCountFragment extends Fragment
 		fragment.setArguments(args);
 		return fragment;
 	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onAttach(Activity activity) {
-		logD("onAttach");
-		super.onAttach(activity);
-		try {
-			mListener = (OnWorkPathListener) activity;
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnPathChangedListener");
-		}
-	}
+*/
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+	public void onActivityResult(int requestCode, int resultCode, Intent resultDataIntent) {
 		final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 		logD("onActivityResult");
 		switch (requestCode) {
 			case OPEN_DIRECTORY_REQUEST_CODE:
 				if (resultCode == Activity.RESULT_OK) {
-					if (resultData != null) {
-						Uri uri = resultData.getData();
+					if (resultDataIntent != null) {
+						Uri uri = resultDataIntent.getData();
 						if (uri != null) {
 							Activity activity = getActivity();
 
 							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
 
-							final int takeFlags = resultData.getFlags() & rwFlags;
+							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
 							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
@@ -183,6 +162,14 @@ public class WeldCountFragment extends Fragment
 	public void onCreate(Bundle savedInstanceState) {
 		logD("onCreate");
 		super.onCreate(savedInstanceState);
+
+		try {
+			mListener = (OnWorkPathListener) getActivity();
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			throw new ClassCastException(getActivity().toString() + " must implement OnPathChangedListener");
+		}
+
 //		if (getArguments() != null) {
 //			mWorkPath = getArguments().getString(ARG_WORK_PATH);
 //		} else {
@@ -225,7 +212,7 @@ public class WeldCountFragment extends Fragment
 			refresher.setRefreshing(false);
 		});
 
-		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_storage);
+		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
@@ -244,14 +231,26 @@ public class WeldCountFragment extends Fragment
 			});
 		}
 
-		mFabSort = (FloatingActionButton) mView.findViewById(R.id.fab_weld_count_sort);
+		mFabUpdate = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_update);
+		if (mFabUpdate != null) {
+			mFabUpdate.setOnClickListener(v -> {
+				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+				builder.setTitle("비정상 MOVE A=0 복구");
+				builder.setIcon(R.drawable.ic_error_outline);
+				builder.setMessage("문제 있는 모든 JOB 파일을 수정합니다.\n비정상 MOVE(SPOT 이전 라인)를 A=0로 복구 하시겠습니까?");
+				builder.setPositiveButton("복구", (dialog, which) -> onUpdateA());
+				builder.setNegativeButton("취소", (dialog, which) -> {
+				});
+				builder.show();
+			});
+		}
+
+		mFabSort = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_sort);
 		if (mFabSort != null) {
 			mFabSort.setOnClickListener(new View.OnClickListener() {
 				private void startOnClickAnimationFab() {
 					final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 180f : 0f;
 					final float toDegree = (fromDegree + 180f) % 360f;
-					mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
-					Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
 					final RotateAnimation animation = new RotateAnimation(fromDegree, toDegree,
 							Animation.RELATIVE_TO_SELF, 0.5f,
 							Animation.RELATIVE_TO_SELF, 0.5f);
@@ -259,7 +258,6 @@ public class WeldCountFragment extends Fragment
 					animation.setFillAfter(true);
 					animation.setInterpolator(new AccelerateDecelerateInterpolator());
 					mFabSort.startAnimation(animation);
-					logD("OrderType:" + mOrderType);
 					logD(String.format(Locale.KOREA, "FabSort from: %.0f, to: %.0f", fromDegree, toDegree));
 				}
 
@@ -276,11 +274,15 @@ public class WeldCountFragment extends Fragment
 
 						@Override
 						public void onAnimationEnd(Animation animation) {
-							mAdapter.sortName(mOrderType);
+							mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
+							Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
+							mWeldCountAdapter.sortName(mOrderType);
+
 							AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 							expand.setDuration(100);
 							expand.setInterpolator(new DecelerateInterpolator());
 							mRecyclerView.startAnimation(expand);
+							logD("OrderType:" + mOrderType);
 						}
 
 						@Override
@@ -382,8 +384,8 @@ public class WeldCountFragment extends Fragment
 			} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 				mRecyclerView.setLayoutManager(mGridLayoutManager);
 			}
-			mAdapter = new WeldCountAdapter(getActivity(), mFabSort, new ArrayList<>());
-			mRecyclerView.setAdapter(mAdapter);
+			mWeldCountAdapter = new WeldCountAdapter(getActivity(), mFabSort, new ArrayList<>());
+			mRecyclerView.setAdapter(mWeldCountAdapter);
 		}
 
 		looperHandler = new LooperHandler(Looper.getMainLooper());
@@ -400,7 +402,6 @@ public class WeldCountFragment extends Fragment
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			mTts.speak("우측하단 버튼을 눌러 작업경로를 설정하세요", TextToSpeech.QUEUE_FLUSH, null, null);
 		} else {
-			//noinspection deprecation
 			mTts.speak("우측하단 버튼을 눌러 작업경로를 설정하세요", TextToSpeech.QUEUE_FLUSH, null);
 		}
 
@@ -430,7 +431,7 @@ public class WeldCountFragment extends Fragment
 		logD("onDetach");
 		super.onDetach();
 		mListener = null;
-		mAdapter = null;
+		mWeldCountAdapter = null;
 		mView = null;
 		mRecyclerView = null;
 		getLoaderManager().destroyLoader(0);
@@ -497,11 +498,28 @@ public class WeldCountFragment extends Fragment
 	}
 */
 
-	private void onSetWorkPath(String path) {
-		if (mListener != null) {
-			mListener.onSetWorkPath(path);
+	private boolean onUpdateA() {
+		if (mWeldCountAdapter != null) {
+			mWeldCountAdapter.updateA("0");
+			toggleFabUpdate();
+		}
+		return true;
+	}
+
+	private void toggleFabUpdate() {
+		if (mWeldCountAdapter != null) {
+			if (mWeldCountAdapter.checkA())
+				mFabUpdate.show();
+			else
+				mFabUpdate.hide();
 		}
 	}
+
+//	private void onSetWorkPath(String path) {
+//		if (mListener != null) {
+//			mListener.onSetWorkPath(path);
+//		}
+//	}
 
 	private String onGetWorkPath() {
 		if (mListener != null) {
@@ -516,12 +534,12 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	private String onGetWorkUri() {
-		if (mListener != null) {
-			return mListener.onGetWorkUri();
-		}
-		return null;
-	}
+//	private String onGetWorkUri() {
+//		if (mListener != null) {
+//			return mListener.onGetWorkUri();
+//		}
+//		return null;
+//	}
 
 	@Override
 	public Loader<List<WeldCountFile>> onCreateLoader(int id, Bundle args) {
@@ -532,7 +550,7 @@ public class WeldCountFragment extends Fragment
 	@Override
 	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
 		logD(String.format(Locale.KOREA, "onLoadFinished: id:%d, size:%d", loader.getId(), data.size()));
-		mAdapter.setData(data, mOrderType);
+		mWeldCountAdapter.setData(data, mOrderType);
 		if (mFabSort != null) {
 			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
 			final float toDegree = ((fromDegree + 180f) % 360f) + 360 * 2;
@@ -562,7 +580,7 @@ public class WeldCountFragment extends Fragment
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
 		if (mView != null) {
-			if (mAdapter.getItemCount() > 0) {
+			if (mWeldCountAdapter.getItemCount() > 0) {
 				mView.findViewById(R.id.imageView).setVisibility(View.GONE);
 				mView.findViewById(R.id.textView).setVisibility(View.GONE);
 			} else {
@@ -570,12 +588,14 @@ public class WeldCountFragment extends Fragment
 				mView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
 			}
 		}
+
+		toggleFabUpdate();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<List<WeldCountFile>> loader) {
 		logD(String.format(Locale.KOREA, "id: %d, onLoaderReset()", loader.getId()));
-		mAdapter.setData(null, ORDER_TYPE_ASCEND);
+		mWeldCountAdapter.setData(null, ORDER_TYPE_ASCEND);
 	}
 
 	/**
@@ -591,7 +611,7 @@ public class WeldCountFragment extends Fragment
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
 
-		void onSetWorkPath(String path);
+//		void onSetWorkPath(String path);
 
 		String onGetWorkUri();
 
@@ -818,19 +838,22 @@ public class WeldCountFragment extends Fragment
 			return sb.toString();
 		}
 
-		void updateAFromMoveList(String value) {
+		int updateA(String value) {
+			int ret = 0;
 			Job prevJob = null;
 			for (Job job : jobList) {
 				if (prevJob != null && job.isSpot()) {
 					String mv = prevJob.getA();
 					if (mv != null) {
 						if (!mv.contains("A=0")) {
-							prevJob.setA(value);
+							if (prevJob.setA(value))
+								ret++;
 						}
 					}
 				}
 				prevJob = job;
 			}
+			return ret;
 		}
 
 //		public void updateCN(Integer start) {
@@ -1036,9 +1059,11 @@ public class WeldCountFragment extends Fragment
 					return null;
 			}
 
-			public void setA(String value) {
+			public boolean setA(String value) {
 				if (getRowType() == JOB_MOVE)
-					((MoveJob) row).setA(value);
+					return ((MoveJob) row).setA(value);
+				else
+					return false;
 			}
 
 			Integer getRowType() {
@@ -1325,15 +1350,18 @@ public class WeldCountFragment extends Fragment
 					return null;
 				}
 
-				public void setA(String value) {
+				public boolean setA(String value) {
+					boolean ret = false;
 					for (JobValue s : mJobValueList) {
 						if (s.equalType("A")) {
 							logD("Step:" + getStep() + " value:" + s.getValue());
 							s.setValue(value);
 							logD("Step:" + getStep() + " value:" + s.getValue());
 							Update();
+							ret = true;
 						}
 					}
+					return ret;
 				}
 
 				String getStep() {
@@ -1373,7 +1401,6 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public static class WeldCountLoader extends AsyncTaskLoader<List<WeldCountFile>> {
 		private static final String TAG = "HI5:WeldCountLoader";
 
@@ -1521,7 +1548,6 @@ public class WeldCountFragment extends Fragment
 			mSnackbarView = snackbarView;
 		}
 
-		@SuppressWarnings("unused")
 		void show(String msg) {
 			try {
 				if (msg != null) {
@@ -1532,6 +1558,46 @@ public class WeldCountFragment extends Fragment
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		boolean checkA() {
+			WeldCountFileEditorAdapter weldCountFileEditorAdapter;
+			for (WeldCountFile weldCountFile : mDataset) {
+				if (weldCountFile.getJobInfo().getTotal() > 0) {
+					weldCountFileEditorAdapter = new WeldCountFileEditorAdapter(getActivity(), mSnackbarView, weldCountFile);
+					if (weldCountFileEditorAdapter.checkA()) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		void updateA(String value) {
+			observer.stopWatching();
+			WeldCountFileEditorAdapter weldCountFileEditorAdapter;
+			int updatedMoveCount = 0;
+			int updatedFileCount = 0;
+			int checkedFileCount = 0;
+			for (WeldCountFile weldCountFile : mDataset) {
+				if (weldCountFile.getJobInfo().getTotal() > 0) {
+					weldCountFileEditorAdapter = new WeldCountFileEditorAdapter(getActivity(), mSnackbarView, weldCountFile);
+					int ret = weldCountFileEditorAdapter.updateA(value);
+					if (ret > 0) {
+						weldCountFileEditorAdapter.saveFile();
+						updatedMoveCount += ret;
+						updatedFileCount++;
+					}
+					checkedFileCount++;
+				}
+			}
+			if (updatedFileCount > 0) {
+				notifyDataSetChanged();
+				show("MOVE A=0: " + updatedFileCount + "개 파일, " + updatedMoveCount + "개 MOVE 수정");
+			} else {
+				show("MOVE A=0: " + checkedFileCount + "개 파일 확인");
+			}
+			observer.startWatching();
 		}
 
 		void setData(List<WeldCountFile> data, int orderType) {
@@ -1576,7 +1642,7 @@ public class WeldCountFragment extends Fragment
 		}
 
 		private void showFileEditorDialog(final int position) {
-			final WeldCountFile weldCountFile = mAdapter.getItem(position);
+			final WeldCountFile weldCountFile = mWeldCountAdapter.getItem(position);
 			if (weldCountFile.getJobInfo().getTotal() == 0) {
 				show("CN 항목이 없습니다");
 				return;
@@ -1588,14 +1654,16 @@ public class WeldCountFragment extends Fragment
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
 			dialogBuilder.setView(dialogView);
 
-			mFileRecyclerView = (RecyclerView) dialogView.findViewById(R.id.recycler_view);
-			mFileRecyclerView.setHasFixedSize(true);
+			RecyclerView mFileEditorDialogRecyclerView = (RecyclerView) dialogView.findViewById(R.id.recycler_view);
+			mFileEditorDialogRecyclerView.setHasFixedSize(true);
+
 			RecyclerView.LayoutManager layoutManager =
 					new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
-			mFileRecyclerView.setLayoutManager(layoutManager);
-			mFileAdapter = new WeldCountFileEditorAdapter(getActivity(),
+			mFileEditorDialogRecyclerView.setLayoutManager(layoutManager);
+
+			mWeldCountFileEditorAdapter = new WeldCountFileEditorAdapter(getActivity(),
 					mSnackbarView, weldCountFile);
-			mFileRecyclerView.setAdapter(mFileAdapter);
+			mFileEditorDialogRecyclerView.setAdapter(mWeldCountFileEditorAdapter);
 
 /*
 			// 배너 광고
@@ -1629,7 +1697,7 @@ public class WeldCountFragment extends Fragment
 							beginNumber = 255;
 						etBeginNumber.setText(String.valueOf(beginNumber));
 						sbBeginNumber.setProgress(beginNumber - 1);
-						mFileAdapter.setBeginNumber(beginNumber);
+						mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
 					}
 				} catch (NumberFormatException e) {
 					logD(e.getLocalizedMessage());
@@ -1642,7 +1710,7 @@ public class WeldCountFragment extends Fragment
 				return false;
 			});
 
-			final int etListSize = mFileAdapter.getItemCount();
+			final int etListSize = mWeldCountFileEditorAdapter.getItemCount();
 			sbBeginNumber.setMax(254);
 			sbBeginNumber.setProgress(0);
 			sbBeginNumber.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1651,7 +1719,7 @@ public class WeldCountFragment extends Fragment
 					Integer beginNumber = sbBeginNumber.getProgress() + 1;
 					etBeginNumber.setText(String.valueOf(beginNumber));
 					if (etListSize < 30)
-						mFileAdapter.setBeginNumber(beginNumber);
+						mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
 				}
 
 				@Override
@@ -1664,34 +1732,33 @@ public class WeldCountFragment extends Fragment
 					Integer beginNumber = sbBeginNumber.getProgress() + 1;
 					etBeginNumber.setText(String.valueOf(beginNumber));
 					if (etListSize >= 30)
-						mFileAdapter.setBeginNumber(beginNumber);
+						mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
 				}
 			});
 
 			dialogBuilder.setNegativeButton("취소", (dialog, which) -> {
-				mFileAdapter.reloadFile();
-				mAdapter.notifyDataSetChanged();
+				mWeldCountFileEditorAdapter.reloadFile();
+				mWeldCountAdapter.notifyDataSetChanged();
 			});
 
 			dialogBuilder.setPositiveButton("저장", (dialog, which) -> {
 				if (weldCountFile.getJobInfo().getTotal() > 0) {
 					observer.stopWatching();
-//					mFileAdapter.updateFile("0");       // A=0
-					mFileAdapter.saveFile();
+					mWeldCountFileEditorAdapter.saveFile();
 					observer.startWatching();
-					mAdapter.notifyDataSetChanged();
-					show("저장 완료: " + mFileAdapter.getName());
+					mWeldCountAdapter.notifyDataSetChanged();
+					show("저장 완료: " + mWeldCountFileEditorAdapter.getName());
 				}
 			});
 
-			dialogBuilder.setNeutralButton("저장(A=0)", (dialog, which) -> {
+			dialogBuilder.setNeutralButton("복구(A=0)", (dialog, which) -> {
 				if (weldCountFile.getJobInfo().getTotal() > 0) {
 					observer.stopWatching();
-					mFileAdapter.updateFile("0");       // A=0
-					mFileAdapter.saveFile();
+					mWeldCountFileEditorAdapter.updateA("0");       // A=0
+					mWeldCountFileEditorAdapter.saveFile();
 					observer.startWatching();
-					mAdapter.notifyDataSetChanged();
-					show("저장 완료: " + mFileAdapter.getName());
+					mWeldCountAdapter.notifyDataSetChanged();
+					show("저장 완료: " + mWeldCountFileEditorAdapter.getName());
 				}
 			});
 
@@ -1938,7 +2005,6 @@ public class WeldCountFragment extends Fragment
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		final WeldCountFile mFile;
 		final List<WeldCountFile.Job> mDataset;
@@ -1967,8 +2033,12 @@ public class WeldCountFragment extends Fragment
 			return mFile.getName();
 		}
 
-		void updateFile(String value) {
-			mFile.updateAFromMoveList(value);
+		boolean checkA() {
+			return !mFile.getMoveList().isEmpty();
+		}
+
+		int updateA(String value) {
+			return mFile.updateA(value);
 		}
 
 		void saveFile() {
@@ -2008,7 +2078,7 @@ public class WeldCountFragment extends Fragment
 							editText.setText(valueString);
 						item.setCN(valueString);
 						if (!item.getCN().equals(valueString))
-							mAdapter.notifyItemChanged((int) v1.getTag(R.string.tag_position));
+							mWeldCountAdapter.notifyItemChanged((int) v1.getTag(R.string.tag_position));
 					}
 				} catch (NumberFormatException e) {
 					logD(e.getLocalizedMessage());

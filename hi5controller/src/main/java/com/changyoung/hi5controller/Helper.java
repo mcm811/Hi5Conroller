@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
@@ -66,6 +68,18 @@ class Helper {
 		final static String BACKUP_PATH_KEY = "backup_path";
 		final static String ORDER_TYPE_KEY = "order_type";
 		final static String LAYOUT_TYPE_KEY = "layout_type";
+
+		static DocumentFile getDocumentFile(Context context, String fileName) {
+			return getWorkDocumentFile(context).findFile(fileName);
+		}
+
+		static DocumentFile getWorkDocumentFile(Context context) {
+			return DocumentFile.fromTreeUri(context, Pref.getUri(context));
+		}
+
+		static Uri getUri(Context context) {
+			return Uri.parse(getWorkUri(context));
+		}
 
 		static String getWorkUri(Context context) {
 			return getPath(context, WORK_URI_KEY);
@@ -286,14 +300,13 @@ class Helper {
 			}
 		}
 
-		static String backup(Context context, View view) {
+		static String backupDocumentFile(Context context, View view) {
 			String ret = null;
 			boolean sourceChecked = false;
 			try {
-				File source = new File(Helper.Pref.getWorkPath(context));
-
+				DocumentFile source = Pref.getWorkDocumentFile(context);
 				if (source.exists()) {
-					for (File file : source.listFiles()) {
+					for (DocumentFile file : source.listFiles()) {
 						String fileName = file.getName().toUpperCase();
 						if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
 							sourceChecked = true;
@@ -306,16 +319,17 @@ class Helper {
 					throw new Exception();
 				}
 
-				@SuppressWarnings("SpellCheckingInspection")
-				File dest = new File(source.getPath() + "/Backup/" + source.getName()
-						+ TimeHelper.getTimeString("_yyyyMMdd_HHmmss",
-						System.currentTimeMillis()));
 				if (source.exists() && source.isDirectory()) {
-					if (dest.exists())
-						FileHelper.delete(dest, false);
-					if (dest.mkdirs())
-						Log.i("backup", "dest.mkdirs");
-					new AsyncTaskFileDialog(context, view, "백업").execute(source, dest);
+					DocumentFile backup = source.findFile("Backup");
+					if (backup == null)
+						backup = source.createDirectory("Backup");
+
+					String destString = source.getName() + TimeHelper.getTimeString("_yyyyMMdd_HHmmss",
+							System.currentTimeMillis());
+					DocumentFile backupDest = backup.findFile(destString);
+					if (backupDest == null)
+						backupDest = backup.createDirectory(destString);
+					new AsyncTaskDocumentFileDialog(context, view, "백업").execute(source, backupDest);
 					return null;
 				}
 				throw new Exception();
@@ -329,6 +343,49 @@ class Helper {
 			}
 			return ret;
 		}
+
+//		static String backup(Context context, View view) {
+//			String ret = null;
+//			boolean sourceChecked = false;
+//			try {
+//				File source = new File(Helper.Pref.getWorkPath(context));
+//
+//				if (source.exists()) {
+//					for (File file : source.listFiles()) {
+//						String fileName = file.getName().toUpperCase();
+//						if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
+//							sourceChecked = true;
+//							break;
+//						}
+//					}
+//				}
+//				if (!sourceChecked) {
+//					ret = "백업 실패: 작업 경로에 job, robot, hx 파일이 없습니다";
+//					throw new Exception();
+//				}
+//
+//				File dest = new File(source.getPath() + "/Backup/" + source.getName()
+//						+ TimeHelper.getTimeString("_yyyyMMdd_HHmmss",
+//						System.currentTimeMillis()));
+//				if (source.exists() && source.isDirectory()) {
+//					if (dest.exists())
+//						FileHelper.delete(dest, false);
+//					if (dest.mkdirs())
+//						Log.i("backup", "dest.mkdirs");
+//					new AsyncTaskFileDialog(context, view, "백업").execute(source, dest);
+//					return null;
+//				}
+//				throw new Exception();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				ret = "백업 실패: 파일 복사 오류";
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				if (ret == null)
+//					ret = "백업 실패";
+//			}
+//			return ret;
+//		}
 	}
 
 	public static class UiHelper {
@@ -460,18 +517,157 @@ class Helper {
 		}
 	}
 
-	public static class AsyncTaskFileDialog extends AsyncTask<File, String, String> {
-		@SuppressWarnings("unused")
-		private static final int MSG_REFRESH_DIR = 0;
-		@SuppressWarnings("unused")
-		private static final int MSG_REFRESH_PARENT_DIR = 1;
+	public static class AsyncTaskDocumentFileDialog extends AsyncTask<DocumentFile, String, String> {
+//		private static final int MSG_REFRESH_DIR = 0;
+//		private static final int MSG_REFRESH_PARENT_DIR = 1;
 
 		private final static long BASE_SLEEP_TIME = 250;
 		private final Context mContext;
 		private final View view;
 		private final String msg;
 		private ProgressDialog progressDialog;
-		@SuppressWarnings("unused")
+		private Handler handler;
+
+		AsyncTaskDocumentFileDialog(Context context, View view, String msg) {
+			mContext = context;
+			this.view = view;
+			this.msg = msg;
+		}
+
+//		AsyncTaskDocumentFileDialog(Context context, View view, @SuppressWarnings("SameParameterValue") String msg, Handler handler) {
+//			mContext = context;
+//			this.view = view;
+//			this.msg = msg;
+//			this.handler = handler;
+//		}
+
+		@Override
+		protected void onPreExecute() {
+			progressDialog = new ProgressDialog(mContext);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressDialog.setTitle(msg);
+			progressDialog.setMessage(msg);
+			progressDialog.show();
+			super.onPreExecute();
+		}
+
+		private void copy(DocumentFile source, DocumentFile dest) throws IOException {
+			ContentResolver contentResolver = mContext.getContentResolver();
+			InputStream inputStream = contentResolver.openInputStream(source.getUri());
+			OutputStream outputStream = contentResolver.openOutputStream(dest.getUri());
+			if (inputStream != null && outputStream != null) {
+				final byte[] buffer = new byte[1024 * 16];
+				for (int r; (r = inputStream.read(buffer)) != -1; ) {
+					outputStream.write(buffer, 0, r);
+				}
+				inputStream.close();
+				outputStream.close();
+			}
+		}
+
+		private String asyncTaskCopy(DocumentFile source, DocumentFile dest) throws IOException {
+			if (source.isFile()) {
+				try {
+					publishProgress("max", "1");
+					publishProgress("progress", "1",
+							String.format("%s %s 중", source.getName(), msg));
+					DocumentFile destFile = dest.findFile(source.getName());
+					if (destFile == null)
+						destFile = dest.createFile("application/octet-stream", source.getName());
+					copy(source, destFile);
+				} catch (IOException e) {
+					return e.getLocalizedMessage();
+				}
+			} else if (source.isDirectory()) {
+				try {
+					DocumentFile[] files = source.listFiles();
+					publishProgress("max", String.valueOf(files.length));
+					for (int i = 0, filesLength = files.length; i < filesLength; i++) {
+						DocumentFile file = files[i];
+						if (file.isFile()) {
+							publishProgress("progress", String.valueOf(i),
+									String.format("%s %s 중", file.getName(), msg));
+							DocumentFile destFile = dest.findFile(file.getName());
+							if (destFile == null)
+								destFile = dest.createFile("application/octet-stream", file.getName());
+							copy(file, destFile);
+						}
+					}
+				} catch (Exception e) {
+					return e.getLocalizedMessage();
+				}
+			}
+			return String.format("%s 완료: %s", msg, dest.getName());
+		}
+
+		private String asyncTaskDelete(DocumentFile dir) throws IOException {
+			try {
+				DocumentFile docFile = Pref.getDocumentFile(mContext, dir.getName());
+				if (docFile != null) {
+					if (docFile.delete()) {
+						Log.e("HI5", "Delete success");
+						return "삭제: " + dir.getName();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return "삭제 실패: " + dir.getName();
+		}
+
+		@Override
+		protected String doInBackground(DocumentFile... params) {
+			try {
+				if (msg.equals("백업") || msg.equals("복원")) {
+					if (params.length != 2) return "인수 오류";
+					return asyncTaskCopy(params[0], params[1]);
+				} else if (msg.equals("삭제")) {
+					if (params.length != 1) return "인수 오류";
+					return asyncTaskDelete(params[0]);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(String... progress) {
+			if (progress[0].equals("progress")) {
+				progressDialog.setProgress(Integer.parseInt(progress[1]));
+				progressDialog.setMessage(progress[2]);
+			} else if (progress[0].equals("max")) {
+				progressDialog.setMax(Integer.parseInt(progress[1]));
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			progressDialog.dismiss();
+			if (result != null && view != null) {
+				Snackbar.make(view, result, Snackbar.LENGTH_SHORT)
+						.setAction("Action", null).show();
+				Log.i("AsyncTask", "onPostExecute: " + result);
+			}
+//			if (handler != null) {
+//				Message msg = handler.obtainMessage();
+//				msg.what = MSG_REFRESH_DIR;
+//				msg.obj = null;
+//				handler.sendMessage(msg);
+//			}
+		}
+	}
+
+	public static class AsyncTaskFileDialog extends AsyncTask<File, String, String> {
+//		private static final int MSG_REFRESH_DIR = 0;
+//		private static final int MSG_REFRESH_PARENT_DIR = 1;
+
+		private final static long BASE_SLEEP_TIME = 250;
+		private final Context mContext;
+		private final View view;
+		private final String msg;
+		private ProgressDialog progressDialog;
 		private Handler handler;
 
 		AsyncTaskFileDialog(Context context, View view, String msg) {
@@ -549,35 +745,38 @@ class Helper {
 		}
 
 		private String asyncTaskDelete(File dir) throws IOException {
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-				List<File> deleteList = new ArrayList<>();
-				searchFile(deleteList, dir);
-				publishProgress("max", String.valueOf(deleteList.size()));
-				long sleepTime = BASE_SLEEP_TIME / deleteList.size();
-
-				for (int i = 0, deleteListSize = deleteList.size(); i < deleteListSize; i++) {
-					File file = deleteList.get(i);
-					publishProgress("progress", String.valueOf(i),
-							String.format("%s %s 중", file.getName(), msg));
-					//noinspection ResultOfMethodCallIgnored
-					file.delete();
-					if (deleteListSize < 20) {
-						try {
-							Thread.sleep(sleepTime);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+			try {
+				DocumentFile docFile = Pref.getDocumentFile(mContext, dir.getName());
+				if (docFile != null) {
+					if (docFile.delete()) {
+						Log.e("HI5", "Delete success");
+						return "삭제: " + dir.getName();
 					}
 				}
-			} else {
-				try {
-					Uri uri = UriHelper.getWorkPathFileUri((Activity) mContext, dir.getPath());
-					if (uri != null)
-						UriHelper.deleteTreeUri((Activity) mContext, uri);
-				} catch (Exception e) {
-					e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			List<File> deleteList = new ArrayList<>();
+			searchFile(deleteList, dir);
+			publishProgress("max", String.valueOf(deleteList.size()));
+			long sleepTime = BASE_SLEEP_TIME / deleteList.size();
+
+			for (int i = 0, deleteListSize = deleteList.size(); i < deleteListSize; i++) {
+				File file = deleteList.get(i);
+				publishProgress("progress", String.valueOf(i),
+						String.format("%s %s 중", file.getName(), msg));
+				//noinspection ResultOfMethodCallIgnored
+				file.delete();
+				if (deleteListSize < 20) {
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+
 			return "삭제 완료: " + dir.getName();
 		}
 

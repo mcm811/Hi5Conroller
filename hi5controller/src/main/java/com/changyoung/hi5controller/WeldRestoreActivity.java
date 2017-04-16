@@ -3,6 +3,7 @@ package com.changyoung.hi5controller;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -143,8 +144,9 @@ public class WeldRestoreActivity extends AppCompatActivity
 					mBackPressedCount = 0;
 					mFab.postDelayed(() -> {
 						String ret = restore();
-						if (ret != null)
+						if (ret != null) {
 							show(ret);
+						}
 					}, 500);
 				}
 			});
@@ -236,27 +238,26 @@ public class WeldRestoreActivity extends AppCompatActivity
 
 		try {
 			final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-			File source = fragment.getDirFile();
-			File dest = new File(Helper.Pref.getWorkPath(getContext()));
-			if (source.equals(dest))
-				throw new Exception();
-			// 복원할 파일을 먼저 확인
-			if (source.exists()) {
-				for (File file : source.listFiles()) {
-					String fileName = file.getName().toUpperCase();
-					if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
-						sourceChecked = true;
-						break;
+			DocumentFile dest = Helper.Pref.getWorkDocumentFile(getContext());
+			DocumentFile backup = dest.findFile("Backup");
+			if (backup != null) {
+				DocumentFile source = backup.findFile(fragment.getDirFile().getName());
+				if (source.equals(dest))
+					throw new Exception();
+				// 복원할 파일을 먼저 확인
+				if (source.exists()) {
+					for (DocumentFile file : source.listFiles()) {
+						String fileName = file.getName().toUpperCase();
+						if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
+							sourceChecked = true;
+							break;
+						}
 					}
-				}
-				if (sourceChecked) {
-					if (dest.exists())
-						Helper.FileHelper.delete(dest, false);
-					if (dest.mkdirs())
-						logD("dest.mkdirs");
-					new Helper.AsyncTaskFileDialog(getContext(),
-							findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
-					return null;
+					if (sourceChecked) {
+						new Helper.AsyncTaskDocumentFileDialog(getContext(),
+								findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
+						return null;
+					}
 				}
 			}
 			throw new Exception();
@@ -275,7 +276,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 	}
 
 	private void backup() {
-		String ret = Helper.FileHelper.backup(getContext(), findViewById(R.id.coordinator_layout));
+		String ret = Helper.FileHelper.backupDocumentFile(getContext(), findViewById(R.id.coordinator_layout));
 		if (ret == null)
 			refresh(Helper.Pref.getBackupPath(getContext()));
 		else

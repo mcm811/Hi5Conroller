@@ -75,7 +75,7 @@ public class WeldConditionFragment extends Fragment
 		LoaderManager.LoaderCallbacks<List<WeldConditionFragment.WeldConditionItem>> {
 
 	private static final int MSG_REFRESH = 0;
-	private static final String ARG_WORK_PATH = "workPath";
+	//	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "HI5:WeldConditionFrag";
 	private static final int[] valueMax = { 2000, 100, 350, 500, 500, 500, 500, 1000, 1000 };
 
@@ -105,14 +105,7 @@ public class WeldConditionFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @param workPath Parameter 1.
-	 * @return A new instance of fragment WeldConditionFragment.
-	 */
-	@SuppressWarnings("unused")
+/*
 	public static WeldConditionFragment newInstance(String workPath) {
 		WeldConditionFragment fragment = new WeldConditionFragment();
 		Bundle args = new Bundle();
@@ -120,6 +113,7 @@ public class WeldConditionFragment extends Fragment
 		fragment.setArguments(args);
 		return fragment;
 	}
+*/
 
 	private static void logD(String msg) {
 		try {
@@ -129,36 +123,22 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void onAttach(Activity activity) {
-		logD("onAttach");
-		super.onAttach(activity);
-		try {
-			mListener = (OnWorkPathListener) activity;
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnPathChangedListener");
-		}
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+	public void onActivityResult(int requestCode, int resultCode, Intent resultDataIntent) {
 		final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 		logD("onActivityResult");
 		switch (requestCode) {
 			case OPEN_DIRECTORY_REQUEST_CODE:
 				if (resultCode == Activity.RESULT_OK) {
-					if (resultData != null) {
-						Uri uri = resultData.getData();
+					if (resultDataIntent != null) {
+						Uri uri = resultDataIntent.getData();
 						if (uri != null) {
 							Activity activity = getActivity();
 
 							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
 
-							final int takeFlags = resultData.getFlags() & rwFlags;
+							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
 							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
@@ -180,6 +160,14 @@ public class WeldConditionFragment extends Fragment
 		// onCreated -> onCreatedView -> onActivityCreated
 		logD("onCreated");
 		super.onCreate(savedInstanceState);
+
+		try {
+			mListener = (OnWorkPathListener) getActivity();
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+			throw new ClassCastException(getActivity().toString() + " must implement OnPathChangedListener");
+		}
+
 //		if (getArguments() != null) {
 //			mWorkPath = getArguments().getString(ARG_WORK_PATH) + "/ROBOT.SWD";
 //		} else {
@@ -472,11 +460,13 @@ public class WeldConditionFragment extends Fragment
 		mFabMain.postDelayed(() -> mFabMain.startAnimation(animation), fabDelay);
 	}
 
+/*
 	private void onSetWorkPath(String path) {
 		if (mListener != null) {
 			mListener.onSetWorkPath(path);
 		}
 	}
+*/
 
 	private String onGetWorkPath() {
 		if (mListener != null) {
@@ -491,12 +481,14 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
+/*
 	private String onGetWorkUri() {
 		if (mListener != null) {
 			return mListener.onGetWorkUri();
 		}
 		return null;
 	}
+*/
 
 	@Override
 	public Loader<List<WeldConditionItem>> onCreateLoader(int id, Bundle args) {
@@ -570,7 +562,6 @@ public class WeldConditionFragment extends Fragment
 		void onSetWorkUri(String uri, String path);
 	}
 
-	@SuppressWarnings("unused")
 	public static class WeldConditionObserver extends FileObserver {
 		static final String TAG = "HI5:WeldConditionObserver";
 		static final int mask = CREATE | DELETE | DELETE_SELF |
@@ -578,13 +569,14 @@ public class WeldConditionFragment extends Fragment
 		final File file;
 		private final Handler handler;
 
-		@SuppressWarnings("unused")
+/*
 		public WeldConditionObserver(File file, Handler handler) {
 			super(file.getPath(), mask);
 			this.file = file;
 			this.handler = handler;
 			logD("FILE_OBSERVER: " + file.getPath());
 		}
+*/
 
 		WeldConditionObserver(String path, Handler handler) {
 			super(path, mask);
@@ -619,7 +611,6 @@ public class WeldConditionFragment extends Fragment
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public static class WeldConditionItem {
 		public static final int OUTPUT_TYPE = 1;            // 출력 타입
 		public static final int MOVE_TIP_CLEARANCE = 3;     // 이동극 제거율
@@ -657,9 +648,11 @@ public class WeldConditionFragment extends Fragment
 			rowList.set(index, object);
 		}
 
+/*
 		public Integer size() {
 			return rowList.size();
 		}
+*/
 
 		public String getString() {
 			if (rowList == null)
@@ -702,12 +695,13 @@ public class WeldConditionFragment extends Fragment
 			}
 		}
 
-		public String getRowString() {
-			return rowString;
-		}
-
 		void setRowString(String rowString) {
 			this.rowString = rowString;
+		}
+
+/*
+		public String getRowString() {
+			return rowString;
 		}
 
 		public boolean isItemChecked() {
@@ -717,9 +711,9 @@ public class WeldConditionFragment extends Fragment
 		public void setItemChecked(boolean itemChecked) {
 			this.itemChecked = itemChecked;
 		}
+*/
 	}
 
-	@SuppressWarnings("unused")
 	public static class WeldConditionLoader extends AsyncTaskLoader<List<WeldConditionItem>> {
 		private static final String TAG = "HI5:WeldConditionLoader";
 
@@ -949,7 +943,6 @@ public class WeldConditionFragment extends Fragment
 	}
 */
 
-	@SuppressWarnings("unused")
 	public class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		List<WeldConditionItem> mDataset;
 		Context mContext;
@@ -1094,7 +1087,6 @@ public class WeldConditionFragment extends Fragment
 			logD(ret);
 		}
 
-		@SuppressWarnings("UnusedParameters")
 		private void showEditorDialog(int position) {
 			final String dialog_title1 = getContext()
 					.getString(R.string.weldcondition_dialog_title1) + " ";

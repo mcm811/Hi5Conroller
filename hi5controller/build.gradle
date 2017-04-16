@@ -1,5 +1,6 @@
 //noinspection GradleCompatible
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.gfx.ribbonizer'
 //apply plugin: 'kotlin-android'
 
 android {
@@ -15,10 +16,10 @@ android {
 	buildToolsVersion '26.0.0 rc1'
 	defaultConfig {
 		applicationId "com.changyoung.hi5controller"
-		minSdkVersion 23
+		minSdkVersion 21
 		targetSdkVersion 25
-		versionCode 27
-		versionName '1.1.7'
+		versionCode 28
+		versionName '1.1.8'
 	}
 	buildTypes {
 		release {
@@ -28,20 +29,60 @@ android {
 			signingConfig signingConfigs.config
 		}
 		debug {
-			applicationIdSuffix '.d'
+			applicationIdSuffix '.debug'
 			minifyEnabled false
 			useProguard false
-			versionNameSuffix 'd'
 		}
+/*
+		beta {
+			//debuggable build which will automatically ribbonized.
+			debuggable true
+			applicationIdSuffix '.beta'
+			minifyEnabled true
+			useProguard true
+			versionNameSuffix 'b'
+		}
+		canary {
+			//non-debuggable build which will no automatically ribbonized.
+			//But, we force one of its flavors. See `ribbonizer` for how-to
+			debuggable false
+			applicationIdSuffix '.canary'
+			minifyEnabled true
+			useProguard true
+			versionNameSuffix 'c'
+		}
+*/
 	}
-//	compileOptions.encoding = 'UTF-8'
 	compileOptions {
 		encoding 'UTF-8'
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
-
 	productFlavors {
+		local {
+			minSdkVersion 21
+			applicationId 'com.changyoung.hi5controller'
+			targetSdkVersion 25
+			versionCode 28
+			versionName '1.1.8'
+			versionNameSuffix '.alpha'
+		}
+		staging {
+			minSdkVersion 21
+			applicationId 'com.changyoung.hi5controller'
+			targetSdkVersion 25
+			versionCode 28
+			versionName '1.1.8'
+			versionNameSuffix '.beta'
+		}
+		production {
+			minSdkVersion 21
+			applicationId 'com.changyoung.hi5controller'
+			targetSdkVersion 25
+			versionCode 28
+			versionName '1.1.8'
+			versionNameSuffix '.release'
+		}
 	}
 	lintOptions {
 		checkReleaseBuilds false
@@ -63,9 +104,30 @@ dependencies {
 	compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
 	compile 'com.android.support:cardview-v7:26.0.0-alpha1'
 	compile 'com.android.support:design:26.0.0-alpha1'
-	//	compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 	compile 'com.android.support.constraint:constraint-layout:1.0.2'
+	//	compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
+
 repositories {
 	mavenCentral()
+}
+
+ribbonizer {
+	// "manifest application[android:icon]" is automatically added to the list
+	iconNames "@drawable/ic_notification", "@drawable/widget_preview"
+
+	builder { variant, iconFile ->
+		// change ribbon colors by product flavors
+		if (variant.flavorName == "local") {
+			return grayRibbonFilter(variant, iconFile)
+		} else if (variant.flavorName == "staging") {
+			return yellowRibbonFilter(variant, iconFile)
+		} else {
+			return greenRibbonFilter(variant, iconFile)
+		}
+	}
+
+	//Although `canary` build-type is marked as `non-debuggable`
+	//we can still force specific variants to be ribbonized:
+	forcedVariantsNames "localCanary"
 }

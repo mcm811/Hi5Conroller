@@ -22,14 +22,6 @@ import android.widget.EditText;
 
 import java.io.File;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this mWeldFileListFragment must implement the
- * {@link OnWorkPathListener} interface
- * to handle interaction events.
- * Use the {@link WeldFileFragment#newInstance} factory method to
- * create an instance of this mWeldFileListFragment.
- */
 public class WeldFileFragment extends Fragment implements Refresh {
 	private static final String TAG = "HI5:WeldFileFragment";
 	private static final String ARG_WORK_PATH = "workPath";
@@ -48,15 +40,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		// Required empty public constructor
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this mWeldFileListFragment using the provided parameters.
-	 *
-	 * @param workPath Parameter 1.
-	 * @return A new instance of mWeldFileListFragment WeldFileFragment.
-	 */
-	@SuppressWarnings("unused")
-	public static WeldFileFragment newInstance(String workPath, String workUri) {
+/*
+ 	public static WeldFileFragment newInstance(String workPath, String workUri) {
 		WeldFileFragment fragment = new WeldFileFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_WORK_PATH, workPath);
@@ -64,22 +49,23 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		fragment.setArguments(args);
 		return fragment;
 	}
+*/
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+	public void onActivityResult(int requestCode, int resultCode, Intent resultDataIntent) {
 		logD("onActivityResult");
 		switch (requestCode) {
 			case OPEN_DIRECTORY_REQUEST_CODE:
 				if (resultCode == Activity.RESULT_OK) {
-					if (resultData != null) {
-						Uri uri = resultData.getData();
+					if (resultDataIntent != null) {
+						Uri uri = resultDataIntent.getData();
 						if (uri != null) {
 							Activity activity = getActivity();
 
 							final int rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 							activity.grantUriPermission(activity.getPackageName(), uri, rwFlags);
 
-							final int takeFlags = resultData.getFlags() & rwFlags;
+							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
 							mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
@@ -425,7 +411,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
 //						startActivity(new Intent(getContext(), WeldRestoreActivity.class), options.toBundle());
-							String ret = Helper.FileHelper.backup(getContext(),
+							String ret = Helper.FileHelper.backupDocumentFile(getContext(),
 									mView.findViewById(R.id.coordinator_layout));
 							if (ret != null)
 								show(ret);
@@ -514,8 +500,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			mListener = (OnWorkPathListener) activity;
 		} catch (ClassCastException e) {
 			e.printStackTrace();
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnPathChangedListener");
+			throw new ClassCastException(activity.toString() + " must implement OnPathChangedListener");
 		}
 	}
 

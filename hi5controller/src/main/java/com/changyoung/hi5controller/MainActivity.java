@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 	private final static String TAG = "HI5:MainActivity";
 
 	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
-	private final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+//	private final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 
 	Toolbar mAppbarToolbar;
 	private ViewPager mViewPager;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
 	}
 */
 
-	private void checkPermissionExternalStorageRecordAudio() {
+	private void checkPermission() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			int writeExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 			int readExtPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
 
-		checkPermissionExternalStorageRecordAudio();
+		checkPermission();
 
 		mAppbarToolbar = (Toolbar) findViewById(R.id.appbar_toolbar);
 		setSupportActionBar(mAppbarToolbar);
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity
 				startActivity(new Intent(this, WeldRestoreActivity.class));
 				break;
 			case R.id.action_main_toolbar_backup:
-				String ret = Helper.FileHelper.backup(getContext(), mTabLayout);
+				String ret = Helper.FileHelper.backupDocumentFile(getContext(), mTabLayout);
 				if (ret != null)
 					show(ret);
 				break;
