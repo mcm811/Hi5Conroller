@@ -74,38 +74,65 @@ class Helper {
 		}
 
 		static DocumentFile getWorkDocumentFile(Context context) {
-			return DocumentFile.fromTreeUri(context, Pref.getUri(context));
+			return DocumentFile.fromTreeUri(context, Pref.getWorkPathUri(context));
 		}
 
-		static Uri getUri(Context context) {
-			return Uri.parse(getWorkUri(context));
+		static Uri getWorkPathUri(Context context) {
+			return Uri.parse(getWorkPathUriString(context));
 		}
 
-		static String getWorkUri(Context context) {
+		static String getWorkPathUriString(Context context) {
 			return getPath(context, WORK_URI_KEY);
+		}
+
+		static DocumentFile getWorkPathDocumentFile(Context context, String path) throws IOException {
+			File file = new File(path);
+			if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				try {
+					Uri uri = getWorkPathUri(context);
+					DocumentFile documentFile = DocumentFile.fromTreeUri(context, uri);
+					return documentFile.findFile(file.getName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				DocumentFile documentFile = DocumentFile.fromFile(file);
+				return documentFile.findFile(file.getName());
+			}
+			return null;
+		}
+
+		static InputStream getWorkPathInputStream(Context context, String path) throws IOException {
+			InputStream inputStream = null;
+			try {
+				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					try {
+						DocumentFile documentFile = getWorkPathDocumentFile(context, path);
+						if (documentFile != null)
+							inputStream = context.getContentResolver().openInputStream(documentFile.getUri());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					inputStream = new FileInputStream(path);
+					Log.e("HI5", "FileInputStream:" + path);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return inputStream;
 		}
 
 		static OutputStream getWorkPathOutputStream(Context context, String path) throws IOException {
 			OutputStream outputStream = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					File file = new File(path);
-					Log.e("HI5", "File.getName:" + file.getName());
-
-					Uri wu = Uri.parse(getPath(context, WORK_URI_KEY));
-					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(wu, DocumentsContract.getTreeDocumentId(wu));
-
-					DocumentFile pickedTree = DocumentFile.fromTreeUri(context, childDocUri);
-					for (DocumentFile docFile : pickedTree.listFiles()) {
-						try {
-							if (docFile.getName().equalsIgnoreCase(file.getName())) {
-								outputStream = context.getContentResolver().openOutputStream(docFile.getUri());
-								Log.e("HI5", "docFile.getName:" + docFile.getName());
-								break;
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					try {
+						DocumentFile documentFile = getWorkPathDocumentFile(context, path);
+						if (documentFile != null)
+							outputStream = context.getContentResolver().openOutputStream(documentFile.getUri());
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				} else {
 					outputStream = new FileOutputStream(path, false);
@@ -114,11 +141,10 @@ class Helper {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 			return outputStream;
 		}
 
-		static void setWorkUri(Context context, String value) {
+		static void setWorkPathUri(Context context, String value) {
 			setPath(context, WORK_URI_KEY, value);
 		}
 

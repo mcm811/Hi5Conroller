@@ -569,13 +569,13 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public String onGetWorkUri() {
-		return Helper.Pref.getWorkUri(getContext());
+		return Helper.Pref.getWorkPathUriString(getContext());
 	}
 
 	@Override
 	public void onSetWorkUri(String uri, String path) {
 		logD("onSetWorkUri");
-		Helper.Pref.setWorkUri(getContext(), uri);
+		Helper.Pref.setWorkPathUri(getContext(), uri);
 		Helper.Pref.setWorkPath(getContext(), path);
 
 		final int[] tabs = {
