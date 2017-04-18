@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
@@ -8,133 +9,144 @@
 	android:layout_gravity="center"
 	android:minHeight="25dp"
 	android:minWidth="25dp"
-	android:paddingBottom="2sp"
-	android:paddingEnd="0sp"
-	android:paddingStart="5sp"
-	android:paddingTop="2sp">
+	>
 	<!--android:background="@color/tab2_textview_background">-->
 	<TextView
-		android:id="@+id/tvOutputData"
-		android:layout_width="wrap_content"
+		android:id="@+id/tvTitleOutputData"
+		android:layout_width="30dp"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="10dp"
-		android:gravity="end"
+		android:layout_marginStart="8dp"
+		android:gravity="right|center_horizontal|end"
 		android:hint="@string/OutputData"
 		android:text="@string/OutputData"
-		android:textSize="15sp"/>
+		android:textSize="15sp"
+		app:layout_constraintBottom_toTopOf="@+id/tvTitleOutputDataLabel"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="1.0"/>
 
 	<TextView
-		android:id="@+id/tvOutputDataLabel"
+		android:id="@+id/tvTitleOutputDataLabel"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/tvOutputData"
-		android:layout_marginStart="8dp"
-		android:gravity="end"
+		android:layout_marginStart="0dp"
+		android:gravity="right|center_horizontal|end"
 		android:hint="@string/output_data"
 		android:text="@string/output_data"
 		android:textSize="8sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="@+id/tvTitleOutputData"
 		tools:ignore="SmallSp"/>
 
 	<TextView
-		android:id="@+id/tvPanelThickness"
-		android:layout_width="wrap_content"
+		android:id="@+id/tvTitleSqueezeForce"
+		android:layout_width="60dp"
 		android:layout_height="wrap_content"
-		android:layout_alignParentEnd="true"
-		android:layout_marginEnd="10dp"
-		android:gravity="end"
-		android:hint="@string/PanelThickness"
-		android:text="@string/PanelThickness"
-		android:textSize="10sp"
-		tools:ignore="SmallSp"/>
-
-	<TextView
-		android:id="@+id/tvCommandOffset"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentEnd="true"
-		android:layout_below="@id/tvPanelThickness"
-		android:layout_marginEnd="10dp"
-		android:layout_marginTop="2dp"
-		android:gravity="end|bottom"
-		android:hint="@string/CommandOffset"
-		android:text="@string/CommandOffset"
-		android:textSize="10sp"
-		tools:ignore="SmallSp"/>
-
-	<TextView
-		android:id="@+id/tvMoveTipClearance"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginEnd="40dp"
-		android:layout_toStartOf="@id/tvPanelThickness"
-		android:gravity="end"
-		android:hint="@string/MoveTipClearance"
-		android:text="@string/MoveTipClearance"
-		android:textSize="10sp"
-		tools:ignore="SmallSp"/>
-
-	<TextView
-		android:id="@+id/tvFixedTipClearance"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/tvMoveTipClearance"
-		android:layout_marginEnd="40dp"
-		android:layout_marginTop="2dp"
-		android:layout_toStartOf="@id/tvCommandOffset"
-		android:gravity="start|bottom"
-		android:hint="@string/FixedTipClearance"
-		android:text="@string/FixedTipClearance"
-		android:textSize="10sp"
-		tools:ignore="SmallSp"/>
-
-	<TextView
-		android:id="@+id/tvOutputType"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginEnd="40dp"
-		android:layout_toStartOf="@id/tvMoveTipClearance"
-		android:gravity="center"
-		android:hint="@string/OutputType"
-		android:text="@string/OutputType"
-		android:textSize="15sp"/>
-
-	<TextView
-		android:id="@+id/tvOutputTypeLabel"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/tvOutputType"
-		android:layout_marginEnd="38dp"
-		android:layout_toStartOf="@id/tvMoveTipClearance"
-		android:gravity="end"
-		android:hint="@string/output_type"
-		android:text="@string/output_type"
-		android:textSize="8sp"
-		tools:ignore="SmallSp"/>
-
-	<TextView
-		android:id="@+id/tvSqueezeForce"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="40dp"
-		android:layout_toEndOf="@id/tvOutputData"
-		android:layout_toStartOf="@id/tvOutputType"
-		android:gravity="center_horizontal|start"
+		android:layout_marginStart="48dp"
+		android:gravity="right|center_horizontal|end"
 		android:hint="@string/SqueezeForce"
 		android:text="@string/SqueezeForce"
-		android:textSize="15sp"/>
+		android:textSize="15sp"
+		app:layout_constraintBottom_toTopOf="@+id/tvTitleSqueezeForceLabel"
+		app:layout_constraintStart_toEndOf="@+id/tvTitleOutputData"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="0.5"/>
 
 	<TextView
-		android:id="@+id/tvSqueezeForceLabel"
-		android:layout_width="wrap_content"
+		android:id="@+id/tvTitleSqueezeForceLabel"
+		android:layout_width="60dp"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/tvSqueezeForce"
-		android:layout_marginStart="38dp"
-		android:layout_toEndOf="@id/tvOutputData"
-		android:layout_toStartOf="@id/tvOutputType"
-		android:gravity="center_horizontal|start"
+		android:gravity="right|center_horizontal|end"
 		android:hint="@string/squeeze_force"
 		android:text="@string/squeeze_force"
 		android:textSize="8sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="@+id/tvTitleSqueezeForce"
 		tools:ignore="SmallSp"/>
 
-</RelativeLayout>
+	<TextView
+		android:id="@+id/tvTitleOutputType"
+		android:layout_width="30dp"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="16dp"
+		android:layout_marginStart="0dp"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/OutputType"
+		android:text="@string/OutputType"
+		android:textSize="15sp"
+		app:layout_constraintEnd_toStartOf="@+id/tvTitleMoveTipClearance"
+		app:layout_constraintHorizontal_bias="1.0"
+		app:layout_constraintStart_toEndOf="@+id/tvTitleSqueezeForce"
+		app:layout_constraintTop_toTopOf="parent"/>
+
+	<TextView
+		android:id="@+id/tvTitleOutputTypeLabel"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/output_type"
+		android:text="@string/output_type"
+		android:textSize="8sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="@+id/tvTitleOutputType"
+		app:layout_constraintTop_toBottomOf="@+id/tvTitleOutputType"
+		tools:ignore="SmallSp"
+		/>
+
+	<TextView
+		android:id="@+id/tvTitleMoveTipClearance"
+		android:layout_width="60dp"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/MoveTipClearance"
+		android:text="@string/MoveTipClearance"
+		android:textSize="10sp"
+		app:layout_constraintEnd_toStartOf="@+id/tvTitlePanelThickness"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:ignore="SmallSp"/>
+
+	<TextView
+		android:id="@+id/tvTitleFixedTipClearance"
+		android:layout_width="60dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="0dp"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/FixedTipClearance"
+		android:text="@string/FixedTipClearance"
+		android:textSize="10sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="@+id/tvTitleMoveTipClearance"
+		app:layout_constraintStart_toStartOf="@+id/tvTitleMoveTipClearance"
+		app:layout_constraintTop_toBottomOf="@+id/tvTitleMoveTipClearance"
+		tools:ignore="SmallSp"/>
+
+	<TextView
+		android:id="@+id/tvTitlePanelThickness"
+		android:layout_width="60dp"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="16dp"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/PanelThickness"
+		android:text="@string/PanelThickness"
+		android:textSize="10sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:ignore="SmallSp"/>
+
+	<TextView
+		android:id="@+id/tvTitleCommandOffset"
+		android:layout_width="60dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="0dp"
+		android:gravity="right|center_horizontal|end"
+		android:hint="@string/CommandOffset"
+		android:text="@string/CommandOffset"
+		android:textSize="10sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="@+id/tvTitlePanelThickness"
+		app:layout_constraintStart_toStartOf="@+id/tvTitlePanelThickness"
+		app:layout_constraintTop_toBottomOf="@+id/tvTitlePanelThickness"
+		tools:ignore="SmallSp"/>
+
+</android.support.constraint.ConstraintLayout>
