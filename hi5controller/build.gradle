@@ -71,8 +71,8 @@ android {
 			minSdkVersion 21
 			applicationId 'com.changyoung.hi5controller'
 			targetSdkVersion 25
-			versionCode 28
-			versionName '1.1.8'
+			versionCode 30
+			versionName '1.1.10'
 			versionNameSuffix '.beta'
 		}
 		production {
@@ -89,6 +89,7 @@ android {
 		abortOnError false
 	}
 	dexOptions {
+		javaMaxHeapSize "2g"
 	}
 }
 

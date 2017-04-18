@@ -521,12 +521,12 @@ class Helper {
 //		private static final int MSG_REFRESH_DIR = 0;
 //		private static final int MSG_REFRESH_PARENT_DIR = 1;
 
-		private final static long BASE_SLEEP_TIME = 250;
+		//		private final static long BASE_SLEEP_TIME = 250;
 		private final Context mContext;
 		private final View view;
 		private final String msg;
 		private ProgressDialog progressDialog;
-		private Handler handler;
+//		private Handler handler;
 
 		AsyncTaskDocumentFileDialog(Context context, View view, String msg) {
 			mContext = context;
