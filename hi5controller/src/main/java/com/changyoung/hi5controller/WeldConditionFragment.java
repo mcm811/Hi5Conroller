@@ -620,7 +620,7 @@ public class WeldConditionFragment extends Fragment
 		static final int OUTPUT_DATA = 0;            // 출력 데이터
 		static final int SQUEEZE_FORCE = 2;          // 가압력
 		private static final String TAG = "HI5:WeldConditionItem";
-		private List<String> rowList;
+		private final List<String> rowList;
 		private String rowString;
 
 //		private boolean itemChecked;
@@ -944,12 +944,12 @@ public class WeldConditionFragment extends Fragment
 */
 
 	public class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		List<WeldConditionItem> mDataset;
+		final List<WeldConditionItem> mDataset;
+		final Activity mActivity;
+		final View mSnackbarView;
+		final SparseBooleanArray mSelectedItems;
+		final Handler mHandler;
 		Context mContext;
-		Activity mActivity;
-		View mSnackbarView;
-		SparseBooleanArray mSelectedItems;
-		Handler mHandler;
 
 		WeldConditionAdapter(Activity activity, View snackbarView,
 		                     List<WeldConditionItem> dataSet) {
@@ -1490,7 +1490,7 @@ public class WeldConditionFragment extends Fragment
 					}
 					if (num != -1) {
 						try {
-							tilList.get(2).getEditText().setText(Integer.toString(num));
+							tilList.get(2).getEditText().setText(String.format(Locale.KOREA, "%d", num));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -1624,8 +1624,8 @@ public class WeldConditionFragment extends Fragment
 		}
 
 		private class ViewHolder extends RecyclerView.ViewHolder {
-			View mItemView;
-			List<TextView> tvList;
+			final View mItemView;
+			final List<TextView> tvList;
 
 			ViewHolder(View itemView) {
 				super(itemView);

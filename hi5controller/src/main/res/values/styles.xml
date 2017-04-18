@@ -31,7 +31,7 @@
 		<item name="android:windowNoTitle">true</item>
 	</style>
 
-	<style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+	<style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert" tools:ignore="UnusedResources">
 		<item name="android:windowAnimationStyle">@style/AlertDialogAnimation</item>
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>

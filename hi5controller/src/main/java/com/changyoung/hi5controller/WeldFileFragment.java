@@ -32,8 +32,6 @@ public class WeldFileFragment extends Fragment implements Refresh {
 	private String mWorkPath;
 	private String mWorkUri;
 	private FloatingActionButton mFabMain;
-	private FloatingActionButton mFabHome;
-	private FloatingActionButton mFabStorage;
 	private OnWorkPathListener mListener;
 
 	public WeldFileFragment() {
@@ -337,7 +335,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			return false;
 		});
 
-		mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_home);
+		FloatingActionButton mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_home);
 		if (mFabHome != null) {
 			mFabHome.setOnClickListener(v -> {
 				show(refresh(R.id.nav_home));
@@ -345,7 +343,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			});
 		}
 
-		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_storage);
+		FloatingActionButton mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");

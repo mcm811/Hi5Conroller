@@ -8,7 +8,8 @@
                 android:isScrollContainer="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:context=".MainActivity"
-                tools:showIn="@layout/main_activity_appbar">
+                tools:showIn="@layout/main_activity_appbar"
+                tools:targetApi="lollipop">
 
 	<android.support.v4.view.ViewPager
 		android:id="@+id/view_pager"
@@ -16,7 +17,8 @@
 		android:layout_height="wrap_content"
 		android:layout_above="@+id/view_dummy"
 		android:elevation="6dp"
-		android:isScrollContainer="true"/>
+		android:isScrollContainer="true"
+		tools:targetApi="lollipop"/>
 
 	<View
 		android:id="@+id/view_dummy"
@@ -37,6 +39,7 @@
 		app:tabIndicatorColor="@color/tabLayoutColor"
 		app:tabPaddingEnd="45dp"
 		app:tabPaddingStart="45dp"
-		app:tabSelectedTextColor="@color/tabLayoutColor"/>
+		app:tabSelectedTextColor="@color/tabLayoutColor"
+		tools:targetApi="lollipop"/>
 
 </RelativeLayout>

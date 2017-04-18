@@ -70,6 +70,9 @@
 		<ignore path="src/main/res/drawable/industrial_robot_black.png"/>
 		<ignore path="src/main/res/drawable/industrial_robot_black_512.png"/>
 		<ignore path="src/main/res/drawable/splash_changyoung.png"/>
+		<ignore path="src/main/res/drawable/splash_changyoung_blue.png"/>
+		<ignore path="src/main/res/drawable/splash_changyoung_brown.png"/>
+		<ignore path="src/main/res/drawable/splash_changyoung_red.png"/>
 	</issue>
 	<issue id="UnusedResources">
 		<ignore path="src/main/res/drawable-hdpi/ic_info_black_24dp.png"/>
@@ -147,5 +150,7 @@
 		<ignore path="src/main/res/drawable/ic_subject_white.png"/>
 		<ignore path="src/main/res/drawable/industrial_robot.png"/>
 		<ignore path="src/main/res/drawable/industrial_robot_black_512.png"/>
+		<ignore path="src/main/res/drawable/splash_changyoung_brown.png"/>
+		<ignore path="src/main/res/drawable/splash_changyoung_red.png"/>
 	</issue>
 </lint>

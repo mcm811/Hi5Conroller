@@ -502,8 +502,9 @@ public class WeldCountFragment extends Fragment
 		if (mWeldCountAdapter != null) {
 			mWeldCountAdapter.updateA("0");
 			toggleFabUpdate();
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private void toggleFabUpdate() {

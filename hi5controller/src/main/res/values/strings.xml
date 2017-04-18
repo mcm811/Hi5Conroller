@@ -5,7 +5,7 @@
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
-	<string name="action_settings">설정</string>
+	<string name="action_settings" tools:ignore="UnusedResources">설정</string>
 	<string name="action_backup">백업 (Backup)</string>
 	<string name="action_restore" tools:ignore="UnusedResources">복원 (Restore)</string>
 	<string name="action_exit" tools:ignore="UnusedResources">종료</string>
@@ -98,7 +98,7 @@
 	<string name="output_type">(Output type)</string>
 	<string name="squeeze_force">(Squeeze force)</string>
 
-	<string-array name="dialog_items">
+	<string-array name="dialog_items" tools:ignore="UnusedResources">
 		<item>계열 수정</item>
 		<item>파일 보기</item>
 	</string-array>

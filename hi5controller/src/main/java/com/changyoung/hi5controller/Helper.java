@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
@@ -85,7 +86,7 @@ class Helper {
 			return getPath(context, WORK_URI_KEY);
 		}
 
-		static DocumentFile getWorkPathDocumentFile(Context context, String path) throws IOException {
+		static DocumentFile getWorkPathDocumentFile(Context context, String path) {
 			File file = new File(path);
 			if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				try {
@@ -102,7 +103,7 @@ class Helper {
 			return null;
 		}
 
-		static InputStream getWorkPathInputStream(Context context, String path) throws IOException {
+		static InputStream getWorkPathInputStream(Context context, String path) {
 			InputStream inputStream = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -123,7 +124,7 @@ class Helper {
 			return inputStream;
 		}
 
-		static OutputStream getWorkPathOutputStream(Context context, String path) throws IOException {
+		static OutputStream getWorkPathOutputStream(Context context, String path) {
 			OutputStream outputStream = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -326,6 +327,7 @@ class Helper {
 			}
 		}
 
+		@Nullable
 		static String backupDocumentFile(Context context, View view) {
 			String ret = null;
 			boolean sourceChecked = false;
@@ -350,8 +352,7 @@ class Helper {
 					if (backup == null)
 						backup = source.createDirectory("Backup");
 
-					String destString = source.getName() + TimeHelper.getTimeString("_yyyyMMdd_HHmmss",
-							System.currentTimeMillis());
+					String destString = source.getName() + TimeHelper.getTimeString("_yyyyMMdd_HHmmss", System.currentTimeMillis());
 					DocumentFile backupDest = backup.findFile(destString);
 					if (backupDest == null)
 						backupDest = backup.createDirectory(destString);
@@ -591,7 +592,7 @@ class Helper {
 			}
 		}
 
-		private String asyncTaskCopy(DocumentFile source, DocumentFile dest) throws IOException {
+		private String asyncTaskCopy(DocumentFile source, DocumentFile dest) {
 			if (source.isFile()) {
 				try {
 					publishProgress("max", "1");
@@ -626,7 +627,7 @@ class Helper {
 			return String.format("%s 완료: %s", msg, dest.getName());
 		}
 
-		private String asyncTaskDelete(DocumentFile dir) throws IOException {
+		private String asyncTaskDelete(DocumentFile dir) {
 			try {
 				DocumentFile docFile = Pref.getDocumentFile(mContext, dir.getName());
 				if (docFile != null) {
@@ -696,11 +697,13 @@ class Helper {
 		private ProgressDialog progressDialog;
 		private Handler handler;
 
-		AsyncTaskFileDialog(Context context, View view, String msg) {
-			mContext = context;
-			this.view = view;
-			this.msg = msg;
-		}
+// --Commented out by Inspection START (2017. 4. 18. PM 6:45):
+//		AsyncTaskFileDialog(Context context, View view, String msg) {
+//			mContext = context;
+//			this.view = view;
+//			this.msg = msg;
+//		}
+// --Commented out by Inspection STOP (2017. 4. 18. PM 6:45)
 
 		AsyncTaskFileDialog(Context context, View view, @SuppressWarnings("SameParameterValue") String msg, Handler handler) {
 			mContext = context;
@@ -719,7 +722,7 @@ class Helper {
 			super.onPreExecute();
 		}
 
-		private String asyncTaskCopy(File source, File dest) throws IOException {
+		private String asyncTaskCopy(File source, File dest) {
 			if (source.isFile()) {
 				if (!dest.exists() && !dest.mkdirs())
 					return "대상 폴더 생성 실패";
@@ -758,7 +761,7 @@ class Helper {
 			return String.format("%s 완료: %s", msg, dest.getName());
 		}
 
-		private void searchFile(List<File> deleteList, File dir) throws IOException {
+		private void searchFile(List<File> deleteList, File dir) {
 			if (dir.isDirectory()) {
 				File[] dirs = dir.listFiles();
 				if (dirs != null) {
@@ -852,8 +855,8 @@ class Helper {
 	@SuppressLint("NewApi")
 	public static final class UriHelper {
 
+		static final String TAG = "TAG";
 		private static final String PRIMARY_VOLUME_NAME = "primary";
-		static String TAG = "TAG";
 
 		public static boolean isKitkat() {
 			return Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
@@ -875,7 +878,7 @@ class Helper {
 			return sdCardDirectory;
 		}
 
-		public static ArrayList<String> getExtSdCardPaths(Context con) throws Exception {
+		public static ArrayList<String> getExtSdCardPaths(Context con) {
 			ArrayList<String> paths = new ArrayList<String>();
 			File[] files = ContextCompat.getExternalFilesDirs(con, "external");
 			File firstFile = files[0];
@@ -1004,11 +1007,11 @@ class Helper {
 			return File.separator;
 		}
 
-		public static boolean deleteUri(Activity activity, Uri uri) throws IOException {
+		public static boolean deleteUri(Activity activity, Uri uri) {
 			return DocumentsContract.deleteDocument(activity.getContentResolver(), uri);
 		}
 
-		public static void deleteTreeUri(Activity activity, Uri uri) throws IOException {
+		public static void deleteTreeUri(Activity activity, Uri uri) {
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
@@ -1030,7 +1033,7 @@ class Helper {
 			}
 		}
 
-		static Uri getWorkPathFileUri(Activity activity, String path) throws IOException {
+		static Uri getWorkPathFileUri(Activity activity, String path) {
 			Uri uri = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {

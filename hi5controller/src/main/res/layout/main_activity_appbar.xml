@@ -7,7 +7,8 @@
                                                  android:elevation="6dp"
                                                  android:fitsSystemWindows="true"
                                                  android:isScrollContainer="true"
-                                                 tools:context=".MainActivity">
+                                                 tools:context=".MainActivity"
+                                                 tools:targetApi="lollipop">
 
 	<android.support.design.widget.AppBarLayout
 		android:layout_width="match_parent"
@@ -21,7 +22,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:elevation="6dp"
-			app:popupTheme="@style/AppTheme.PopupOverlay"/>
+			app:popupTheme="@style/AppTheme.PopupOverlay"
+			tools:targetApi="lollipop"/>
 
 		<View
 			android:layout_width="match_parent"

@@ -6,7 +6,8 @@
              android:layout_height="match_parent"
              android:background="@color/grey_200"
              android:paddingTop="2dp"
-             tools:context="com.changyoung.hi5controller.WeldCountFragment">
+             tools:context="com.changyoung.hi5controller.WeldCountFragment"
+             tools:ignore="Overdraw">
 
 	<ImageView
 		android:id="@+id/imageView"
@@ -49,7 +50,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="top"
-		android:elevation="6dp">
+		android:elevation="6dp"
+		tools:targetApi="lollipop">
 
 		<android.support.design.widget.FloatingActionButton
 			android:id="@+id/fab_weldcount_update"
