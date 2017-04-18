@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="fill_parent"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="?android:attr/selectableItemBackground"
 	android:clickable="true"
@@ -12,48 +12,67 @@
 
 	<ImageView
 		android:id="@+id/file_image"
-		android:layout_width="30dip"
-		android:layout_height="30dip"
-		android:layout_gravity="center"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
 		android:alpha="0.8"
 		android:background="@android:color/white"
 		android:contentDescription="@string/file_icon_image"
 		android:scaleType="center"
 		android:src="@drawable/ic_description"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/file_text"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
 		tools:ignore="UnusedAttribute"/>
 
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/file_fab"
-		android:layout_width="30dip"
-		android:layout_height="30dip"
-		android:layout_gravity="center"
-		android:layout_margin="5dp"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
 		android:alpha="0.8"
 		android:rotation="0"
 		android:scaleType="center"
 		android:src="@drawable/ic_description"
 		app:backgroundTint="@android:color/white"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/file_text"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
 		tools:ignore="UnusedAttribute"/>
 
 	<TextView
 		android:id="@+id/file_text"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		android:layout_gravity="start|center_vertical"
-		android:layout_marginStart="10dip"
-		android:layout_weight="1"
+		android:layout_marginEnd="8dp"
+		android:layout_marginStart="48dp"
 		android:maxLines="1"
 		android:text="@string/file_name"
-		android:textSize="14sp"/>
+		android:textSize="14sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/file_time"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"/>
 
 	<TextView
 		android:id="@+id/file_time"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="end|center_vertical"
-		android:layout_marginEnd="5dip"
+		android:layout_marginEnd="8dp"
+		android:layout_marginTop="0dp"
 		android:maxLines="1"
 		android:text="@string/file_time"
-		android:textSize="12sp"/>
+		android:textSize="12sp"
+		app:layout_constraintBottom_toBottomOf="@+id/file_text"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toTopOf="@+id/file_text"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

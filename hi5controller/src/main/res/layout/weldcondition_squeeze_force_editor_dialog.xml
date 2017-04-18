@@ -17,6 +17,12 @@
 		android:paddingBottom="4dp"
 		android:textStyle="bold"/>
 
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="0.5dp"
+		android:layout_marginTop="8dp"
+		android:background="@color/black"/>
+
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view"
 		android:layout_width="match_parent"
@@ -27,5 +33,11 @@
 		android:paddingEnd="25dp"
 		android:paddingStart="25dp"
 		tools:listitem="@layout/weldcondition_squeeze_force_view_holder_item"/>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="0.5dp"
+		android:layout_marginTop="8dp"
+		android:background="@color/black"/>
 
 </LinearLayout>

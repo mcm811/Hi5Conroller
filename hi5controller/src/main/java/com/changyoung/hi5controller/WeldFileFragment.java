@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
 	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+	EditText mEditTextPath;
 	private WeldFileListFragment mWeldFileListFragment;
 	private View mView;
 	private String mWorkPath;
@@ -70,9 +72,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 							mWorkUri = uri.toString();
 							onSetWorkUri(mWorkUri, mWorkPath);
 
-							EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-							if (etPath != null) {
-								etPath.setText(mWorkPath);
+							if (mEditTextPath != null) {
+								mEditTextPath.setText(mWorkPath);
 								logD("etPath:" + mWorkPath);
 							}
 							show("경로 설정 완료: " + mWorkPath);
@@ -99,12 +100,11 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			logD("[refresh]:" + mWorkPath);
 
 			if (mView != null) {
-				EditText etPath = (EditText) mView.findViewById((R.id.etWorkPath));
-				if (etPath != null)
-					etPath.setText(mWorkPath);
+				if (mEditTextPath != null)
+					mEditTextPath.setText(mWorkPath);
 			}
 
-			if (!isDetached()) {
+			if (isAdded()) {
 				WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
 				if (workPathFragment != null)
 					workPathFragment.refreshFilesList(mWorkPath);
@@ -257,8 +257,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		try {
 			if (isAdded()) {    // Return true if the mWeldFileListFragment is currently added to its activity.
 				mWorkPath = onGetWorkPath();
-				EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-				etPath.setText(path);
+				if (mEditTextPath != null)
+					mEditTextPath.setText(path);
 //				FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab_work_path_main);
 //				if (fab != null) {
 //					if (mWorkPath.compareTo(path) == 0) {
@@ -308,28 +308,42 @@ public class WeldFileFragment extends Fragment implements Refresh {
 
 		mWeldFileListFragment.snackbarView = mView;
 		mWeldFileListFragment.refreshFilesList(path);
-		@SuppressLint("CutPasteId") EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
-		etPath.setText(path);
-		etPath.setOnFocusChangeListener((v, hasFocus) -> {
-			WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
-			@SuppressLint("CutPasteId") EditText etPath1 = (EditText) mView.findViewById(R.id.etWorkPath);
-			try {
-				File file = new File(etPath1.getText().toString());
-				if (file.isDirectory()) {
-					onSetWorkPath(etPath1.getText().toString());
-				} else {
-					throw new Exception();
+		mEditTextPath = (EditText) mView.findViewById(R.id.etWorkPath);
+		mEditTextPath.setText(path);
+		mEditTextPath.setOnFocusChangeListener((v, hasFocus) -> {
+			logD("FabStorage");
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				if (hasFocus) {
+					v.clearFocus();
+					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+					flags |= Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+					intent.setFlags(flags);
+					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
+					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				}
-			} catch (NullPointerException e) {
-				logD(e.getLocalizedMessage());
-			} catch (Exception e) {
-				e.printStackTrace();
-				show("잘못된 경로: " + etPath1.getText().toString());
-				etPath1.setText(onGetWorkPath());
+			} else {
+				WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
+				@SuppressLint("CutPasteId") EditText etPath1 = (EditText) mView.findViewById(R.id.etWorkPath);
+				try {
+					File file = new File(etPath1.getText().toString());
+					if (file.isDirectory()) {
+						onSetWorkPath(etPath1.getText().toString());
+					} else {
+						throw new Exception();
+					}
+				} catch (NullPointerException e) {
+					logD(e.getLocalizedMessage());
+				} catch (Exception e) {
+					e.printStackTrace();
+					show("잘못된 경로: " + etPath1.getText().toString());
+					etPath1.setText(onGetWorkPath());
+				}
+				fragment.refreshFilesList(etPath1.getText().toString());
 			}
-			fragment.refreshFilesList(etPath1.getText().toString());
 		});
-		etPath.setOnKeyListener((v, keyCode, event) -> {
+		mEditTextPath.setOnKeyListener((v, keyCode, event) -> {
 			Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
 			return false;
 		});
@@ -346,7 +360,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
-				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 					int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
 					flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
@@ -400,7 +414,6 @@ public class WeldFileFragment extends Fragment implements Refresh {
 					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager()
 							.findFragmentById(R.id.weldfile_fragment);
-					EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 					String path = fragment.getDirPath();
 					mWorkPath = onGetWorkPath();
 					if (mWorkPath != null) {
@@ -412,7 +425,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 							if (ret != null)
 								show(ret);
 						} else {
-							etPath.setText(path);
+							if (mEditTextPath != null)
+								mEditTextPath.setText(path);
 							onSetWorkPath(path);
 							fragment.refreshFilesList();
 							show("경로 설정 완료: " + path);

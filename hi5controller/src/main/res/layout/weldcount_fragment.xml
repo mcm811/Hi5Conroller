@@ -55,7 +55,7 @@
 		android:layout_marginEnd="156dp"
 		android:clickable="true"
 		android:focusable="true"
-		android:src="@drawable/ic_error_outline"
+		android:src="@drawable/ic_error"
 		android:tint="@android:color/white"
 		app:backgroundTint="@color/red_A200"
 		app:elevation="6dp"

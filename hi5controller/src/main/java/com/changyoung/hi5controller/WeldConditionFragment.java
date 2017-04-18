@@ -1521,6 +1521,7 @@ public class WeldConditionFragment extends Fragment
 					.inflate(R.layout.weldcondition_view_holder_item, parent, false);
 			final ViewHolder holder = new ViewHolder(v);
 			holder.mItemView.setOnClickListener(v14 -> {
+				Helper.UiHelper.hideSoftKeyboard(mActivity, v14, null);
 				final int position = (int) v14.getTag();
 				if (toggleSelection(position))
 					mLastPosition = position;
@@ -1532,6 +1533,7 @@ public class WeldConditionFragment extends Fragment
 				setImageFab();
 			});
 			holder.mItemView.setOnLongClickListener(v13 -> {
+				Helper.UiHelper.hideSoftKeyboard(mActivity, v13, null);
 				mLastPosition = (int) v13.getTag();
 				showEditorDialog(mLastPosition);
 				return true;

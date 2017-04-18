@@ -8,8 +8,6 @@
 	android:minHeight="25dp"
 	android:minWidth="25dp"
 	android:orientation="vertical"
-	android:paddingLeft="0dp"
-	android:paddingRight="0dp"
 	tools:context="com.changyoung.hi5controller.WeldFileListFragment">
 
 	<android.support.v4.widget.SwipeRefreshLayout
@@ -21,8 +19,6 @@
 			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:paddingEnd="2dp"
-			android:paddingStart="2dp"
 			android:scrollbars="vertical"
 			tools:listitem="@layout/weldfile_list_view_holder_item"/>
 

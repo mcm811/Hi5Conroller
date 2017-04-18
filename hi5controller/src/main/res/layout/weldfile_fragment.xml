@@ -21,8 +21,8 @@
 			android:id="@+id/textInputLayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginEnd="10dp"
-			android:layout_marginStart="10dp">
+			android:layout_marginEnd="4dp"
+			android:layout_marginStart="4dp">
 
 			<com.changyoung.hi5controller.EditText
 				android:id="@+id/etWorkPath"
@@ -36,16 +36,14 @@
 		<View
 			android:layout_width="match_parent"
 			android:layout_height="0.5dp"
-			android:background="@color/toolbarOutlineColor"
-			/>
+			android:layout_marginTop="1dp"
+			android:background="@color/toolbarOutlineColor"/>
 
 		<fragment
 			android:id="@+id/weldfile_fragment"
 			class="com.changyoung.hi5controller.WeldFileListFragment"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_marginEnd="10dp"
-			android:layout_marginStart="10dp"
 			android:layout_weight="1"
 			tools:layout="@layout/weldfile_list_fragment"/>
 
