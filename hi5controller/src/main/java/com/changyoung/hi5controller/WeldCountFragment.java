@@ -384,7 +384,8 @@ public class WeldCountFragment extends Fragment
 			} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 				mRecyclerView.setLayoutManager(mGridLayoutManager);
 			}
-			mWeldCountAdapter = new WeldCountAdapter(getActivity(), mFabSort, new ArrayList<>());
+
+			mWeldCountAdapter = new WeldCountAdapter(getActivity(), mView, new ArrayList<>());
 			mRecyclerView.setAdapter(mWeldCountAdapter);
 		}
 
@@ -481,7 +482,7 @@ public class WeldCountFragment extends Fragment
 	public void show(String msg) {
 		try {
 			if (msg != null && isAdded()) {
-				Snackbar.make(mFabSort, msg, Snackbar.LENGTH_SHORT)
+				Snackbar.make(mView, msg, Snackbar.LENGTH_LONG)
 						.setAction("Action", null)
 						.show();
 				logD(msg);
@@ -1552,7 +1553,7 @@ public class WeldCountFragment extends Fragment
 		void show(String msg) {
 			try {
 				if (msg != null) {
-					Snackbar.make(mSnackbarView, msg, Snackbar.LENGTH_SHORT)
+					Snackbar.make(mSnackbarView, msg, Snackbar.LENGTH_LONG)
 							.setAction("Action", null)
 							.show();
 				}

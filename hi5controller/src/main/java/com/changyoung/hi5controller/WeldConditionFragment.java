@@ -229,16 +229,14 @@ public class WeldConditionFragment extends Fragment
 		mRecyclerView.setHasFixedSize(true);
 		mLayoutManager = new LinearLayoutManager(getContext());
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mWeldConditionAdapter = new WeldConditionAdapter(getActivity(),
-				mView.findViewById(R.id.coordinator_layout), new ArrayList<>());
+		mWeldConditionAdapter = new WeldConditionAdapter(getActivity(), mView, new ArrayList<>());
 		mWeldConditionAdapter.onLoadInstanceState(savedInstanceState);
 		mRecyclerView.setAdapter(mWeldConditionAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
 				new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
 		mRecyclerView.addItemDecoration(itemDecoration);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-		mWeldConditionSqueezeForceAdapter = new WeldConditionSqueezeForceAdapter(getActivity(),
-				mView.findViewById(R.id.coordinator_layout), mWeldConditionAdapter.getData());
+		mWeldConditionSqueezeForceAdapter = new WeldConditionSqueezeForceAdapter(getActivity(), mView, mWeldConditionAdapter.getData());
 
 		mLooperHandler = new LooperHandler(Looper.getMainLooper());
 		mWeldConditionObserver = new WeldConditionObserver(onGetWorkPath(), mLooperHandler);
@@ -345,7 +343,7 @@ public class WeldConditionFragment extends Fragment
 	public void show(String msg) {
 		try {
 			if (msg != null && isAdded()) {
-				Snackbar.make(mView.findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+				Snackbar.make(mView, msg, Snackbar.LENGTH_LONG)
 						.setAction("Action", null).show();
 				logD(msg);
 			}
@@ -367,9 +365,7 @@ public class WeldConditionFragment extends Fragment
 				final int selectedItemCount = mWeldConditionAdapter.getSelectedItemCount();
 				if (mSnackbar == null || !mSnackbar.isShown()) {
 					mSnackbar = Snackbar
-							.make(mView.findViewById(R.id.coordinator_layout),
-									String.valueOf(selectedItemCount) + "개 항목 선택됨",
-									Snackbar.LENGTH_INDEFINITE)
+							.make(mView, String.valueOf(selectedItemCount) + "개 항목 선택됨", Snackbar.LENGTH_INDEFINITE)
 							.setAction("선택 취소", v -> {
 								Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
 								mWeldConditionAdapter.clearSelections();

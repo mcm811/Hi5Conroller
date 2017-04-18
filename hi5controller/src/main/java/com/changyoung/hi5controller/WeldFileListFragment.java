@@ -1,10 +1,7 @@
 package com.changyoung.hi5controller;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,11 +9,9 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.DocumentsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -57,7 +52,7 @@ public class WeldFileListFragment extends Fragment {
 	private RecyclerView mRecyclerView;
 	private FileListAdapter mAdapter;
 
-	private Uri dirUri;
+	//	private Uri dirUri;
 	private File dirPath;
 	private FileListObserver fileListObserver;
 	private LooperHandler looperHandler;
@@ -89,11 +84,10 @@ public class WeldFileListFragment extends Fragment {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void show(String msg) {
 		try {
 			if (snackbarView != null)
-				Snackbar.make(snackbarView, msg, Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(snackbarView, msg, Snackbar.LENGTH_LONG).show();
 			logD(msg);
 		} catch (Exception e) {
 			logD(msg);
@@ -106,18 +100,19 @@ public class WeldFileListFragment extends Fragment {
 		return dirPath.getPath();
 	}
 
-	private void setDirPath(File value) {
-		this.dirPath = value;
-	}
-
 	private void setDirPath(String value) {
 		this.dirPath = new File(value);
+	}
+
+	private void setDirPath(File value) {
+		this.dirPath = value;
 	}
 
 	public File getDirFile() {
 		return dirPath;
 	}
 
+/*
 	public Uri getDirUri() {
 		return dirUri;
 	}
@@ -125,6 +120,7 @@ public class WeldFileListFragment extends Fragment {
 	public void setDirUri(Uri uri) {
 		this.dirUri = uri;
 	}
+*/
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -238,6 +234,7 @@ public class WeldFileListFragment extends Fragment {
 		return getDirPath();
 	}
 
+/*
 	void refreshFilesList(Uri uri) {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 //			uri = Uri.parse("content://com.android.externalstorage.documents/tree/A345-1F0E%3Ajob");
@@ -300,6 +297,7 @@ public class WeldFileListFragment extends Fragment {
 			}
 		}
 	}
+*/
 
 	@Override
 	public void onResume() {
@@ -479,10 +477,8 @@ public class WeldFileListFragment extends Fragment {
 	}
 */
 
-	@SuppressWarnings("unused")
 	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		final List<File> mDataset;
-		@SuppressWarnings("unused")
 		Activity mActivity;
 		Context mContext;
 
@@ -508,7 +504,6 @@ public class WeldFileListFragment extends Fragment {
 			Collections.sort(mDataset, comparator);
 		}
 
-		@SuppressWarnings("unused")
 		public void setData(List<File> data) {
 			mDataset.clear();
 			mDataset.addAll(data);

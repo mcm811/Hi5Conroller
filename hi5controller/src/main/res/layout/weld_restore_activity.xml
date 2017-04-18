@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-	android:id="@+id/frame_layout"
+<android.support.design.widget.CoordinatorLayout
+	android:id="@+id/coordinator_layout_weld_restore_activity"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
@@ -72,25 +72,18 @@
 		ads:adUnitId="@string/banner_ad_unit_id"/>
 	-->
 
-	<android.support.design.widget.CoordinatorLayout
-		android:id="@+id/coordinator_layout"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		>
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/fab_workpath_main"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_margin="5dp"
+		android:src="@drawable/ic_settings_backup_restore"
+		android:tint="@android:color/white"
+		android:transitionName="@string/transitionNameFab"
+		app:backgroundTint="@color/blue_A200"
+		app:borderWidth="0dp"
+		app:elevation="6dp"
+		tools:ignore="UnusedAttribute"/>
 
-		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab_workpath_main"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
-			android:layout_margin="5dp"
-			android:src="@drawable/ic_settings_backup_restore"
-			android:tint="@android:color/white"
-			android:transitionName="@string/transitionNameFab"
-			app:backgroundTint="@color/blue_A200"
-			app:borderWidth="0dp"
-			app:elevation="6dp"
-			tools:ignore="UnusedAttribute"/>
-
-	</android.support.design.widget.CoordinatorLayout>
-</merge>
+</android.support.design.widget.CoordinatorLayout>

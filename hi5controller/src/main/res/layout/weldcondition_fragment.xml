@@ -1,9 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.changyoung.hi5controller.WeldConditionFragment">
+<android.support.design.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="com.changyoung.hi5controller.WeldConditionFragment">
 
 	<ImageView
 		android:id="@+id/imageView"
@@ -59,40 +60,33 @@
 		</android.support.v4.widget.SwipeRefreshLayout>
 	</LinearLayout>
 
-	<android.support.design.widget.CoordinatorLayout
-		android:id="@+id/coordinator_layout"
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/fab_weld_condition_main"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="78dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
+		android:src="@drawable/ic_view_module"
+		android:tint="@android:color/white"
+		android:transitionName="@string/transitionNameFab"
+		app:backgroundTint="@color/fabBackgroundTiltColor"
+		app:elevation="6dp"
+		tools:targetApi="lollipop"/>
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/fab_weld_condition_storage"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_gravity="top">
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_margin="8dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:src="@drawable/ic_storage"
+		android:tint="@android:color/white"
+		app:backgroundTint="@color/fabBackgroundTiltColor"
+		app:elevation="6dp"/>
 
-		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab_weld_condition_main"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
-			android:layout_marginBottom="5dp"
-			android:layout_marginEnd="70dp"
-			android:layout_marginStart="5dp"
-			android:layout_marginTop="5dp"
-			android:src="@drawable/ic_view_module"
-			android:tint="@android:color/white"
-			android:transitionName="@string/transitionNameFab"
-			app:backgroundTint="@color/fabBackgroundTiltColor"
-			app:elevation="6dp"
-			tools:targetApi="lollipop"/>
-
-		<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab_weld_condition_storage"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
-			android:layout_margin="5dp"
-			android:clickable="true"
-			android:focusable="true"
-			android:src="@drawable/ic_storage"
-			android:tint="@android:color/white"
-			app:backgroundTint="@color/fabBackgroundTiltColor"
-			app:elevation="6dp"/>
-
-	</android.support.design.widget.CoordinatorLayout>
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

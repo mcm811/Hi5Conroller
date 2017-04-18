@@ -6,7 +6,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,11 +13,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +51,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 				getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		if (fragment != null) {
 			fragment.refreshFilesList(path);
-			fragment.snackbarView = view.findViewById(R.id.coordinator_layout);
+			fragment.snackbarView = view.findViewById(R.id.coordinator_layout_weld_restore_activity);
 			final EditText etPath = (EditText) view.findViewById((R.id.etBackupPath));
 			if (etPath != null) {
 				etPath.setText(path);
@@ -95,7 +89,6 @@ public class WeldRestoreActivity extends AppCompatActivity
 				return true;
 			});
 		}
-*/
 
 		AdView adView = new AdView(getContext());
 		adView.setAdSize(AdSize.BANNER);
@@ -115,6 +108,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		if (frameLayout != null) {
 			frameLayout.addView(adView, frameLayout.getChildCount() - 1);
 		}
+*/
 
 		try {
 			//noinspection ConstantConditions
@@ -240,24 +234,22 @@ public class WeldRestoreActivity extends AppCompatActivity
 			final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 			DocumentFile dest = Helper.Pref.getWorkDocumentFile(getContext());
 			DocumentFile backup = dest.findFile("Backup");
-			if (backup != null) {
-				DocumentFile source = backup.findFile(fragment.getDirFile().getName());
-				if (source.equals(dest))
-					throw new Exception();
-				// 복원할 파일을 먼저 확인
-				if (source.exists()) {
-					for (DocumentFile file : source.listFiles()) {
-						String fileName = file.getName().toUpperCase();
-						if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
-							sourceChecked = true;
-							break;
-						}
+			DocumentFile source = backup.findFile(fragment.getDirFile().getName());
+			if (source.equals(dest))
+				throw new Exception();
+			// 복원할 파일을 먼저 확인
+			if (source.exists()) {
+				for (DocumentFile file : source.listFiles()) {
+					String fileName = file.getName().toUpperCase();
+					if (fileName.startsWith("HX") || fileName.endsWith("JOB") || fileName.startsWith("ROBOT")) {
+						sourceChecked = true;
+						break;
 					}
-					if (sourceChecked) {
-						new Helper.AsyncTaskDocumentFileDialog(getContext(),
-								findViewById(R.id.coordinator_layout), "복원").execute(source, dest);
-						return null;
-					}
+				}
+				if (sourceChecked) {
+					new Helper.AsyncTaskDocumentFileDialog(getContext(),
+							findViewById(R.id.coordinator_layout_weld_restore_activity), "복원").execute(source, dest);
+					return null;
 				}
 			}
 			throw new Exception();
@@ -276,7 +268,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 	}
 
 	private void backup() {
-		String ret = Helper.FileHelper.backupDocumentFile(getContext(), findViewById(R.id.coordinator_layout));
+		String ret = Helper.FileHelper.backupDocumentFile(getContext(), findViewById(R.id.coordinator_layout_weld_restore_activity));
 		if (ret == null)
 			refresh(Helper.Pref.getBackupPath(getContext()));
 		else
@@ -312,7 +304,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		try {
 			if (msg != null) {
 				//noinspection ConstantConditions
-				Snackbar.make(findViewById(R.id.coordinator_layout), msg, Snackbar.LENGTH_SHORT)
+				Snackbar.make(findViewById(R.id.coordinator_layout_weld_restore_activity), msg, Snackbar.LENGTH_LONG)
 						.setAction("Action", null).show();
 				logD(msg);
 			}

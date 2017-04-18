@@ -243,8 +243,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			if (msg == null)
 				return;
 			if (mView != null) {
-				Snackbar.make(mView.findViewById(R.id.coordinator_layout),
-						msg, Snackbar.LENGTH_SHORT)
+				Snackbar.make(mView, msg, Snackbar.LENGTH_LONG)
 						.setAction("Action", null).show();
 			}
 			logD(msg);
@@ -307,7 +306,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			transaction.commit();
 		}
 
-		mWeldFileListFragment.snackbarView = mView.findViewById(R.id.coordinator_layout);
+		mWeldFileListFragment.snackbarView = mView;
 		mWeldFileListFragment.refreshFilesList(path);
 		@SuppressLint("CutPasteId") EditText etPath = (EditText) mView.findViewById(R.id.etWorkPath);
 		etPath.setText(path);
@@ -409,8 +408,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
 //						startActivity(new Intent(getContext(), WeldRestoreActivity.class), options.toBundle());
-							String ret = Helper.FileHelper.backupDocumentFile(getContext(),
-									mView.findViewById(R.id.coordinator_layout));
+							String ret = Helper.FileHelper.backupDocumentFile(getContext(), mView);
 							if (ret != null)
 								show(ret);
 						} else {

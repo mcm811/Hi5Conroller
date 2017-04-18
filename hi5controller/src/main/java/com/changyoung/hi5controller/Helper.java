@@ -70,12 +70,15 @@ class Helper {
 		final static String ORDER_TYPE_KEY = "order_type";
 		final static String LAYOUT_TYPE_KEY = "layout_type";
 
-		static DocumentFile getDocumentFile(Context context, String fileName) {
+		static DocumentFile getDocumentFile(Context context, String fileName) throws NullPointerException {
 			return getWorkDocumentFile(context).findFile(fileName);
 		}
 
-		static DocumentFile getWorkDocumentFile(Context context) {
-			return DocumentFile.fromTreeUri(context, Pref.getWorkPathUri(context));
+		static DocumentFile getWorkDocumentFile(Context context) throws NullPointerException {
+			DocumentFile documentFile = DocumentFile.fromTreeUri(context, Pref.getWorkPathUri(context));
+			if (documentFile == null)
+				throw new NullPointerException();
+			return documentFile;
 		}
 
 		static Uri getWorkPathUri(Context context) {

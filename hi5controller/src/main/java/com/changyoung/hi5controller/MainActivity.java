@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
 				refresh.show(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Snackbar.make(mViewPager, msg, Snackbar.LENGTH_SHORT)
+			Snackbar.make(mViewPager, msg, Snackbar.LENGTH_LONG)
 					.setAction("Action", null).show();
 			logD(msg);
 		}
