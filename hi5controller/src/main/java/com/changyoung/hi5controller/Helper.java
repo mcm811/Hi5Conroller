@@ -33,8 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.io.BufferedReader;
@@ -451,19 +449,7 @@ class Helper {
 			builder.show();
 		}
 
-		static void adMobExitDialog(final Activity context) {
-			AdView adView = new AdView(context);
-			adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
-			adView.setScaleX(0.95f);
-			adView.setScaleY(0.95f);
-			if (BuildConfig.DEBUG)
-				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_debug));
-			else
-				adView.setAdUnitId(context.getString(R.string.banner_ad_unit_id_release));
-			AdRequest adRequest = new AdRequest.Builder()
-					.setRequestAgent("android_studio:ad_template").build();
-			adView.loadAd(adRequest);
-
+		static void adMobExitDialog(final Activity context, AdView adView) {
 			TextView tvMessage = new TextView(context);
 			tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
 			tvMessage.setTypeface(Typeface.DEFAULT_BOLD);
@@ -481,6 +467,12 @@ class Helper {
 			builder.setView(linearLayout);
 			builder.setPositiveButton("확인", (dialog, which) -> context.finish());
 			builder.setNegativeButton("취소", (dialog, which) -> {
+			});
+			builder.setOnCancelListener(dialog -> {
+				linearLayout.removeView(adView);
+			});
+			builder.setOnDismissListener(dialog -> {
+				linearLayout.removeView(adView);
 			});
 			builder.show();
 		}

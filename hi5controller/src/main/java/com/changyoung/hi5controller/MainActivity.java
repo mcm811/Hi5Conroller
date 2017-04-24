@@ -30,6 +30,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity
@@ -42,11 +47,13 @@ public class MainActivity extends AppCompatActivity
 	private final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 100;
 //	private final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
 
-	Toolbar mAppbarToolbar;
+	private Toolbar mAppbarToolbar;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
 	private DrawerLayout mDrawer;
 	private int mBackPressedCount;
+
+	private AdView mAdView;
 
 	private static void logD(String msg) {
 		try {
@@ -351,6 +358,28 @@ public class MainActivity extends AppCompatActivity
 			}
 		});
 */
+
+		MobileAds.initialize(getApplicationContext(), "R.string.banner_ad_unit_id");
+
+		AdRequest adRequest;
+		int adResId;
+		if (BuildConfig.DEBUG) {
+			adRequest = new AdRequest.Builder().addTestDevice("hi5Controller test device").build();
+			adResId = R.string.banner_ad_unit_id_debug;
+		} else {
+			adRequest = new AdRequest.Builder().build();
+			adResId = R.string.banner_ad_unit_id;
+		}
+		mAdView = new AdView(getContext());
+		mAdView.setAdSize(AdSize.MEDIUM_RECTANGLE);
+		mAdView.setAdUnitId(getContext().getString(adResId));
+		mAdView.loadAd(adRequest);
+
+/*
+		AdView adViewBanner = (AdView) findViewById(R.id.adViewBanner);
+		adViewBanner.setAlpha(0.5f);
+		adViewBanner.loadAd(adRequest);
+*/
 	}
 
 	@Override
@@ -388,7 +417,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	private void onExitDialog() {
-		Helper.UiHelper.adMobExitDialog(this);
+		Helper.UiHelper.adMobExitDialog(this, mAdView);
 	}
 
 	@Override
@@ -407,8 +436,8 @@ public class MainActivity extends AppCompatActivity
 
 		switch (item.getItemId()) {
 			case R.id.action_main_toolbar_exit:
-//				onExitDialog();
-				finish();
+				onExitDialog();
+//				finish();
 				break;
 			case R.id.action_main_toolbar_restore:
 //				final FloatingActionButton fab = (FloatingActionButton) getFab();
@@ -500,8 +529,8 @@ public class MainActivity extends AppCompatActivity
 		} else if (id == R.id.nav_backup) {
 			startActivity(new Intent(MainActivity.this, WeldRestoreActivity.class));
 		} else if (id == R.id.nav_exit) {
-//			onExitDialog();
-			finish();
+			onExitDialog();
+//			finish();
 		}
 		mDrawer.closeDrawer(GravityCompat.START);
 
@@ -537,6 +566,7 @@ public class MainActivity extends AppCompatActivity
 			path = Helper.Pref.getWorkPath(getContext());
 		}
 
+/*
 		try {
 			File file = new File(path);
 			if (file.getName().length() > 0) {
@@ -546,6 +576,7 @@ public class MainActivity extends AppCompatActivity
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+*/
 
 		return path;
 	}
