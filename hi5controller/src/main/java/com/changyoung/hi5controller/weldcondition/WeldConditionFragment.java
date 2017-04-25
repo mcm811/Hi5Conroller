@@ -31,8 +31,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
-import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.common.FileHelper;
+import com.changyoung.hi5controller.common.RefreshHandler;
+import com.changyoung.hi5controller.common.UiHelper;
+import com.changyoung.hi5controller.common.UriHelper;
 import com.changyoung.hi5controller.weldfile.WeldFileListFragment;
 
 import java.io.File;
@@ -45,12 +47,11 @@ import java.util.Locale;
  * changmin811@gmail.com
  */
 public class WeldConditionFragment extends Fragment
-		implements Refresh,
+		implements RefreshHandler,
 		LoaderManager.LoaderCallbacks<List<WeldConditionItem>> {
-
-	static final int MSG_REFRESH = 0;
+	static final int MSG_DEFAULT = 100;
+	static final int MSG_REFRESH = 101;
 	static final int[] valueMax = { 2000, 100, 350, 500, 500, 500, 500, 1000, 1000 };
-	//	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "HI5:WeldConditionFrag";
 	RecyclerView mRecyclerView;
 	WeldConditionAdapter mWeldConditionAdapter;
@@ -109,7 +110,7 @@ public class WeldConditionFragment extends Fragment
 							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
-							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+							String path = UriHelper.getFullPathFromTreeUri(uri, getContext());
 							onSetWorkUri(uri.toString(), path);
 
 							WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
@@ -152,7 +153,7 @@ public class WeldConditionFragment extends Fragment
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		refresher.setOnRefreshListener(() -> {
-			refresh(true);
+			onRefresh(true);
 			refresher.setRefreshing(false);
 		});
 
@@ -170,8 +171,8 @@ public class WeldConditionFragment extends Fragment
 			}
 		});
 		mFabMain.setOnLongClickListener(v -> {
-			Helper.UiHelper.textViewActivity(getActivity(), "ROBOT.SWD",
-					Helper.FileHelper.readFileString(onGetWorkPath()));
+			UiHelper.textViewActivity(getActivity(), "ROBOT.SWD",
+					FileHelper.readFileString(onGetWorkPath()));
 			return true;
 		});
 
@@ -189,7 +190,7 @@ public class WeldConditionFragment extends Fragment
 					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
-					show(refresh(R.id.nav_usbstorage));
+					show(onRefresh(R.id.nav_usbstorage));
 				}
 			});
 		}
@@ -268,10 +269,10 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	@Override
-	public void refresh(boolean forced) {
+	public void onRefresh(boolean forced) {
 		try {
 			if (isAdded()) {
-				logD("refresh:restartLoader:" + onGetWorkPath());
+				logD("onRefresh:restartLoader:" + onGetWorkPath());
 				getLoaderManager().restartLoader(0, null, this);
 				if (mWeldConditionObserver != null) {
 					mWeldConditionObserver.stopWatching();
@@ -288,7 +289,7 @@ public class WeldConditionFragment extends Fragment
 	}
 
 	@Override
-	public String refresh(int menuId) {
+	public String onRefresh(int menuId) {
 		return null;
 	}
 
@@ -331,7 +332,7 @@ public class WeldConditionFragment extends Fragment
 					mSnackbar = Snackbar
 							.make(mView, String.valueOf(selectedItemCount) + "개 항목 선택됨", Snackbar.LENGTH_INDEFINITE)
 							.setAction("선택 취소", v -> {
-								Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
+								UiHelper.hideSoftKeyboard(getActivity(), null, null);
 								mWeldConditionAdapter.clearSelections();
 								setImageFab();
 							});
@@ -513,6 +514,7 @@ public class WeldConditionFragment extends Fragment
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+
 		void onSetWorkUri(String uri, String path);
 	}
 
@@ -607,9 +609,11 @@ public class WeldConditionFragment extends Fragment
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
+				case MSG_DEFAULT:
+					break;
 				case MSG_REFRESH:
 					logD("MSG_REFRESH");
-					refresh(true);
+					onRefresh(true);
 					break;
 				default:
 					break;

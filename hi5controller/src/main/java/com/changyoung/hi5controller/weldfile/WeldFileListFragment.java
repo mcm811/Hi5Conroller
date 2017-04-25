@@ -32,8 +32,9 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class WeldFileListFragment extends Fragment {
-	public static final int MSG_REFRESH_DIR = 0;
-	private static final int MSG_REFRESH_PARENT_DIR = 1;
+	public static final int MSG_DEFAULT = 100;
+	public static final int MSG_REFRESH_DIR = 101;
+	private static final int MSG_REFRESH_PARENT_DIR = 102;
 
 	private static final String TAG = "WeldFileListFragment";
 	private static final String ARG_DIR_PATH = "dirPath";
@@ -43,7 +44,6 @@ public class WeldFileListFragment extends Fragment {
 	private OnPathChangedListener mListener;
 	private RecyclerView mRecyclerView;
 	private WeldFileListAdapter mAdapter;
-	//	private Uri dirUri;
 	private File dirPath;
 	private WeldFileListObserver weldFileListObserver;
 
@@ -434,6 +434,8 @@ public class WeldFileListFragment extends Fragment {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
+				case MSG_DEFAULT:
+					break;
 				case MSG_REFRESH_DIR:
 					logD("MSG_REFRESH_DIR");
 					if (msg.obj == null)

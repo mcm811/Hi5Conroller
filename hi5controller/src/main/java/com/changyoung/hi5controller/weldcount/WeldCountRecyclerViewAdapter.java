@@ -30,21 +30,22 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.TimeStringHelper;
+import com.changyoung.hi5controller.common.UiHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final WeldCountFragment weldCountFragment;
-	private final List<WeldCountFile> mDataset;
+	private final List<WeldCountJobFile> mDataset;
 	private final Activity mActivity;
 	private final View mSnackbarView;
 	private Context mContext;
 
-	WeldCountAdapter(WeldCountFragment weldCountFragment, Activity activity, View snackbarView, List<WeldCountFile> dataSet) {
+	WeldCountRecyclerViewAdapter(WeldCountFragment weldCountFragment, Activity activity, View snackbarView, List<WeldCountJobFile> dataSet) {
 		this.weldCountFragment = weldCountFragment;
 		mDataset = dataSet;
 		mActivity = activity;
@@ -64,11 +65,11 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 	}
 
 	boolean checkA() {
-		WeldCountFileEditorAdapter weldCountFileEditorAdapter;
-		for (WeldCountFile weldCountFile : mDataset) {
-			if (weldCountFile.getJobInfo().getTotal() > 0) {
-				weldCountFileEditorAdapter = new WeldCountFileEditorAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountFile);
-				if (weldCountFileEditorAdapter.checkA()) {
+		WeldCountJobFileEditorRecyclerViewAdapter weldCountJobFileEditorRecyclerViewAdapter;
+		for (WeldCountJobFile weldCountJobFile : mDataset) {
+			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+				weldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountJobFile);
+				if (weldCountJobFileEditorRecyclerViewAdapter.checkA()) {
 					return true;
 				}
 			}
@@ -78,16 +79,16 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 	void updateZeroA() {
 		weldCountFragment.observer.stopWatching();
-		WeldCountFileEditorAdapter weldCountFileEditorAdapter;
+		WeldCountJobFileEditorRecyclerViewAdapter weldCountJobFileEditorRecyclerViewAdapter;
 		int updatedMoveCount = 0;
 		int updatedFileCount = 0;
 		int checkedFileCount = 0;
-		for (WeldCountFile weldCountFile : mDataset) {
-			if (weldCountFile.getJobInfo().getTotal() > 0) {
-				weldCountFileEditorAdapter = new WeldCountFileEditorAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountFile);
-				int ret = weldCountFileEditorAdapter.updateZeroA();
+		for (WeldCountJobFile weldCountJobFile : mDataset) {
+			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+				weldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountJobFile);
+				int ret = weldCountJobFileEditorRecyclerViewAdapter.updateZeroA();
 				if (ret > 0) {
-					weldCountFileEditorAdapter.saveFile();
+					weldCountJobFileEditorRecyclerViewAdapter.saveFile();
 					updatedMoveCount += ret;
 					updatedFileCount++;
 				}
@@ -103,7 +104,7 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 		weldCountFragment.observer.startWatching();
 	}
 
-	void setData(List<WeldCountFile> data, int orderType) {
+	void setData(List<WeldCountJobFile> data, int orderType) {
 		mDataset.clear();
 		if (data != null) {
 			//noinspection Java8ListSort
@@ -145,8 +146,8 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 	}
 
 	private void showFileEditorDialog(final int position) {
-		final WeldCountFile weldCountFile = weldCountFragment.mWeldCountAdapter.getItem(position);
-		if (weldCountFile.getJobInfo().getTotal() == 0) {
+		final WeldCountJobFile weldCountJobFile = weldCountFragment.mWeldCountRecyclerViewAdapter.getItem(position);
+		if (weldCountJobFile.getJobFileInfo().getTotal() == 0) {
 			show("CN 항목이 없습니다");
 			return;
 		}
@@ -164,9 +165,9 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 				new GridLayoutManager(weldCountFragment.getContext(), 4, LinearLayoutManager.VERTICAL, false);
 		mFileEditorDialogRecyclerView.setLayoutManager(layoutManager);
 
-		weldCountFragment.mWeldCountFileEditorAdapter = new WeldCountFileEditorAdapter(weldCountFragment, weldCountFragment.getActivity(),
-				weldCountFile);
-		mFileEditorDialogRecyclerView.setAdapter(weldCountFragment.mWeldCountFileEditorAdapter);
+		weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(),
+				weldCountJobFile);
+		mFileEditorDialogRecyclerView.setAdapter(weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter);
 
 /*
 		// 배너 광고
@@ -188,7 +189,7 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText(String.format(Locale.KOREA, "계열 수정 (CN: %d개)",
-				weldCountFile.getJobInfo().getTotal()));
+				weldCountJobFile.getJobFileInfo().getTotal()));
 
 		final TextInputEditText etBeginNumber = (TextInputEditText) dialogView.findViewById(R.id.etBeginNumber);
 		final SeekBar sbBeginNumber = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
@@ -200,7 +201,7 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 						beginNumber = 255;
 					etBeginNumber.setText(String.valueOf(beginNumber));
 					sbBeginNumber.setProgress(beginNumber - 1);
-					weldCountFragment.mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
+					weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.setBeginNumber(beginNumber);
 				}
 			} catch (NumberFormatException e) {
 				WeldCountFragment.logD(e.getLocalizedMessage());
@@ -209,11 +210,11 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 			}
 		});
 		etBeginNumber.setOnKeyListener((v, keyCode, event) -> {
-			Helper.UiHelper.hideSoftKeyboard(mActivity, v, event);
+			UiHelper.hideSoftKeyboard(mActivity, v, event);
 			return false;
 		});
 
-		final int etListSize = weldCountFragment.mWeldCountFileEditorAdapter.getItemCount();
+		final int etListSize = weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.getItemCount();
 		sbBeginNumber.setMax(254);
 		sbBeginNumber.setProgress(0);
 		sbBeginNumber.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -222,12 +223,12 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 				Integer beginNumber = sbBeginNumber.getProgress() + 1;
 				etBeginNumber.setText(String.valueOf(beginNumber));
 				if (etListSize < 30)
-					weldCountFragment.mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
+					weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.setBeginNumber(beginNumber);
 			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				Helper.UiHelper.hideSoftKeyboard(mActivity, seekBar, null);
+				UiHelper.hideSoftKeyboard(mActivity, seekBar, null);
 			}
 
 			@Override
@@ -235,33 +236,33 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 				Integer beginNumber = sbBeginNumber.getProgress() + 1;
 				etBeginNumber.setText(String.valueOf(beginNumber));
 				if (etListSize >= 30)
-					weldCountFragment.mWeldCountFileEditorAdapter.setBeginNumber(beginNumber);
+					weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.setBeginNumber(beginNumber);
 			}
 		});
 
 		dialogBuilder.setNegativeButton("취소", (dialog, which) -> {
-			weldCountFragment.mWeldCountFileEditorAdapter.reloadFile();
-			weldCountFragment.mWeldCountAdapter.notifyDataSetChanged();
+			weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.reloadFile();
+			weldCountFragment.mWeldCountRecyclerViewAdapter.notifyDataSetChanged();
 		});
 
 		dialogBuilder.setPositiveButton("저장", (dialog, which) -> {
-			if (weldCountFile.getJobInfo().getTotal() > 0) {
+			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
 				weldCountFragment.observer.stopWatching();
-				weldCountFragment.mWeldCountFileEditorAdapter.saveFile();
+				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.saveFile();
 				weldCountFragment.observer.startWatching();
-				weldCountFragment.mWeldCountAdapter.notifyDataSetChanged();
-				show("저장 완료: " + weldCountFragment.mWeldCountFileEditorAdapter.getName());
+				weldCountFragment.mWeldCountRecyclerViewAdapter.notifyDataSetChanged();
+				show("저장 완료: " + weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.getName());
 			}
 		});
 
 		dialogBuilder.setNeutralButton("복구(A=0)", (dialog, which) -> {
-			if (weldCountFile.getJobInfo().getTotal() > 0) {
+			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
 				weldCountFragment.observer.stopWatching();
-				weldCountFragment.mWeldCountFileEditorAdapter.updateZeroA();       // A=0
-				weldCountFragment.mWeldCountFileEditorAdapter.saveFile();
+				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.updateZeroA();       // A=0
+				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.saveFile();
 				weldCountFragment.observer.startWatching();
-				weldCountFragment.mWeldCountAdapter.notifyDataSetChanged();
-				show("저장 완료: " + weldCountFragment.mWeldCountFileEditorAdapter.getName());
+				weldCountFragment.mWeldCountRecyclerViewAdapter.notifyDataSetChanged();
+				show("저장 완료: " + weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.getName());
 			}
 		});
 
@@ -376,16 +377,16 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 		final ViewHolder holder = new ViewHolder(v);
 		holder.mItemView.setOnClickListener(v1 -> {
 			final int position = (int) v1.getTag();
-			final WeldCountFile weldCountFile = mDataset.get(position);
-			if (weldCountFile.getJobInfo().getTotal() == 0) {
-				Helper.UiHelper.textViewActivity(mActivity,
-						weldCountFile.getName(),
-						weldCountFile.getRowText());
+			final WeldCountJobFile weldCountJobFile = mDataset.get(position);
+			if (weldCountJobFile.getJobFileInfo().getTotal() == 0) {
+				UiHelper.textViewActivity(mActivity,
+						weldCountJobFile.getName(),
+						weldCountJobFile.getRowText());
 			} else {
 				final float scale = 1.2f;
 				AnimationSet animationSet = new AnimationSet(true);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-					animationSet.addAnimation(Helper.UiHelper
+					animationSet.addAnimation(UiHelper
 							.getCenterTranslateAnimation(weldCountFragment.mView, holder.mItemView, scale));
 				animationSet.addAnimation(new ScaleAnimation(1f, scale, 1f, scale,
 						ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
@@ -420,16 +421,16 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //					if (which == 0) {
 //						showFileEditorDialog((int) v12.getTag());
 //					} else if (which == 1) {
-//						final WeldCountFile weldCountFile = mDataset.get((int) v12.getTag());
-//						Helper.UiHelper.textViewActivity(mActivity, weldCountFile.getName(),
-//								weldCountFile.getRowText());
+//						final WeldCountJobFile weldCountJobFile = mDataset.get((int) v12.getTag());
+//						UiHelper.textViewActivity(mActivity, weldCountJobFile.getName(),
+//								weldCountJobFile.getRowText());
 //					}
 //				});
 //				builder.create().show();
 
-			final WeldCountFile weldCountFile = mDataset.get((int) v12.getTag());
-			Helper.UiHelper.textViewActivity(mActivity, weldCountFile.getName(),
-					weldCountFile.getRowText());
+			final WeldCountJobFile weldCountJobFile = mDataset.get((int) v12.getTag());
+			UiHelper.textViewActivity(mActivity, weldCountJobFile.getName(),
+					weldCountJobFile.getRowText());
 
 			return true;
 		});
@@ -439,19 +440,19 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 	@Override
 	public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
 		final ViewHolder holder = (ViewHolder) rh;
-		final WeldCountFile jobFile = mDataset.get(position);
+		final WeldCountJobFile jobFile = mDataset.get(position);
 		holder.tvFileName.setText(jobFile.getName());
-		holder.tvTime.setText(Helper.TimeHelper.getLasModified(jobFile));
+		holder.tvTime.setText(TimeStringHelper.getLasModified(jobFile));
 		holder.tvSize.setText(String.format(Locale.KOREA, "%dB", jobFile.length()));
 
-		final String countString = jobFile.getJobInfo().getString();
+		final String countString = jobFile.getJobFileInfo().getString();
 		if (countString == null || countString.isEmpty()) {
 			holder.tvCount.setVisibility(View.GONE);
 		} else {
 			holder.tvCount.setVisibility(View.VISIBLE);
 			holder.tvCount.setText(countString);
 		}
-		final String previewString = jobFile.getJobInfo().getPreview();
+		final String previewString = jobFile.getJobFileInfo().getPreview();
 		if (previewString == null || previewString.isEmpty()) {
 			holder.tvPreview.setVisibility(View.GONE);
 		} else {
@@ -480,7 +481,7 @@ public class WeldCountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 		return mDataset.size();
 	}
 
-	private WeldCountFile getItem(int position) {
+	private WeldCountJobFile getItem(int position) {
 		return mDataset.get(position);
 	}
 

@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.UiHelper;
 
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +70,7 @@ public class WeldConditionSqueezeForceAdapter extends WeldConditionAdapter {
 		holder.editText.setOnEditorActionListener((v1, actionId, event) -> {
 //					Log.i("onEditorAction", "actionId: " + String.valueOf(actionId));
 			if (actionId == 6) {
-				Helper.UiHelper.hideSoftKeyboard(mActivity, v1, event);
+				UiHelper.hideSoftKeyboard(mActivity, v1, event);
 				return true;
 			}
 			return false;
@@ -106,7 +106,7 @@ public class WeldConditionSqueezeForceAdapter extends WeldConditionAdapter {
 		}
 
 		if (weldConditionFragment.mWeldConditionAdapter.getItemCount() == 0) {
-			weldConditionFragment.refresh(false);
+			weldConditionFragment.onRefresh(false);
 			if (weldConditionFragment.mWeldConditionAdapter.getItemCount() == 0)
 				weldConditionFragment.show("항목이 없습니다");
 			return;
@@ -145,7 +145,7 @@ public class WeldConditionSqueezeForceAdapter extends WeldConditionAdapter {
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText(String.format(Locale.KOREA, "가압력 수정 (용접 조건: %d개)", weldConditionFragment.mWeldConditionAdapter.getItemCount()));
 
-		dialogBuilder.setNegativeButton("취소", (dialog, which) -> weldConditionFragment.refresh(true));
+		dialogBuilder.setNegativeButton("취소", (dialog, which) -> weldConditionFragment.onRefresh(true));
 
 		dialogBuilder.setPositiveButton("저장", (dialog, which) -> {
 			if (weldConditionFragment.mWeldConditionSqueezeForceAdapter.getItemCount() > 0) {

@@ -12,7 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.AsyncTaskProgressDialogFile;
+import com.changyoung.hi5controller.common.FileHelper;
+import com.changyoung.hi5controller.common.TimeStringHelper;
+import com.changyoung.hi5controller.common.UiHelper;
 
 import java.io.File;
 import java.util.Collections;
@@ -81,8 +84,8 @@ class WeldFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			} else if (file.isDirectory()) {
 				weldFileListFragment.refreshFilesList(file.getPath());
 			} else {
-				Helper.UiHelper.textViewActivity(weldFileListFragment.getActivity(), file.getName(),
-						Helper.FileHelper.readFileString(file.getPath()));
+				UiHelper.textViewActivity(weldFileListFragment.getActivity(), file.getName(),
+						FileHelper.readFileString(file.getPath()));
 			}
 		});
 		holder.mItemView.setOnLongClickListener(v1 -> {
@@ -94,7 +97,7 @@ class WeldFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 			String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
 			String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
 			String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
-					fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
+					fileType, file.getName(), TimeStringHelper.getLasModified(file));
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(weldFileListFragment.getActivity());
 			builder.setTitle(actionName)
@@ -102,7 +105,7 @@ class WeldFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 					.setNegativeButton("취소", (dialog, which) -> weldFileListFragment.show("삭제가 취소 되었습니다"))
 					.setPositiveButton("삭제", (dialog, which) -> {
 						try {
-							new Helper.AsyncTaskFileDialog(weldFileListFragment.getContext(),
+							new AsyncTaskProgressDialogFile(weldFileListFragment.getContext(),
 									weldFileListFragment.snackbarView, "삭제", weldFileListFragment.looperHandler)
 									.execute(file);
 						} catch (Exception e) {
@@ -134,7 +137,7 @@ class WeldFileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 				fileImageResourceId = R.drawable.ic_arrow_upward;
 			}
 		} else {
-			fileTime = Helper.TimeHelper.getLasModified(file);
+			fileTime = TimeStringHelper.getLasModified(file);
 			fileName = file.getName();
 			fileImageResourceId = file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder;
 		}

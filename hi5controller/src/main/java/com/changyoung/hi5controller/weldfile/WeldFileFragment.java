@@ -22,16 +22,20 @@ import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
-import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.common.FileHelper;
+import com.changyoung.hi5controller.common.PrefHelper;
+import com.changyoung.hi5controller.common.RefreshHandler;
+import com.changyoung.hi5controller.common.UiHelper;
+import com.changyoung.hi5controller.common.UriHelper;
 
 import java.io.File;
 
-public class WeldFileFragment extends Fragment implements Refresh {
+public class WeldFileFragment extends Fragment implements RefreshHandler {
 	private static final String TAG = "HI5:WeldFileFragment";
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
 	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
+
 	private EditText mEditTextPath;
 	private WeldFileListFragment mWeldFileListFragment;
 	private View mView;
@@ -72,7 +76,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
-							mWorkPath = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
+							mWorkPath = UriHelper.getFullPathFromTreeUri(uri, activity);
 							mWorkUri = uri.toString();
 							onSetWorkUri(mWorkUri, mWorkPath);
 
@@ -97,11 +101,11 @@ public class WeldFileFragment extends Fragment implements Refresh {
 	}
 
 	@Override
-	public void refresh(boolean forced) {
+	public void onRefresh(boolean forced) {
 		try {
 			mWorkUri = onGetWorkUri();
 			mWorkPath = onGetWorkPath();
-			logD("[refresh]:" + mWorkPath);
+			logD("[onRefresh]:" + mWorkPath);
 
 			if (mView != null) {
 				if (mEditTextPath != null)
@@ -118,7 +122,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		}
 	}
 
-	private boolean refresh(String path) {
+	private boolean onRefresh(String path) {
 		if (path != null && isAdded()) {
 			try {
 				File dir = new File(path);
@@ -132,40 +136,40 @@ public class WeldFileFragment extends Fragment implements Refresh {
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				logD("refresh");
+				logD("onRefresh");
 			}
 		} else {
-			logD("isAdded() == false, refresh:" + path);
+			logD("isAdded() == false, onRefresh:" + path);
 		}
 		return false;
 	}
 
-	public String refresh(int menuId) {
+	public String onRefresh(int menuId) {
 		String ret = null;
 		switch (menuId) {
 			case R.id.nav_home:
-				if (!refresh(onGetWorkPath()))
+				if (!onRefresh(onGetWorkPath()))
 					ret = "경로 이동 실패: " + onGetWorkPath();
 				break;
 			case R.id.nav_storage:
-				if (!refresh(Helper.Pref.STORAGE_PATH))
-					ret = "경로 이동 실패: " + Helper.Pref.STORAGE_PATH;
+				if (!onRefresh(PrefHelper.STORAGE_PATH))
+					ret = "경로 이동 실패: " + PrefHelper.STORAGE_PATH;
 				break;
 			case R.id.nav_sdcard:
-				if (!refresh(Helper.Pref.EXTERNAL_STORAGE_PATH))
-					ret = "경로 이동 실패: " + Helper.Pref.EXTERNAL_STORAGE_PATH;
+				if (!onRefresh(PrefHelper.EXTERNAL_STORAGE_PATH))
+					ret = "경로 이동 실패: " + PrefHelper.EXTERNAL_STORAGE_PATH;
 				break;
 			case R.id.nav_extsdcard:
 				ret = "경로 이동 실패: " + "SD 카드";
 				try {
-					File dir = new File(Helper.Pref.STORAGE_PATH);
+					File dir = new File(PrefHelper.STORAGE_PATH);
 					File[] dirs = dir.listFiles();
 					if (dirs != null) {
 						for (File file : dirs) {
 							if (file.getName().toLowerCase().startsWith("ext") || file.getName().toLowerCase().startsWith("sdcard1")) {
 								try {
 									for (File subItem : file.listFiles()) {
-										if (subItem.exists() && refresh(file.getPath())) {
+										if (subItem.exists() && onRefresh(file.getPath())) {
 											ret = null;
 											break;
 										}
@@ -184,7 +188,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			case R.id.nav_usbstorage:
 				ret = "경로 이동 실패: " + "USB 저장소";
 				try {
-					File dir = new File(Helper.Pref.STORAGE_PATH);
+					File dir = new File(PrefHelper.STORAGE_PATH);
 					Log.i(TAG, String.format("STORAGE: %s", dir.getPath().toLowerCase()));
 					File[] dirs = dir.listFiles();
 					if (dirs != null) {
@@ -194,7 +198,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 									File[] filteredFiles = file.listFiles();
 									if (filteredFiles != null) {
 										for (File subItem : filteredFiles) {
-											if (subItem.exists() && refresh(file.getPath())) {
+											if (subItem.exists() && onRefresh(file.getPath())) {
 												Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
 												ret = null;
 												break;
@@ -215,7 +219,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 									File[] filteredFiles = file.listFiles();
 									if (filteredFiles != null) {
 										for (File subItem : filteredFiles) {
-											if (subItem.exists() && refresh(file.getPath())) {
+											if (subItem.exists() && onRefresh(file.getPath())) {
 												Log.i(TAG, String.format("USB: %s", file.getPath().toLowerCase()));
 												ret = null;
 												break;
@@ -347,14 +351,14 @@ public class WeldFileFragment extends Fragment implements Refresh {
 			}
 		});
 		mEditTextPath.setOnKeyListener((v, keyCode, event) -> {
-			Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+			UiHelper.hideSoftKeyboard(getActivity(), v, event);
 			return false;
 		});
 
 		FloatingActionButton mFabHome = (FloatingActionButton) mView.findViewById(R.id.fab_workpath_home);
 		if (mFabHome != null) {
 			mFabHome.setOnClickListener(v -> {
-				show(refresh(R.id.nav_home));
+				show(onRefresh(R.id.nav_home));
 				logD("FabHome");
 			});
 		}
@@ -372,7 +376,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
-					show(refresh(R.id.nav_usbstorage));
+					show(onRefresh(R.id.nav_usbstorage));
 				}
 			});
 		}
@@ -414,7 +418,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 				@Override
 				public void onClick(View v) {
 					scaleAnimationFab(1.0f, 1.5f);
-					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
+					UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					WeldFileListFragment fragment = (WeldFileListFragment) getChildFragmentManager()
 							.findFragmentById(R.id.weldfile_fragment);
 					String path = fragment.getDirPath();
@@ -424,7 +428,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 //						ActivityOptions options = ActivityOptions
 //								.makeSceneTransitionAnimation(getActivity(), fab, "fab");
 //						startActivity(new Intent(getContext(), WeldRestoreActivity.class), options.toBundle());
-							String ret = Helper.FileHelper.backupDocumentFile(getContext(), mView);
+							String ret = FileHelper.backupDocumentFile(getContext(), mView);
 							if (ret != null)
 								show(ret);
 						} else {
@@ -443,7 +447,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) mView.findViewById(R.id.work_path_toolbar);
 		toolbar.inflateMenu(R.menu.menu_toolbar_work_path);
 		toolbar.setOnMenuItemClickListener(item -> {
-			String ret = refresh(item.getItemId());
+			String ret = onRefresh(item.getItemId());
 			if (ret != null)
 				show(ret);
 			return true;

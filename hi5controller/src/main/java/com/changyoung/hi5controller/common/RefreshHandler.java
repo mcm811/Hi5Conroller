@@ -5,16 +5,12 @@ package com.changyoung.hi5controller.common;
  * changmin811@gmail.com
  */
 
-public interface Refresh {
-	void refresh(boolean forced);
+public interface RefreshHandler {
+	void onRefresh(boolean forced);
 
-//	boolean refresh(String path);
-
-	String refresh(int menuId);
+	String onRefresh(int menuId);
 
 	String onBackPressedFragment();
-
-//	View getFab();
 
 	void show(String msg);
 }

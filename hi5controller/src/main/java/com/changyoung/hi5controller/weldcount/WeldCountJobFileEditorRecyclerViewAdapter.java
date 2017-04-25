@@ -11,28 +11,28 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.UiHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private final WeldCountFile mFile;
-	private final List<WeldCountFile.Job> mDataset;
+class WeldCountJobFileEditorRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	private final WeldCountJobFile mFile;
+	private final List<WeldCountJobFile.JobFileItem> mDataset;
 	private final Activity mActivity;
 	private final WeldCountFragment weldCountFragment;
 
-	WeldCountFileEditorAdapter(WeldCountFragment weldCountFragment,
-	                           Activity activity,
-	                           WeldCountFile weldCountFile) {
+	WeldCountJobFileEditorRecyclerViewAdapter(WeldCountFragment weldCountFragment,
+	                                          Activity activity,
+	                                          WeldCountJobFile weldCountJobFile) {
 		this.weldCountFragment = weldCountFragment;
-		mFile = weldCountFile;
+		mFile = weldCountJobFile;
 		mDataset = new ArrayList<>();
 		for (int i = 0; i < mFile.size(); i++) {
-			final WeldCountFile.Job job = mFile.get(i);
-			if (job.getRowType() == WeldCountFile.Job.JOB_SPOT)
-				mDataset.add(job);
+			final WeldCountJobFile.JobFileItem jobFileItem = mFile.get(i);
+			if (jobFileItem.getJobType() == WeldCountJobFile.JobFileItem.JOB_SPOT)
+				mDataset.add(jobFileItem);
 		}
 		mActivity = activity;
 	}
@@ -58,10 +58,10 @@ class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	}
 
 	void setBeginNumber(int beginNumber) {
-		for (WeldCountFile.Job job : mDataset) {
-			job.setCN(String.valueOf(beginNumber++));
-			if (beginNumber > WeldCountFile.VALUE_MAX)
-				beginNumber = WeldCountFile.VALUE_MAX;
+		for (WeldCountJobFile.JobFileItem jobFileItem : mDataset) {
+			jobFileItem.setCN(String.valueOf(beginNumber++));
+			if (beginNumber > WeldCountJobFile.VALUE_MAX)
+				beginNumber = WeldCountJobFile.VALUE_MAX;
 		}
 		notifyDataSetChanged();
 	}
@@ -77,20 +77,20 @@ class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				if (!hasFocus) {
 					final TextInputEditText editText = (TextInputEditText) v1;
 					final String editTextString = editText.getText().toString();
-					final WeldCountFile.Job item = (WeldCountFile.Job) v1.getTag(R.string.tag_item);
+					final WeldCountJobFile.JobFileItem item = (WeldCountJobFile.JobFileItem) v1.getTag(R.string.tag_item);
 					if (editTextString.equals("")) {
 						editText.setText(item.getCN());
 						return;
 					}
 					Integer valueInteger = Integer.parseInt(editTextString);
-					if (valueInteger > WeldCountFile.VALUE_MAX)
-						valueInteger = WeldCountFile.VALUE_MAX;
+					if (valueInteger > WeldCountJobFile.VALUE_MAX)
+						valueInteger = WeldCountJobFile.VALUE_MAX;
 					final String valueString = String.format(Locale.KOREA, "%d", valueInteger);
 					if (!valueString.equals(editText.getText().toString()))
 						editText.setText(valueString);
 					item.setCN(valueString);
 					if (!item.getCN().equals(valueString))
-						weldCountFragment.mWeldCountAdapter.notifyItemChanged((int) v1.getTag(R.string.tag_position));
+						weldCountFragment.mWeldCountRecyclerViewAdapter.notifyItemChanged((int) v1.getTag(R.string.tag_position));
 				}
 			} catch (NumberFormatException e) {
 				WeldCountFragment.logD(e.getLocalizedMessage());
@@ -100,7 +100,7 @@ class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 		});
 		holder.editText.setOnEditorActionListener((v12, actionId, event) -> {
 			if (actionId == 6) {
-				Helper.UiHelper.hideSoftKeyboard(mActivity, v12, event);
+				UiHelper.hideSoftKeyboard(mActivity, v12, event);
 				return true;
 			}
 			return false;
@@ -111,8 +111,8 @@ class WeldCountFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	@Override
 	public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
 		final ViewHolder holder = (ViewHolder) rh;
-		final WeldCountFile.Job item = mDataset.get(position);
-		holder.textInputLayout.setHint(String.format(Locale.KOREA, "%03d", item.getRowNumber()));
+		final WeldCountJobFile.JobFileItem item = mDataset.get(position);
+		holder.textInputLayout.setHint(String.format(Locale.KOREA, "%03d", item.getJobNumber()));
 		holder.editText.setText(item.getCN());
 		holder.editText.setTag(R.string.tag_position, position);
 		holder.editText.setTag(R.string.tag_item, item);

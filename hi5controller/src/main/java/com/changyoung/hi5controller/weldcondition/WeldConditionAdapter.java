@@ -32,7 +32,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.PrefHelper;
+import com.changyoung.hi5controller.common.UiHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -143,7 +144,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		StringBuilder sb = new StringBuilder();
 		weldConditionFragment.mWeldConditionObserver.stopWatching();
 		try {
-			InputStream inputStream = Helper.Pref.getWorkPathInputStream(weldConditionFragment.getActivity(), path);
+			InputStream inputStream = PrefHelper.getWorkPathInputStream(weldConditionFragment.getActivity(), path);
 			InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "EUC-KR");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -172,7 +173,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 			inputStreamReader.close();
 			inputStream.close();
 
-			OutputStream outputStream = Helper.Pref.getWorkPathOutputStream(weldConditionFragment.getActivity(), path);
+			OutputStream outputStream = PrefHelper.getWorkPathOutputStream(weldConditionFragment.getActivity(), path);
 			OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream, "EUC-KR");
 			BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
 
@@ -205,7 +206,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		}
 
 		if (weldConditionFragment.mWeldConditionAdapter.getItemCount() == 0) {
-			weldConditionFragment.refresh(false);
+			weldConditionFragment.onRefresh(false);
 			if (weldConditionFragment.mWeldConditionAdapter.getItemCount() == 0)
 				weldConditionFragment.show("항목이 없습니다");
 			return;
@@ -312,7 +313,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 				});
 				editText.setOnEditorActionListener((v, actionId, event) -> {
 					if (actionId == 6)
-						Helper.UiHelper.hideSoftKeyboard(weldConditionFragment.getActivity(), v, event);
+						UiHelper.hideSoftKeyboard(weldConditionFragment.getActivity(), v, event);
 					Log.i("onEditorAction", "actionId: " + String.valueOf(actionId));
 					return false;
 				});
@@ -633,7 +634,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 				.inflate(R.layout.weldcondition_view_holder_item, parent, false);
 		final ViewHolder holder = new ViewHolder(v);
 		holder.mItemView.setOnClickListener(v14 -> {
-			Helper.UiHelper.hideSoftKeyboard(mActivity, v14, null);
+			UiHelper.hideSoftKeyboard(mActivity, v14, null);
 			final int position = (int) v14.getTag();
 			if (toggleSelection(position))
 				weldConditionFragment.mLastPosition = position;
@@ -645,7 +646,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 			weldConditionFragment.setImageFab();
 		});
 		holder.mItemView.setOnLongClickListener(v13 -> {
-			Helper.UiHelper.hideSoftKeyboard(mActivity, v13, null);
+			UiHelper.hideSoftKeyboard(mActivity, v13, null);
 			weldConditionFragment.mLastPosition = (int) v13.getTag();
 			showEditorDialog(weldConditionFragment.mLastPosition);
 			return true;
@@ -698,7 +699,7 @@ class WeldConditionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 				weldConditionFragment.mRecyclerView.scrollToPosition(scrollPosition);
 			}
 			if (actionId == 6) {
-				Helper.UiHelper.hideSoftKeyboard(mActivity, v1, event);
+				UiHelper.hideSoftKeyboard(mActivity, v1, event);
 				return true;
 			}
 			return false;

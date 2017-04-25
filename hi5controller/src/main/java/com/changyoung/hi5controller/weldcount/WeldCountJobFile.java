@@ -2,7 +2,7 @@ package com.changyoung.hi5controller.weldcount;
 
 import android.app.Activity;
 
-import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.PrefHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,38 +15,38 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-class WeldCountFile extends File {
+class WeldCountJobFile extends File {
 	static final int VALUE_MAX = 255;
-	private List<Job> jobList;
-	private JobInfo jobInfo;
+	private List<JobFileItem> jobFileItemList;
+	private JobFileInfo jobFileInfo;
 
-	WeldCountFile(String path) {
+	WeldCountJobFile(String path) {
 		super(path);
 		readFile();
 	}
 
-	Job get(Integer index) {
-		return jobList.get(index);
+	JobFileItem get(Integer index) {
+		return jobFileItemList.get(index);
 	}
 
-//		public void set(Integer index, Job value) {
-//			jobList.set(index, value);
+//		public void set(Integer index, JobFileItem value) {
+//			jobFileItemList.set(index, value);
 //		}
 
 	Integer size() {
-		return jobList.size();
+		return jobFileItemList.size();
 	}
 
-	JobInfo getJobInfo() {
-		return jobInfo;
+	JobFileInfo getJobFileInfo() {
+		return jobFileInfo;
 	}
 
 	void readFile() {
-		jobList = readFile(getPath(), new ArrayList<>());
-		jobInfo = createJobInfo(jobList, new JobInfo());
+		jobFileItemList = readFile(getPath(), new ArrayList<>());
+		jobFileInfo = createJobInfo(jobFileItemList, new JobFileInfo());
 	}
 
-	private List<Job> readFile(String fileName, List<Job> items) {
+	private List<JobFileItem> readFile(String fileName, List<JobFileItem> items) {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(fileName);
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "EUC-KR");
@@ -55,7 +55,7 @@ class WeldCountFile extends File {
 			String rowString;
 			Integer rowNumber = 0;
 			while ((rowString = bufferedReader.readLine()) != null) {
-				items.add(new Job(rowNumber++, rowString));
+				items.add(new JobFileItem(rowNumber++, rowString));
 			}
 
 			bufferedReader.close();
@@ -70,19 +70,19 @@ class WeldCountFile extends File {
 	}
 
 	void saveFile(Activity activity) {
-		jobInfo = saveFile(getPath(), jobList, activity);
+		jobFileInfo = saveFile(getPath(), jobFileItemList, activity);
 	}
 
-	private JobInfo
-	saveFile(String fileName, List<Job> items, Activity activity) {
+	private JobFileInfo
+	saveFile(String fileName, List<JobFileItem> items, Activity activity) {
 		try {
 			WeldCountFragment.logD("fileName:" + fileName);
-			OutputStream outputStream = Helper.Pref.getWorkPathOutputStream(activity, fileName);
+			OutputStream outputStream = PrefHelper.getWorkPathOutputStream(activity, fileName);
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "EUC-KR");
 			BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-			for (Job item : items) {
-				bufferedWriter.write(item.getRowString());
+			for (JobFileItem item : items) {
+				bufferedWriter.write(item.getJobString());
 				bufferedWriter.newLine();
 			}
 			bufferedWriter.close();
@@ -93,39 +93,39 @@ class WeldCountFile extends File {
 			e.printStackTrace();
 		}
 
-		return createJobInfo(jobList, new JobInfo());
+		return createJobInfo(jobFileItemList, new JobFileInfo());
 	}
 
-	private JobInfo createJobInfo(List<Job> jobList, JobInfo jobInfo) {
-		for (Job job : jobList) {
-			String cn = job.getCN();
+	private JobFileInfo createJobInfo(List<JobFileItem> jobFileItemList, JobFileInfo jobFileInfo) {
+		for (JobFileItem jobFileItem : jobFileItemList) {
+			String cn = jobFileItem.getCN();
 			if (cn != null) {
-				jobInfo.setTotal(jobInfo.getTotal() + 1);
+				jobFileInfo.setTotal(jobFileInfo.getTotal() + 1);
 			}
-			String gn = job.getGN();
+			String gn = jobFileItem.getGN();
 			if (gn != null) {
-				jobInfo.IncreaseGN(gn);
+				jobFileInfo.IncreaseGN(gn);
 			}
-			String g = job.getG();
+			String g = jobFileItem.getG();
 			if (g != null) {
-				jobInfo.IncreaseG(g);
+				jobFileInfo.IncreaseG(g);
 			}
-			if (job.getRowType() == Job.JOB_MOVE) {
-				jobInfo.setStep(jobInfo.getStep() + 1);
+			if (jobFileItem.getJobType() == JobFileItem.JOB_MOVE) {
+				jobFileInfo.setStep(jobFileInfo.getStep() + 1);
 			}
-			if (job.getRowType() == Job.JOB_COMMENT) {
-				if (jobInfo.getPreview() == null)
-					jobInfo.setPreview(job.getRowString().trim());
+			if (jobFileItem.getJobType() == JobFileItem.JOB_COMMENT) {
+				if (jobFileInfo.getPreview() == null)
+					jobFileInfo.setPreview(jobFileItem.getJobString().trim());
 			}
 		}
-		return jobInfo;
+		return jobFileInfo;
 	}
 
 	String getCNList() {
 		StringBuilder sb = new StringBuilder();
 		Integer n = 0;
-		for (Job job : jobList) {
-			String cn = job.getCN();
+		for (JobFileItem jobFileItem : jobFileItemList) {
+			String cn = jobFileItem.getCN();
 			if (cn != null) {
 				if (++n > 500) {    // 500개 까지만 보여줌
 					sb.append("...");
@@ -141,10 +141,10 @@ class WeldCountFile extends File {
 
 //		public String getCNTest() {
 //			StringBuilder sb = new StringBuilder();
-//			for (Job job : jobList) {
+//			for (JobFileItem job : jobFileItemList) {
 //				String cn = job.getCN();
 //				if (cn != null) {
-//					sb.append(String.format(Locale.KOREA, "%d: CN=%s\n", job.getRowNumber(), cn));
+//					sb.append(String.format(Locale.KOREA, "%d: CN=%s\n", job.getJobNumber(), cn));
 //				}
 //			}
 //			return sb.toString();
@@ -152,8 +152,8 @@ class WeldCountFile extends File {
 
 	String getRowText() {
 		StringBuilder sb = new StringBuilder();
-		for (Job Job : jobList) {
-			sb.append(Job.getRowString());
+		for (JobFileItem JobFileItem : jobFileItemList) {
+			sb.append(JobFileItem.getJobString());
 			sb.append("\n");
 		}
 		return sb.toString();
@@ -162,10 +162,10 @@ class WeldCountFile extends File {
 	String getMoveList() {
 		StringBuilder sb = new StringBuilder();
 //			Integer n = 0;
-		Job prevJob = null;
-		for (Job job : jobList) {
-			if (prevJob != null && job.isSpot()) {
-				String mv = prevJob.getA();
+		JobFileItem prevJobFileItem = null;
+		for (JobFileItem jobFileItem : jobFileItemList) {
+			if (prevJobFileItem != null && jobFileItem.isSpot()) {
+				String mv = prevJobFileItem.getA();
 				if (mv != null) {
 //						if (mv.contains("A=0") && ++n < 100) {
 //							sb.append(mv).append(" ");
@@ -177,7 +177,7 @@ class WeldCountFile extends File {
 					}
 				}
 			}
-			prevJob = job;
+			prevJobFileItem = jobFileItem;
 		}
 		if (sb.length() > 0)
 			sb.insert(0, "MV: ");
@@ -186,42 +186,42 @@ class WeldCountFile extends File {
 
 	int updateZeroA() {
 		int ret = 0;
-		Job prevJob = null;
-		for (Job job : jobList) {
-			if (prevJob != null && job.isSpot()) {
-				String mv = prevJob.getA();
+		JobFileItem prevJobFileItem = null;
+		for (JobFileItem jobFileItem : jobFileItemList) {
+			if (prevJobFileItem != null && jobFileItem.isSpot()) {
+				String mv = prevJobFileItem.getA();
 				if (mv != null) {
 					if (!mv.contains("A=0")) {
-						if (prevJob.setZeroA())
+						if (prevJobFileItem.setZeroA())
 							ret++;
 					}
 				}
 			}
-			prevJob = job;
+			prevJobFileItem = jobFileItem;
 		}
 		return ret;
 	}
 
 //		public void updateCN(Integer start) {
-//			for (Job job : jobList) {
-//				if (job.getRowType() == Job.JOB_SPOT) {
+//			for (JobFileItem job : jobFileItemList) {
+//				if (job.getJobType() == JobFileItem.JOB_SPOT) {
 //					job.setCN((start++).toString());
 //				}
 //			}
 //		}
 
 //		public void updateCN(Integer index, String value) {
-//			jobList.get(index).setCN(value);
+//			jobFileItemList.get(index).setCN(value);
 //		}
 
-	class JobInfo {
+	class JobFileInfo {
 		private final List<Integer> gnList;  // SPOT 단어 다음에 나오는 첫번째 단어 분석 해서 종류 결정(GN1, GN2, GN3, G1, G2)
 		private final List<Integer> gList;
 		private Integer total;         // SPOT 의 총 카운트
 		private Integer step;          // S1 S2 S3 붙은 것들 젤 마지막 S번호 값
 		private String preview;
 
-		JobInfo() {
+		JobFileInfo() {
 			total = 0;
 			step = 0;
 			gnList = new ArrayList<>();
@@ -298,132 +298,132 @@ class WeldCountFile extends File {
 		}
 	}
 
-	class Job {
+	class JobFileItem {
+		static final int JOB_HEADER = 0;
 		static final int JOB_COMMENT = 1;
 		static final int JOB_SPOT = 2;
 		static final int JOB_MOVE = 3;
 		static final int JOB_WAIT = 4;
 		static final int JOB_DO = 5;
-		static final int JOB_HEADER = 0;
 		static final int JOB_CALL = 6;
 		static final int JOB_END = 7;
 		static final int JOB_ETC = 8;
-		Job.RowJob row;
+		Job job;
 
-		Job(Integer rowNumber, String rowString) {
-			Integer rowType = getRowType(rowString);
+		JobFileItem(Integer jobNumber, String jobString) {
+			Integer jobType = getJobType(jobString);
 
-			switch (rowType) {
+			switch (jobType) {
 				case JOB_HEADER:
-					row = new Job.HeaderJob(rowNumber, rowString);
+					job = new JobHeader(jobNumber, jobString);
 					break;
 				case JOB_COMMENT:
-					row = new Job.CommentJob(rowNumber, rowString);
+					job = new JobComment(jobNumber, jobString);
 					break;
 				case JOB_SPOT:
-					row = new Job.SpotJob(rowNumber, rowString);
+					job = new JobSpot(jobNumber, jobString);
 					break;
 				case JOB_MOVE:
-					row = new Job.MoveJob(rowNumber, rowString);
+					job = new JobMove(jobNumber, jobString);
 					break;
 				case JOB_WAIT:
-					row = new Job.WaitJob(rowNumber, rowString);
+					job = new JobWait(jobNumber, jobString);
 					break;
 				case JOB_DO:
-					row = new Job.DoJob(rowNumber, rowString);
+					job = new JobDo(jobNumber, jobString);
 					break;
 				case JOB_CALL:
-					row = new Job.CallJob(rowNumber, rowString);
+					job = new JobCall(jobNumber, jobString);
 					break;
 				case JOB_END:
-					row = new Job.EndJob(rowNumber, rowString);
+					job = new JobEnd(jobNumber, jobString);
 					break;
 				case JOB_ETC:
-					row = new Job.EtcJob(rowNumber, rowString);
+					job = new JobEtc(jobNumber, jobString);
 					break;
 			}
 		}
 
-		private Integer getRowType(String rowString) {
-			Integer rowType = JOB_ETC;
-			String[] s = rowString.trim().split(" ");
+		private Integer getJobType(String jobString) {
+			Integer jobType = JOB_ETC;
+			String[] s = jobString.trim().split(" ");
 			if (s.length > 0) {
 				if (s[0].equals("Program"))
-					rowType = JOB_HEADER;
+					jobType = JOB_HEADER;
 				else if (s[0].startsWith("'"))
-					rowType = JOB_COMMENT;
+					jobType = JOB_COMMENT;
 				else if (s[0].startsWith("SPOT"))
-					rowType = JOB_SPOT;
+					jobType = JOB_SPOT;
 				else if (s[0].startsWith("S"))
-					rowType = JOB_MOVE;
+					jobType = JOB_MOVE;
 				else if (s[0].startsWith("WAIT"))
-					rowType = JOB_WAIT;
+					jobType = JOB_WAIT;
 				else if (s[0].startsWith("DO"))
-					rowType = JOB_DO;
+					jobType = JOB_DO;
 				else if (s[0].startsWith("END"))
-					rowType = JOB_END;
+					jobType = JOB_END;
 			}
-			return rowType;
+			return jobType;
 		}
 
 		boolean isSpot() {
-			return getRowType() == JOB_SPOT;
+			return getJobType() == JOB_SPOT;
 		}
 
 		String getCN() {
-			if (getRowType() == JOB_SPOT)
-				return ((Job.SpotJob) row).getCN();
+			if (getJobType() == JOB_SPOT)
+				return ((JobSpot) job).getCN();
 			else
 				return null;
 		}
 
 		void setCN(String value) {
-			if (getRowType() == JOB_SPOT)
-				((Job.SpotJob) row).setCN(value);
+			if (getJobType() == JOB_SPOT)
+				((JobSpot) job).setCN(value);
 		}
 
 		String getGN() {
-			if (getRowType() == JOB_SPOT)
-				return ((Job.SpotJob) row).getGN();
+			if (getJobType() == JOB_SPOT)
+				return ((JobSpot) job).getGN();
 			else
 				return null;
 		}
 
 		String getG() {
-			if (getRowType() == JOB_SPOT)
-				return ((Job.SpotJob) row).getG();
+			if (getJobType() == JOB_SPOT)
+				return ((JobSpot) job).getG();
 			else
 				return null;
 		}
 
 		public String getA() {
-			if (getRowType() == JOB_MOVE)
-				return ((Job.MoveJob) row).getA();
+			if (getJobType() == JOB_MOVE)
+				return ((JobMove) job).getA();
 			else
 				return null;
 		}
 
 		boolean setZeroA() {
-			return getRowType() == JOB_MOVE && ((MoveJob) row).setZeroA();
+			return getJobType() == JOB_MOVE && ((JobMove) job).setZeroA();
 		}
 
-		Integer getRowType() {
-			return row.getRowType();
+		Integer getJobType() {
+			return job.getJobType();
 		}
 
-		Integer getRowNumber() {
-			return row.getRowNumber();
+		Integer getJobNumber() {
+			return job.getJobNumber();
 		}
 
-		String getRowString() {
-			return row.getRowString();
+		String getJobString() {
+			return job.getJobString();
 		}
 
-		class JobValue {
+		class JobTypeValue {
 			private String mType;
 			private String mValue;
 
-			JobValue(String str) {
+			JobTypeValue(String str) {
 				setUpdate(str);
 			}
 
@@ -434,14 +434,6 @@ class WeldCountFile extends File {
 			void setValue(String value) {
 				this.mValue = value;
 			}
-
-//			public String getType() {
-//				return mType;
-//			}
-
-//			public void setType(String type) {
-//				this.mType = type;
-//			}
 
 			boolean equalType(String s) {
 				return !(mType == null || s == null) && mType.equals(s);
@@ -465,62 +457,53 @@ class WeldCountFile extends File {
 			}
 		}
 
-		class RowJob {
-			private final Integer mRowType;
-			private final Integer mRowNumber;
-			private String mRowString;
+		class Job {
+			private final Integer mJobType;
+			private final Integer mJobNumber;
+			private String mJobString;
 
-			RowJob(Integer rowType, Integer rowNumber, String rowString) {
-				mRowType = rowType;
-				mRowNumber = rowNumber;
-				mRowString = rowString;
+			Job(Integer jobType, Integer jobNumber, String jobString) {
+				mJobType = jobType;
+				mJobNumber = jobNumber;
+				mJobString = jobString;
 			}
 
-			Integer getRowType() {
-				return mRowType;
+			Integer getJobType() {
+				return mJobType;
 			}
 
-//			public void setRowType(Integer value) {
-//				mRowType = value;
-//			}
-
-			Integer getRowNumber() {
-				return mRowNumber;
+			Integer getJobNumber() {
+				return mJobNumber;
 			}
 
-			String getRowString() {
-				return mRowString;
+			String getJobString() {
+				return mJobString;
 			}
 
-			void setRowString(String rowString) {
-				this.mRowString = rowString;
+			void setJobString(String jobString) {
+				this.mJobString = jobString;
 			}
 		}
 
-		class HeaderJob extends Job.RowJob {
-//				String version;
-//				String mechType;
-//				String totalAxis;
-//				String auxAxis;
-
-			HeaderJob(Integer rowNumber, String rowString) {
+		class JobHeader extends Job {
+			JobHeader(Integer rowNumber, String rowString) {
 				super(JOB_HEADER, rowNumber, rowString);
 			}
 		}
 
-		class CommentJob extends Job.RowJob {
-			CommentJob(Integer rowNumber, String rowString) {
+		class JobComment extends Job {
+			JobComment(Integer rowNumber, String rowString) {
 				super(JOB_COMMENT, rowNumber, rowString);
 			}
 		}
 
-		class SpotJob extends Job.RowJob {
-			final List<Job.JobValue> mJobValueList;
+		class JobSpot extends Job {
+			final List<JobTypeValue> mJobTypeValueList;
 			StringBuilder mComment;
 
-			SpotJob(Integer rowNumber, String rowString) {
+			JobSpot(Integer rowNumber, String rowString) {
 				super(JOB_SPOT, rowNumber, rowString);
-				mJobValueList = new ArrayList<>();
+				mJobTypeValueList = new ArrayList<>();
 
 				// split commands, comments
 				String rs = rowString;
@@ -551,14 +534,14 @@ class WeldCountFile extends File {
 				if (s.length == 2) {
 					String[] f = s[1].split(",");
 					for (String aF : f) {
-						mJobValueList.add(new Job.JobValue(aF));
+						mJobTypeValueList.add(new JobTypeValue(aF));
 					}
 				}
 			}
 
 			void Update() {
 				StringBuilder rs = new StringBuilder("     SPOT ");
-				for (Job.JobValue jv : mJobValueList) {
+				for (JobTypeValue jv : mJobTypeValueList) {
 					rs.append(jv.getUpdate());
 					rs.append(",");
 				}
@@ -569,12 +552,12 @@ class WeldCountFile extends File {
 					rs.append(" ");
 					rs.append(mComment);
 				}
-				setRowString(rs.toString());
+				setJobString(rs.toString());
 				WeldCountFragment.logD("UPDATE:" + rs);
 			}
 
 			String getCN() {
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("CN"))
 						return s.getValue();
 				}
@@ -582,7 +565,7 @@ class WeldCountFile extends File {
 			}
 
 			void setCN(String value) {
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("CN")) {
 						s.setValue(value);
 						Update();
@@ -591,7 +574,7 @@ class WeldCountFile extends File {
 			}
 
 			String getGN() {
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("GN"))
 						return s.getValue();
 				}
@@ -599,7 +582,7 @@ class WeldCountFile extends File {
 			}
 
 			String getG() {
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("G"))
 						return s.getValue();
 				}
@@ -607,15 +590,15 @@ class WeldCountFile extends File {
 			}
 		}
 
-		public class MoveJob extends Job.RowJob {
-			final List<Job.JobValue> mJobValueList;
+		public class JobMove extends Job {
+			final List<JobTypeValue> mJobTypeValueList;
 			StringBuilder mComment;
 			String mStep;
 			String mParam;
 
-			MoveJob(Integer rowNumber, String rowString) {
+			JobMove(Integer rowNumber, String rowString) {
 				super(JOB_MOVE, rowNumber, rowString);
-				mJobValueList = new ArrayList<>();
+				mJobTypeValueList = new ArrayList<>();
 
 				// split commands, comments
 				String rs = rowString;
@@ -641,16 +624,12 @@ class WeldCountFile extends File {
 //					logD("rs:" + rs);
 
 				String[] s = rs.trim().split(" +");
-//					logD("s.Length:" + s.length);
-//					for (String ds : s) {
-//						logD("s[" + ds + "]");
-//					}
 				if (s.length == 4) {
 					mStep = s[0].substring(1);
 					//logD("step:" + mStep + ";");
 					String[] f = s[2].split(",");
 					for (String aF : f) {
-						mJobValueList.add(new Job.JobValue(aF));
+						mJobTypeValueList.add(new JobTypeValue(aF));
 					}
 					mParam = s[3].trim();
 				}
@@ -658,7 +637,7 @@ class WeldCountFile extends File {
 
 			void Update() {
 				StringBuilder rs = new StringBuilder("S" + getStep() + (getStep().length() == 1 ? "   " : "  ") + "MOVE ");
-				for (Job.JobValue jv : mJobValueList) {
+				for (JobTypeValue jv : mJobTypeValueList) {
 					rs.append(jv.getUpdate());
 					rs.append(",");
 				}
@@ -673,12 +652,12 @@ class WeldCountFile extends File {
 					rs.append(" ");
 					rs.append(mComment);
 				}
-				setRowString(rs.toString());
+				setJobString(rs.toString());
 				WeldCountFragment.logD("UPDATE:" + rs);
 			}
 
 			public String getA() {
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("A")) {
 						//logD("value[" + s.getValue() + "] " + getStep());
 						//if (!s.getValue().equals("0"))
@@ -690,7 +669,7 @@ class WeldCountFile extends File {
 
 			boolean setZeroA() {
 				boolean ret = false;
-				for (Job.JobValue s : mJobValueList) {
+				for (JobTypeValue s : mJobTypeValueList) {
 					if (s.equalType("A")) {
 						WeldCountFragment.logD("Step:" + getStep() + " value:" + s.getValue());
 						s.setValue("0");
@@ -707,32 +686,32 @@ class WeldCountFile extends File {
 			}
 		}
 
-		class WaitJob extends Job.RowJob {
-			WaitJob(Integer rowNumber, String rowString) {
+		class JobWait extends Job {
+			JobWait(Integer rowNumber, String rowString) {
 				super(JOB_WAIT, rowNumber, rowString);
 			}
 		}
 
-		class DoJob extends Job.RowJob {
-			DoJob(Integer rowNumber, String rowString) {
+		class JobDo extends Job {
+			JobDo(Integer rowNumber, String rowString) {
 				super(JOB_DO, rowNumber, rowString);
 			}
 		}
 
-		class CallJob extends Job.RowJob {
-			CallJob(Integer rowNumber, String rowString) {
+		class JobCall extends Job {
+			JobCall(Integer rowNumber, String rowString) {
 				super(JOB_CALL, rowNumber, rowString);
 			}
 		}
 
-		class EndJob extends Job.RowJob {
-			EndJob(Integer rowNumber, String rowString) {
+		class JobEnd extends Job {
+			JobEnd(Integer rowNumber, String rowString) {
 				super(JOB_END, rowNumber, rowString);
 			}
 		}
 
-		class EtcJob extends Job.RowJob {
-			EtcJob(Integer rowNumber, String rowString) {
+		class JobEtc extends Job {
+			JobEtc(Integer rowNumber, String rowString) {
 				super(JOB_ETC, rowNumber, rowString);
 			}
 		}

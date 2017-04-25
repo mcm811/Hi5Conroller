@@ -32,8 +32,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
-import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.common.PrefHelper;
+import com.changyoung.hi5controller.common.RefreshHandler;
+import com.changyoung.hi5controller.common.UriHelper;
 import com.changyoung.hi5controller.weldfile.WeldFileListFragment;
 
 import java.util.ArrayList;
@@ -45,20 +46,19 @@ import java.util.Locale;
  * changmin811@gmail.com
  */
 public class WeldCountFragment extends Fragment
-		implements Refresh, LoaderManager.LoaderCallbacks<List<WeldCountFile>> {
-
-	static final int MSG_REFRESH = 0;
+		implements RefreshHandler, LoaderManager.LoaderCallbacks<List<WeldCountJobFile>> {
+	static final int MSG_DEFAULT = 100;
+	static final int MSG_REFRESH = 101;
 	static final int ORDER_TYPE_DESCEND = 1;
-	//	private static final String ARG_WORK_PATH = "workPath";
 	private static final String TAG = "HI5:WeldCountFrag";
 	private static final int ORDER_TYPE_ASCEND = 0;
 	private static final int LAYOUT_TYPE_LINEAR = 0;
 	private static final int LAYOUT_TYPE_GRID = 1;
-	//	static final int LAYOUT_TYPE_STAGGERRED = 2;
-	public WeldCountAdapter mWeldCountAdapter;
-	WeldCountFileEditorAdapter mWeldCountFileEditorAdapter;
+
+	public WeldCountRecyclerViewAdapter mWeldCountRecyclerViewAdapter;
+	WeldCountJobFileEditorRecyclerViewAdapter mWeldCountJobFileEditorRecyclerViewAdapter;
 	View mView;
-	WeldCountFileObserver observer;
+	WeldCountJobFileListObserver observer;
 	TextToSpeech mTts;
 	SpeechRecognizer mRecognizer;
 	private RecyclerView mRecyclerView;
@@ -115,7 +115,7 @@ public class WeldCountFragment extends Fragment
 							final int takeFlags = resultDataIntent.getFlags() & rwFlags;
 							activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
-							String path = Helper.UriHelper.getFullPathFromTreeUri(uri, activity);
+							String path = UriHelper.getFullPathFromTreeUri(uri, activity);
 							onSetWorkUri(uri.toString(), path);
 
 							WeldFileListFragment workPathFragment = (WeldFileListFragment) getChildFragmentManager().findFragmentById(R.id.weldfile_fragment);
@@ -146,8 +146,8 @@ public class WeldCountFragment extends Fragment
 //		} else {
 //			mWorkPath = onGetWorkPath();
 //		}
-		mLayoutType = Helper.Pref.getInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, LAYOUT_TYPE_LINEAR);
-		mOrderType = Helper.Pref.getInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
+		mLayoutType = PrefHelper.getInt(getContext(), PrefHelper.LAYOUT_TYPE_KEY, LAYOUT_TYPE_LINEAR);
+		mOrderType = PrefHelper.getInt(getContext(), PrefHelper.ORDER_TYPE_KEY, ORDER_TYPE_ASCEND);
 		logD("OrderType:" + mOrderType);
 	}
 
@@ -159,13 +159,13 @@ public class WeldCountFragment extends Fragment
 				logD("Set Orientation: PORTRAIT LinearLayout");
 				mRecyclerView.setLayoutManager(mLinearLayoutManager);
 				mLayoutType = LAYOUT_TYPE_LINEAR;
-				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+				PrefHelper.putInt(getContext(), PrefHelper.LAYOUT_TYPE_KEY, mLayoutType);
 				break;
 			case Configuration.ORIENTATION_LANDSCAPE:
 				logD("Set Orientation: GidLayout");
 				mRecyclerView.setLayoutManager(mGridLayoutManager);
 				mLayoutType = LAYOUT_TYPE_GRID;
-				Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+				PrefHelper.putInt(getContext(), PrefHelper.LAYOUT_TYPE_KEY, mLayoutType);
 				break;
 		}
 	}
@@ -179,7 +179,7 @@ public class WeldCountFragment extends Fragment
 
 		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
 		refresher.setOnRefreshListener(() -> {
-			refresh(true);
+			onRefresh(true);
 			refresher.setRefreshing(false);
 		});
 
@@ -197,7 +197,7 @@ public class WeldCountFragment extends Fragment
 					startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE);
 					logD("FabStorage:OPEN_DIRECTORY_REQUEST_CODE");
 				} else {
-					show(refresh(R.id.nav_usbstorage));
+					show(onRefresh(R.id.nav_usbstorage));
 				}
 			});
 		}
@@ -246,8 +246,8 @@ public class WeldCountFragment extends Fragment
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							mOrderType = (mOrderType == ORDER_TYPE_ASCEND) ? ORDER_TYPE_DESCEND : ORDER_TYPE_ASCEND;
-							Helper.Pref.putInt(getContext(), Helper.Pref.ORDER_TYPE_KEY, mOrderType);
-							mWeldCountAdapter.sortName(mOrderType);
+							PrefHelper.putInt(getContext(), PrefHelper.ORDER_TYPE_KEY, mOrderType);
+							mWeldCountRecyclerViewAdapter.sortName(mOrderType);
 
 							AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 							expand.setDuration(100);
@@ -310,7 +310,7 @@ public class WeldCountFragment extends Fragment
 								mLayoutManager = new GridLayoutManager(getContext(), 2);
 							}
 							mRecyclerView.setLayoutManager(mLayoutManager);
-							Helper.Pref.putInt(getContext(), Helper.Pref.LAYOUT_TYPE_KEY, mLayoutType);
+							PrefHelper.putInt(getContext(), PrefHelper.LAYOUT_TYPE_KEY, mLayoutType);
 
 							AlphaAnimation expand = new AlphaAnimation(0.5f, 1.0f);
 							expand.setDuration(100);
@@ -356,18 +356,17 @@ public class WeldCountFragment extends Fragment
 				mRecyclerView.setLayoutManager(mGridLayoutManager);
 			}
 
-			mWeldCountAdapter = new WeldCountAdapter(this, getActivity(), mView, new ArrayList<>());
-			mRecyclerView.setAdapter(mWeldCountAdapter);
+			mWeldCountRecyclerViewAdapter = new WeldCountRecyclerViewAdapter(this, getActivity(), mView, new ArrayList<>());
+			mRecyclerView.setAdapter(mWeldCountRecyclerViewAdapter);
 		}
 
 		looperHandler = new LooperHandler(Looper.getMainLooper());
-		observer = new WeldCountFileObserver(onGetWorkPath(), looperHandler);
+		observer = new WeldCountJobFileListObserver(onGetWorkPath(), looperHandler);
 		observer.startWatching();
 
 		try {
 			mTts = new TextToSpeech(getContext(), status -> {
 			});
-//			mTts.setLanguage(Locale.KOREAN);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -398,7 +397,7 @@ public class WeldCountFragment extends Fragment
 		logD("onDetach");
 		super.onDetach();
 		mListener = null;
-		mWeldCountAdapter = null;
+		mWeldCountRecyclerViewAdapter = null;
 		mView = null;
 		mRecyclerView = null;
 		getLoaderManager().destroyLoader(0);
@@ -414,12 +413,12 @@ public class WeldCountFragment extends Fragment
 	}
 
 	@Override
-	public void refresh(boolean forced) {
+	public void onRefresh(boolean forced) {
 		try {
 			if (isAdded()) {
-				logD("refresh:restartLoader: " + onGetWorkPath());
+				logD("onRefresh:restartLoader: " + onGetWorkPath());
 				getLoaderManager().restartLoader(0, null, this);
-				observer = new WeldCountFileObserver(onGetWorkPath(), looperHandler);
+				observer = new WeldCountJobFileListObserver(onGetWorkPath(), looperHandler);
 				observer.startWatching();
 			}
 		} catch (IllegalStateException e) {
@@ -430,7 +429,7 @@ public class WeldCountFragment extends Fragment
 	}
 
 	@Override
-	public String refresh(int menuId) {
+	public String onRefresh(int menuId) {
 		return null;
 	}
 
@@ -461,8 +460,8 @@ public class WeldCountFragment extends Fragment
 */
 
 	private boolean onUpdateA() {
-		if (mWeldCountAdapter != null) {
-			mWeldCountAdapter.updateZeroA();
+		if (mWeldCountRecyclerViewAdapter != null) {
+			mWeldCountRecyclerViewAdapter.updateZeroA();
 			toggleFabUpdate();
 			return true;
 		}
@@ -470,8 +469,8 @@ public class WeldCountFragment extends Fragment
 	}
 
 	private void toggleFabUpdate() {
-		if (mWeldCountAdapter != null) {
-			if (mWeldCountAdapter.checkA())
+		if (mWeldCountRecyclerViewAdapter != null) {
+			if (mWeldCountRecyclerViewAdapter.checkA())
 				mFabUpdate.show();
 			else
 				mFabUpdate.hide();
@@ -505,15 +504,15 @@ public class WeldCountFragment extends Fragment
 //	}
 
 	@Override
-	public Loader<List<WeldCountFile>> onCreateLoader(int id, Bundle args) {
+	public Loader<List<WeldCountJobFile>> onCreateLoader(int id, Bundle args) {
 		logD(String.format(Locale.KOREA, "id:%d, onCreateLoader()", id));
-		return new WeldCountAsyncTaskLoader(getActivity(), mListener);
+		return new WeldCountJobFileListAsyncTaskLoader(getActivity(), mListener);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<WeldCountFile>> loader, List<WeldCountFile> data) {
+	public void onLoadFinished(Loader<List<WeldCountJobFile>> loader, List<WeldCountJobFile> data) {
 		logD(String.format(Locale.KOREA, "onLoadFinished: id:%d, size:%d", loader.getId(), data.size()));
-		mWeldCountAdapter.setData(data, mOrderType);
+		mWeldCountRecyclerViewAdapter.setData(data, mOrderType);
 		if (mFabSort != null) {
 			final float fromDegree = (mOrderType == ORDER_TYPE_ASCEND) ? 0f : 180f;
 			final float toDegree = ((fromDegree + 180f) % 360f) + 360 * 2;
@@ -543,7 +542,7 @@ public class WeldCountFragment extends Fragment
 		if (mRecyclerView != null)
 			mRecyclerView.refreshDrawableState();
 		if (mView != null) {
-			if (mWeldCountAdapter.getItemCount() > 0) {
+			if (mWeldCountRecyclerViewAdapter.getItemCount() > 0) {
 				mView.findViewById(R.id.imageView).setVisibility(View.GONE);
 				mView.findViewById(R.id.textView).setVisibility(View.GONE);
 			} else {
@@ -556,9 +555,9 @@ public class WeldCountFragment extends Fragment
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<WeldCountFile>> loader) {
+	public void onLoaderReset(Loader<List<WeldCountJobFile>> loader) {
 		logD(String.format(Locale.KOREA, "id: %d, onLoaderReset()", loader.getId()));
-		mWeldCountAdapter.setData(null, ORDER_TYPE_ASCEND);
+		mWeldCountRecyclerViewAdapter.setData(null, ORDER_TYPE_ASCEND);
 	}
 
 	/**
@@ -573,6 +572,7 @@ public class WeldCountFragment extends Fragment
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
+
 		void onSetWorkUri(String uri, String path);
 	}
 
@@ -585,9 +585,11 @@ public class WeldCountFragment extends Fragment
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
+				case MSG_DEFAULT:
+					break;
 				case MSG_REFRESH:
 					logD("MSG_REFRESH");
-					refresh(true);
+					onRefresh(true);
 					break;
 				default:
 					break;

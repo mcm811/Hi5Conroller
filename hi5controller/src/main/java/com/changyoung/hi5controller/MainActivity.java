@@ -30,8 +30,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.changyoung.hi5controller.common.Helper;
-import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.common.FileHelper;
+import com.changyoung.hi5controller.common.PrefHelper;
+import com.changyoung.hi5controller.common.RefreshHandler;
+import com.changyoung.hi5controller.common.UiHelper;
+import com.changyoung.hi5controller.common.UriHelper;
 import com.changyoung.hi5controller.weldcondition.WeldConditionFragment;
 import com.changyoung.hi5controller.weldcount.WeldCountFragment;
 import com.changyoung.hi5controller.weldfile.WeldFileFragment;
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity
 //			if (resultData != null) {
 //				Uri pickedDirUri = resultData.getData();
 //				if (pickedDirUri != null) {
-//					String path = Helper.UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
+//					String path = UriHelper.getFullPathFromTreeUri(pickedDirUri, getContext());
 //					String uri = pickedDirUri.toString();
 //					onSetWorkUri(uri, path);
 //					show("경로 설정 완료: " + path);
@@ -166,9 +169,9 @@ public class MainActivity extends AppCompatActivity
 		try {
 			if (msg == null)
 				return;
-			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(mTabLayout.getSelectedTabPosition());
-			if (refresh != null)
-				refresh.show(msg);
+			RefreshHandler refreshHandler = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter()).getItem(mTabLayout.getSelectedTabPosition());
+			if (refreshHandler != null)
+				refreshHandler.show(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Snackbar.make(mViewPager, msg, Snackbar.LENGTH_LONG)
@@ -271,17 +274,17 @@ public class MainActivity extends AppCompatActivity
 		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
-				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+				UiHelper.hideSoftKeyboard(getContext(), null, null);
 			}
 
 			@Override
 			public void onTabUnselected(TabLayout.Tab tab) {
-				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+				UiHelper.hideSoftKeyboard(getContext(), null, null);
 			}
 
 			@Override
 			public void onTabReselected(TabLayout.Tab tab) {
-				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+				UiHelper.hideSoftKeyboard(getContext(), null, null);
 			}
 		});
 /*
@@ -343,11 +346,11 @@ public class MainActivity extends AppCompatActivity
 					mTabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), tabLayoutColorId));
 					mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(getApplicationContext(), tabIndicatorColorId));
 				}
-				Helper.UiHelper.hideSoftKeyboard(getContext(), null, null);
+				UiHelper.hideSoftKeyboard(getContext(), null, null);
 //				try {
-//					Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab.getPosition());
-//					if (refresh != null) {
-//						refresh.refresh(false);
+//					RefreshHandler onRefresh = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab.getPosition());
+//					if (onRefresh != null) {
+//						onRefresh.onRefresh(false);
 //					}
 //				} catch (Exception e) {
 //					e.printStackTrace();
@@ -403,10 +406,10 @@ public class MainActivity extends AppCompatActivity
 			mBackPressedCount = 0;
 		} else {
 			try {
-				Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+				RefreshHandler refreshHandler = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter())
 						.getItem(mTabLayout.getSelectedTabPosition());
-				if (refresh != null) {
-					String ret = refresh.onBackPressedFragment();
+				if (refreshHandler != null) {
+					String ret = refreshHandler.onBackPressedFragment();
 					if (ret == null || ret.compareTo("/") == 0)
 						throw new Exception();
 					else
@@ -424,7 +427,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	private void onExitDialog() {
-		Helper.UiHelper.adMobExitDialog(this, mAdView);
+		UiHelper.adMobExitDialog(this, mAdView);
 	}
 
 	@Override
@@ -489,7 +492,7 @@ public class MainActivity extends AppCompatActivity
 				startActivity(new Intent(this, WeldRestoreActivity.class));
 				break;
 			case R.id.action_main_toolbar_backup:
-				String ret = Helper.FileHelper.backupDocumentFile(getContext(), mTabLayout);
+				String ret = FileHelper.backupDocumentFile(getContext(), mTabLayout);
 				if (ret != null)
 					show(ret);
 				break;
@@ -501,10 +504,10 @@ public class MainActivity extends AppCompatActivity
 //	private View getFab() {
 //		View fab = null;
 //		try {
-//			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+//			RefreshHandler onRefresh = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter())
 //					.getItem(mTabLayout.getSelectedTabPosition());
-//			if (refresh != null)
-//				fab = refresh.getFab();
+//			if (onRefresh != null)
+//				fab = onRefresh.getFab();
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
@@ -542,10 +545,10 @@ public class MainActivity extends AppCompatActivity
 		mDrawer.closeDrawer(GravityCompat.START);
 
 		try {
-			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter())
+			RefreshHandler refreshHandler = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter())
 					.getItem(mTabLayout.getSelectedTabPosition());
-			if (refresh != null) {
-				show(refresh.refresh(id));
+			if (refreshHandler != null) {
+				show(refreshHandler.onRefresh(id));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -568,9 +571,9 @@ public class MainActivity extends AppCompatActivity
 		String path;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			Uri uri = Uri.parse(onGetWorkUri());
-			path = Helper.UriHelper.getFullPathFromTreeUri(uri, getContext());
+			path = UriHelper.getFullPathFromTreeUri(uri, getContext());
 		} else {
-			path = Helper.Pref.getWorkPath(getContext());
+			path = PrefHelper.getWorkPath(getContext());
 		}
 
 /*
@@ -591,7 +594,7 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onSetWorkPath(String path) {
 		logD("onSetWorkPath");
-		Helper.Pref.setWorkPath(getContext(), path);
+		PrefHelper.setWorkPath(getContext(), path);
 
 		final int[] tabs = {
 				PagerAdapter.WELD_COUNT_FRAGMENT,
@@ -599,22 +602,22 @@ public class MainActivity extends AppCompatActivity
 				PagerAdapter.WORK_PATH_FRAGMENT
 		};
 		for (int tab : tabs) {
-			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
-			if (refresh != null)
-				refresh.refresh(true);
+			RefreshHandler refreshHandler = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
+			if (refreshHandler != null)
+				refreshHandler.onRefresh(true);
 		}
 	}
 
 	@Override
 	public String onGetWorkUri() {
-		return Helper.Pref.getWorkPathUriString(getContext());
+		return PrefHelper.getWorkPathUriString(getContext());
 	}
 
 	@Override
 	public void onSetWorkUri(String uri, String path) {
 		logD("onSetWorkUri");
-		Helper.Pref.setWorkPathUri(getContext(), uri);
-		Helper.Pref.setWorkPath(getContext(), path);
+		PrefHelper.setWorkPathUri(getContext(), uri);
+		PrefHelper.setWorkPath(getContext(), path);
 
 		final int[] tabs = {
 				PagerAdapter.WELD_COUNT_FRAGMENT,
@@ -622,9 +625,9 @@ public class MainActivity extends AppCompatActivity
 				PagerAdapter.WORK_PATH_FRAGMENT
 		};
 		for (int tab : tabs) {
-			Refresh refresh = (Refresh) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
-			if (refresh != null)
-				refresh.refresh(true);
+			RefreshHandler refreshHandler = (RefreshHandler) ((PagerAdapter) mViewPager.getAdapter()).getItem(tab);
+			if (refreshHandler != null)
+				refreshHandler.onRefresh(true);
 		}
 
 		try {

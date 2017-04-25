@@ -10,24 +10,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile>> {
+public class WeldCountJobFileListAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountJobFile>> {
 	private final WeldCountFragment.OnWorkPathListener mCallBack;
-	private List<WeldCountFile> mList;
+	private List<WeldCountJobFile> mList;
 	private WeldCountBroadcastReceiver mReceiver;
 
-	WeldCountAsyncTaskLoader(Context context,
-	                         WeldCountFragment.OnWorkPathListener callBack) {
+	WeldCountJobFileListAsyncTaskLoader(Context context,
+	                                    WeldCountFragment.OnWorkPathListener callBack) {
 		super(context);
 		mCallBack = callBack;
 	}
 
 	@Override
-	public List<WeldCountFile> loadInBackground() {
+	public List<WeldCountJobFile> loadInBackground() {
 		WeldCountFragment.logD("loadInBackground");
 		if (mCallBack == null)
 			return null;
 		String path = mCallBack.onGetWorkPath();
-		List<WeldCountFile> list = new ArrayList<>();
+		List<WeldCountJobFile> list = new ArrayList<>();
 		try {
 			File dir = new File(path);
 			File[] dirs = dir.listFiles();
@@ -35,7 +35,7 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 				for (File file : dirs) {
 					if (file.getName().toUpperCase().endsWith(".JOB")
 							|| file.getName().toUpperCase().startsWith("HX"))
-						list.add(new WeldCountFile(file.getPath()));
+						list.add(new WeldCountJobFile(file.getPath()));
 				}
 			}
 		} catch (Exception e) {
@@ -46,7 +46,7 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 	}
 
 	@Override
-	public void deliverResult(List<WeldCountFile> data) {
+	public void deliverResult(List<WeldCountJobFile> data) {
 		WeldCountFragment.logD("deliverResult");
 
 		if (isReset()) {
@@ -54,7 +54,7 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 				onReleaseResources(data);
 		}
 
-		List<WeldCountFile> oldList = mList;
+		List<WeldCountJobFile> oldList = mList;
 		mList = data;
 
 		if (isStarted()) {
@@ -67,7 +67,7 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 			WeldCountFragment.logD("deliverResult() mList.size: " + mList.size());
 	}
 
-	private void onReleaseResources(List<WeldCountFile> data) {
+	private void onReleaseResources(List<WeldCountJobFile> data) {
 		// For a simple List<> there is nothing to do.  For something
 		// like a Cursor, we would close it here.
 		if (data != null)
@@ -98,7 +98,7 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 	}
 
 	@Override
-	public void onCanceled(List<WeldCountFile> data) {
+	public void onCanceled(List<WeldCountJobFile> data) {
 		WeldCountFragment.logD("onCanceled");
 		super.onCanceled(data);
 		onReleaseResources(data);
@@ -127,9 +127,9 @@ public class WeldCountAsyncTaskLoader extends AsyncTaskLoader<List<WeldCountFile
 		public static final String WELD_COUNT_LOAD = "com.changyoung.hi5controller.weld_count_load";
 		public static final String WELD_COUNT_UPDATE = "com.changyoung.hi5controller.weld_count_update";
 
-		final WeldCountAsyncTaskLoader mLoader;
+		final WeldCountJobFileListAsyncTaskLoader mLoader;
 
-		public WeldCountBroadcastReceiver(WeldCountAsyncTaskLoader loader) {
+		public WeldCountBroadcastReceiver(WeldCountJobFileListAsyncTaskLoader loader) {
 			this.mLoader = loader;
 			IntentFilter filter = new IntentFilter(WELD_COUNT_LOAD);
 			filter.addAction(WELD_COUNT_UPDATE);

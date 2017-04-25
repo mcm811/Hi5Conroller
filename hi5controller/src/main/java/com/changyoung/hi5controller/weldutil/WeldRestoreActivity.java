@@ -15,15 +15,18 @@ import android.view.animation.RotateAnimation;
 import android.widget.EditText;
 
 import com.changyoung.hi5controller.R;
-import com.changyoung.hi5controller.common.Helper;
-import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.common.AsyncTaskProgressDialogDocumentFile;
+import com.changyoung.hi5controller.common.FileHelper;
+import com.changyoung.hi5controller.common.PrefHelper;
+import com.changyoung.hi5controller.common.RefreshHandler;
+import com.changyoung.hi5controller.common.UiHelper;
 import com.changyoung.hi5controller.weldfile.WeldFileListFragment;
 
 import java.io.File;
 import java.io.IOException;
 
 public class WeldRestoreActivity extends AppCompatActivity
-		implements Refresh, WeldFileListFragment.OnPathChangedListener {
+		implements RefreshHandler, WeldFileListFragment.OnPathChangedListener {
 	private final static String TAG = "HI5:WeldRestoreActivity";
 	private int mBackPressedCount;
 
@@ -51,7 +54,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		setContentView(R.layout.weld_restore_activity);
 		WeldRestoreActivity view = this;
 
-		String path = Helper.Pref.getBackupPath(getContext());
+		String path = PrefHelper.getBackupPath(getContext());
 		final WeldFileListFragment fragment = (WeldFileListFragment)
 				getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 		if (fragment != null) {
@@ -64,19 +67,19 @@ public class WeldRestoreActivity extends AppCompatActivity
 					try {
 						File file = new File(etPath.getText().toString());
 						if (file.isDirectory()) {
-							Helper.Pref.setBackupPath(getContext(), etPath.getText().toString());
+							PrefHelper.setBackupPath(getContext(), etPath.getText().toString());
 						} else {
 							throw new Exception();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						show("잘못된 경로: " + etPath.getText().toString());
-						etPath.setText(Helper.Pref.getBackupPath(getContext()));
+						etPath.setText(PrefHelper.getBackupPath(getContext()));
 					}
 					fragment.refreshFilesList(etPath.getText().toString());
 				});
 				etPath.setOnKeyListener((v, keyCode, event) -> {
-					Helper.UiHelper.hideSoftKeyboard(getActivity(), v, event);
+					UiHelper.hideSoftKeyboard(getActivity(), v, event);
 					return false;
 				});
 			}
@@ -87,7 +90,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		if (toolbar != null) {
 			toolbar.inflateMenu(R.menu.menu_toolbar_back_path);
 			toolbar.setOnMenuItemClickListener(item -> {
-				String ret = refresh(item.getItemId());
+				String ret = onRefresh(item.getItemId());
 				if (ret != null)
 					show(ret);
 				mBackPressedCount = 0;
@@ -139,7 +142,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 				@Override
 				public void onClick(View view) {
 					animationFab();
-					Helper.UiHelper.hideSoftKeyboard(getActivity(), null, null);
+					UiHelper.hideSoftKeyboard(getActivity(), null, null);
 					mBackPressedCount = 0;
 					mFab.postDelayed(() -> {
 						String ret = restore();
@@ -179,13 +182,13 @@ public class WeldRestoreActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void refresh(boolean forced) {
+	public void onRefresh(boolean forced) {
 		try {
 			if (forced) {
 				final EditText etPath = (EditText) findViewById((R.id.etBackupPath));
 				final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
 				if (etPath != null) {
-					etPath.setText(Helper.Pref.getBackupPath(getContext()));
+					etPath.setText(PrefHelper.getBackupPath(getContext()));
 					fragment.refreshFilesList(etPath.getText().toString());
 				}
 			}
@@ -194,7 +197,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		}
 	}
 
-	private boolean refresh(String path) {
+	private boolean onRefresh(String path) {
 		if (path != null) {
 			try {
 				File dir = new File(path);
@@ -211,10 +214,10 @@ public class WeldRestoreActivity extends AppCompatActivity
 	}
 
 	@Override
-	public String refresh(int menuId) {
+	public String onRefresh(int menuId) {
 		switch (menuId) {
 			case R.id.nav_home:
-				if (!refresh(Helper.Pref.getBackupPath(getContext())))
+				if (!onRefresh(PrefHelper.getBackupPath(getContext())))
 					show("백업 폴더가 없습니다");
 				break;
 			case R.id.nav_backup:
@@ -236,7 +239,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 
 		try {
 			final WeldFileListFragment fragment = (WeldFileListFragment) getSupportFragmentManager().findFragmentById(R.id.backup_path_fragment);
-			DocumentFile dest = Helper.Pref.getWorkDocumentFile(getContext());
+			DocumentFile dest = PrefHelper.getWorkDocumentFile(getContext());
 			DocumentFile backup = dest.findFile("Backup");
 			DocumentFile source = backup.findFile(fragment.getDirFile().getName());
 			if (source.equals(dest))
@@ -251,7 +254,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 					}
 				}
 				if (sourceChecked) {
-					new Helper.AsyncTaskDocumentFileDialog(getContext(),
+					new AsyncTaskProgressDialogDocumentFile(getContext(),
 							findViewById(R.id.coordinator_layout_weld_restore_activity), "복원", null).execute(source, dest);
 					return null;
 				}
@@ -272,9 +275,9 @@ public class WeldRestoreActivity extends AppCompatActivity
 	}
 
 	private void backup() {
-		String ret = Helper.FileHelper.backupDocumentFile(getContext(), findViewById(R.id.coordinator_layout_weld_restore_activity));
+		String ret = FileHelper.backupDocumentFile(getContext(), findViewById(R.id.coordinator_layout_weld_restore_activity));
 		if (ret == null)
-			refresh(Helper.Pref.getBackupPath(getContext()));
+			onRefresh(PrefHelper.getBackupPath(getContext()));
 		else
 			show(ret);
 	}

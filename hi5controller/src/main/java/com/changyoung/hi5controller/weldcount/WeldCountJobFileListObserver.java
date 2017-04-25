@@ -7,23 +7,13 @@ import android.os.Message;
 import java.io.File;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
-public class WeldCountFileObserver extends FileObserver {
-	static final String TAG = "HI5:WeldCountFileObserver";
+public class WeldCountJobFileListObserver extends FileObserver {
 	private static final int mask = CREATE | DELETE | DELETE_SELF |
 			MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
 	private final File file;
 	private final Handler handler;
 
-	@SuppressWarnings("unused")
-	public WeldCountFileObserver(File file, Handler handler) {
-		super(file.getPath(), mask);
-		this.file = file;
-		this.handler = handler;
-		WeldCountFragment.logD("FILE_OBSERVER: " + file.getPath());
-	}
-
-	WeldCountFileObserver(String path, Handler handler) {
+	WeldCountJobFileListObserver(String path, Handler handler) {
 		super(path, mask);
 		this.file = new File(path);
 		this.handler = handler;
