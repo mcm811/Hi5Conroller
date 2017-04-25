@@ -49,7 +49,7 @@
 			android:value="@integer/google_play_services_version"/>
 
 		<activity
-			android:name=".WeldRestoreActivity"
+			android:name=".weldutil.WeldRestoreActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:label="@string/title_restore_activity"
 			android:parentActivityName=".MainActivity">
@@ -63,7 +63,7 @@
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
 			android:theme="@android:style/Theme.Translucent"/>
 		<activity
-			android:name=".WeldTextViewerActivity"
+			android:name=".weldutil.WeldTextViewerActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:label="@string/title_textviewer_activity"
 			android:parentActivityName=".MainActivity"

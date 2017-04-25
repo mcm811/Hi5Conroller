@@ -1,14 +1,14 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.common;
 
 /**
  * Created by chang on 2015-10-11.
  * changmin811@gmail.com
  */
 
-interface Refresh {
+public interface Refresh {
 	void refresh(boolean forced);
 
-	boolean refresh(String path);
+//	boolean refresh(String path);
 
 	String refresh(int menuId);
 

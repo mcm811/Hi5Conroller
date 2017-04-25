@@ -1,4 +1,4 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.common;
 
 import android.content.Context;
 import android.util.AttributeSet;

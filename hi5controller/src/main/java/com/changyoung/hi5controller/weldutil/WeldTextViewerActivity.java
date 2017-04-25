@@ -1,4 +1,4 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.weldutil;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.widget.TextView;
+
+import com.changyoung.hi5controller.R;
 
 public class WeldTextViewerActivity extends AppCompatActivity {
 /*

@@ -19,7 +19,7 @@
 		android:layout_height="wrap_content"
 		>
 
-		<com.changyoung.hi5controller.EditText
+		<com.changyoung.hi5controller.common.EditText
 			android:id="@+id/editText"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

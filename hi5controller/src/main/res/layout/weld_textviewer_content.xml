@@ -9,7 +9,7 @@
 	android:scrollbars="horizontal|vertical"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	app:layout_scrollFlags="scroll"
-	tools:context="com.changyoung.hi5controller.WeldTextViewerActivity"
+	tools:context="com.changyoung.hi5controller.weldutil.WeldTextViewerActivity"
 	tools:showIn="@layout/weld_textviewer_activity">
 
 	<TextView

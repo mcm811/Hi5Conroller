@@ -1,19 +1,14 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.weldfile;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,14 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.changyoung.hi5controller.R;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,22 +32,20 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class WeldFileListFragment extends Fragment {
-	private static final int MSG_REFRESH_DIR = 0;
+	public static final int MSG_REFRESH_DIR = 0;
 	private static final int MSG_REFRESH_PARENT_DIR = 1;
 
 	private static final String TAG = "WeldFileListFragment";
 	private static final String ARG_DIR_PATH = "dirPath";
 	public View snackbarView;
+	LooperHandler looperHandler;
 	private View mView;
 	private OnPathChangedListener mListener;
-
 	private RecyclerView mRecyclerView;
-	private FileListAdapter mAdapter;
-
+	private WeldFileListAdapter mAdapter;
 	//	private Uri dirUri;
 	private File dirPath;
-	private FileListObserver fileListObserver;
-	private LooperHandler looperHandler;
+	private WeldFileListObserver weldFileListObserver;
 
 	public WeldFileListFragment() {
 		// Required empty public constructor
@@ -76,7 +66,7 @@ public class WeldFileListFragment extends Fragment {
 		return fragment;
 	}
 
-	private static void logD(String msg) {
+	static void logD(String msg) {
 		try {
 			Log.i("HI5", TAG + ":" + msg);
 		} catch (Exception e) {
@@ -84,7 +74,7 @@ public class WeldFileListFragment extends Fragment {
 		}
 	}
 
-	private void show(String msg) {
+	void show(String msg) {
 		try {
 			if (snackbarView != null)
 				Snackbar.make(snackbarView, msg, Snackbar.LENGTH_LONG).show();
@@ -150,7 +140,7 @@ public class WeldFileListFragment extends Fragment {
 		mRecyclerView.setHasFixedSize(true);
 		RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new FileListAdapter(getActivity(), new ArrayList<>());
+		mAdapter = new WeldFileListAdapter(this, new ArrayList<>());
 		mRecyclerView.setAdapter(mAdapter);
 		RecyclerView.ItemDecoration itemDecoration =
 				new android.support.v7.widget.DividerItemDecoration(getContext(),
@@ -222,8 +212,8 @@ public class WeldFileListFragment extends Fragment {
 			mAdapter.notifyDataSetChanged();
 			onDirPathChanged(dir);
 
-			fileListObserver = new FileListObserver(dir, looperHandler);
-			fileListObserver.startWatching();
+			weldFileListObserver = new WeldFileListObserver(dir, looperHandler);
+			weldFileListObserver.startWatching();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -333,9 +323,9 @@ public class WeldFileListFragment extends Fragment {
 		mAdapter = null;
 		dirPath = null;
 		looperHandler = null;
-		if (fileListObserver != null) {
-			fileListObserver.stopWatching();
-			fileListObserver = null;
+		if (weldFileListObserver != null) {
+			weldFileListObserver.stopWatching();
+			weldFileListObserver = null;
 		}
 	}
 
@@ -353,49 +343,7 @@ public class WeldFileListFragment extends Fragment {
 		void onPathChanged(File path);
 	}
 
-	@SuppressWarnings("unused")
-	public static class FileListObserver extends FileObserver {
-		@SuppressWarnings("unused")
-		static final String TAG = "HI5:FileListObserver";
-		static final int mask = CREATE | DELETE | DELETE_SELF |
-				MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
-		final File file;
-		private final Handler handler;
-
-		public FileListObserver(File file, Handler handler) {
-			super(file.getPath(), mask);
-			this.file = file;
-			this.handler = handler;
-			logD("FILE_OBSERVER: " + file.getPath());
-		}
-
-		public void onEvent(int event, String path) {
-			if ((event & CREATE) == CREATE)
-				logD(String.format("CREATE: %s/%s", file.getPath(), path));
-			else if ((event & DELETE) == DELETE)
-				logD(String.format("DELETE: %s/%s", file.getPath(), path));
-			else if ((event & DELETE_SELF) == DELETE_SELF)
-				logD(String.format("DELETE_SELF: %s/%s", file.getPath(), path));
-			else if ((event & MOVED_FROM) == MOVED_FROM)
-				logD(String.format("MOVED_FROM: %s/%s", file.getPath(), path));
-			else if ((event & MOVED_TO) == MOVED_TO)
-				logD(String.format("MOVED_TO: %s", path == null ? file.getPath() : path));
-			else if ((event & MOVE_SELF) == MOVE_SELF)
-				logD(String.format("MOVE_SELF: %s", path == null ? file.getPath() : path));
-			else if ((event & CLOSE_WRITE) == CLOSE_WRITE)
-				logD(String.format("CLOSE_WRITE: %s", path == null ? file.getPath() : path));
-			else
-				return;
-
-			stopWatching();
-			Message msg = handler.obtainMessage();
-			msg.what = MSG_REFRESH_DIR;
-			msg.obj = file;
-			handler.sendMessage(msg);
-		}
-	}
-
-/*
+	/*
 	public static class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
 		private static final int[] ATTRS = new int[]{
@@ -476,158 +424,6 @@ public class WeldFileListFragment extends Fragment {
 		}
 	}
 */
-
-	public class FileListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-		final List<File> mDataset;
-		Activity mActivity;
-		Context mContext;
-
-		FileListAdapter(Activity activity, List<File> dataset) {
-			mActivity = activity;
-			mDataset = dataset;
-		}
-
-		void clear() {
-			mDataset.clear();
-		}
-
-		void add(File item) {
-			mDataset.add(item);
-		}
-
-		void insert(File item, @SuppressWarnings("SameParameterValue") int index) {
-			mDataset.add(index, item);
-		}
-
-		void sort(Comparator<File> comparator) {
-			//noinspection Java8ListSort
-			Collections.sort(mDataset, comparator);
-		}
-
-		public void setData(List<File> data) {
-			mDataset.clear();
-			mDataset.addAll(data);
-			notifyDataSetChanged();
-		}
-
-		@Override
-		public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			mContext = parent.getContext();
-			final View v = LayoutInflater.from(mContext)
-					.inflate(R.layout.weldfile_list_view_holder_item, parent, false);
-			// set the view's size, margins, paddings and layout parameters
-			final ViewHolder holder = new ViewHolder(v);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				holder.mFileFab.setVisibility(View.VISIBLE);
-				holder.mFileImageView.setVisibility(View.GONE);
-			} else {
-				holder.mFileFab.setVisibility(View.GONE);
-				holder.mFileImageView.setVisibility(View.VISIBLE);
-			}
-			holder.mItemView.setOnClickListener(v12 -> {
-				final int position = (int) v12.getTag();
-				final File file = mDataset.get(position);
-				if (position == 0) {
-					String p = file.getParent();
-					if (p == null)
-						p = File.pathSeparator;
-					refreshFilesList(p);
-				} else if (file.isDirectory()) {
-					refreshFilesList(file.getPath());
-				} else {
-					Helper.UiHelper.textViewActivity(getActivity(), file.getName(),
-							Helper.FileHelper.readFileString(file.getPath()));
-				}
-			});
-			holder.mItemView.setOnLongClickListener(v1 -> {
-				final int position = (int) v1.getTag();
-				if (position == 0)
-					return false;
-
-				final File file = mDataset.get(position);
-				String actionName = file.isDirectory() ? "폴더 삭제" : "파일 삭제";
-				String fileType = file.isDirectory() ? "이 폴더를" : "이 파일을";
-				String msg = String.format("%s 완전히 삭제 하시겠습니까?\n\n%s\n\n수정한 날짜: %s",
-						fileType, file.getName(), Helper.TimeHelper.getLasModified(file));
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(actionName)
-						.setMessage(msg)
-						.setNegativeButton("취소", (dialog, which) -> show("삭제가 취소 되었습니다"))
-						.setPositiveButton("삭제", (dialog, which) -> {
-							try {
-								new Helper.AsyncTaskFileDialog(getContext(),
-										snackbarView, "삭제", looperHandler)
-										.execute(file);
-							} catch (Exception e) {
-								e.printStackTrace();
-								show("삭제할 수 없습니다");
-							}
-						});
-				builder.create().show();
-
-				return true;
-			});
-			return holder;
-		}
-
-		@Override
-		public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
-			final ViewHolder holder = (ViewHolder) rh;
-			String fileTime = null;
-			String fileName;
-			int fileImageResourceId;
-			final File file = mDataset.get(position);
-			if (position == 0) {
-				String p = file.getParent();
-				if (p == null) {
-					fileName = ".";
-					fileImageResourceId = R.drawable.ic_android;
-				} else {
-					fileName = file.getParentFile().getName() + "/..";
-					fileImageResourceId = R.drawable.ic_arrow_upward;
-				}
-			} else {
-				fileTime = Helper.TimeHelper.getLasModified(file);
-				fileName = file.getName();
-				fileImageResourceId = file.isFile() ? R.drawable.ic_description : R.drawable.ic_folder;
-			}
-
-			if (fileTime == null) {
-				holder.mFileTimeTextView.setText("");
-				holder.mFileTimeTextView.setVisibility(View.GONE);
-			} else {
-				holder.mFileTimeTextView.setText(fileTime);
-				holder.mFileTimeTextView.setVisibility(View.VISIBLE);
-			}
-			holder.mFileNameTextView.setText(fileName);
-			holder.mFileImageView.setImageResource(fileImageResourceId);
-			holder.mFileFab.setImageResource(fileImageResourceId);
-			holder.mItemView.setTag(position);
-		}
-
-		@Override
-		public int getItemCount() {
-			return mDataset.size();
-		}
-
-		class ViewHolder extends RecyclerView.ViewHolder {
-			final View mItemView;
-			final TextView mFileTimeTextView;
-			final TextView mFileNameTextView;
-			final ImageView mFileImageView;
-			final FloatingActionButton mFileFab;
-
-			ViewHolder(View itemView) {
-				super(itemView);
-				mItemView = itemView;
-				mFileTimeTextView = (TextView) itemView.findViewById(R.id.file_time);
-				mFileNameTextView = (TextView) itemView.findViewById(R.id.file_text);
-				mFileImageView = (ImageView) itemView.findViewById(R.id.file_image);
-				mFileFab = (FloatingActionButton) itemView.findViewById(R.id.file_fab);
-			}
-		}
-	}
 
 	private class LooperHandler extends Handler {
 		LooperHandler(Looper looper) {

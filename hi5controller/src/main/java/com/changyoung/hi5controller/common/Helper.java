@@ -1,4 +1,4 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.common;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.changyoung.hi5controller.weldutil.WeldTextViewerActivity;
 import com.google.android.gms.ads.AdView;
 
 import java.io.BufferedReader;
@@ -53,26 +55,28 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.changyoung.hi5controller.weldfile.WeldFileListFragment.MSG_REFRESH_DIR;
+
 /**
  * Created by chang on 2015-10-13.
  * changmin811@gmail.com
  */
-class Helper {
-	static class Pref {
-		final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
-		final static String STORAGE_PATH = "/storage";
+public class Helper {
+	public static class Pref {
+		public final static String EXTERNAL_STORAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+		public final static String STORAGE_PATH = "/storage";
+		public final static String ORDER_TYPE_KEY = "order_type";
+		public final static String LAYOUT_TYPE_KEY = "layout_type";
 		final static String PACKAGE_NAME = "com.changyoung.hi5controller";
 		final static String WORK_PATH_KEY = "work_path";
 		final static String WORK_URI_KEY = "work_uri";
 		final static String BACKUP_PATH_KEY = "backup_path";
-		final static String ORDER_TYPE_KEY = "order_type";
-		final static String LAYOUT_TYPE_KEY = "layout_type";
 
 		static DocumentFile getDocumentFile(Context context, String fileName) throws NullPointerException {
 			return getWorkDocumentFile(context).findFile(fileName);
 		}
 
-		static DocumentFile getWorkDocumentFile(Context context) throws NullPointerException {
+		public static DocumentFile getWorkDocumentFile(Context context) throws NullPointerException {
 			DocumentFile documentFile = DocumentFile.fromTreeUri(context, Pref.getWorkPathUri(context));
 			if (documentFile == null)
 				throw new NullPointerException();
@@ -83,7 +87,7 @@ class Helper {
 			return Uri.parse(getWorkPathUriString(context));
 		}
 
-		static String getWorkPathUriString(Context context) {
+		public static String getWorkPathUriString(Context context) {
 			return getPath(context, WORK_URI_KEY);
 		}
 
@@ -104,7 +108,7 @@ class Helper {
 			return null;
 		}
 
-		static InputStream getWorkPathInputStream(Context context, String path) {
+		public static InputStream getWorkPathInputStream(Context context, String path) {
 			InputStream inputStream = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -125,7 +129,7 @@ class Helper {
 			return inputStream;
 		}
 
-		static OutputStream getWorkPathOutputStream(Context context, String path) {
+		public static OutputStream getWorkPathOutputStream(Context context, String path) {
 			OutputStream outputStream = null;
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -146,23 +150,23 @@ class Helper {
 			return outputStream;
 		}
 
-		static void setWorkPathUri(Context context, String value) {
+		public static void setWorkPathUri(Context context, String value) {
 			setPath(context, WORK_URI_KEY, value);
 		}
 
-		static String getWorkPath(Context context) {
+		public static String getWorkPath(Context context) {
 			return getPath(context, WORK_PATH_KEY);
 		}
 
-		static void setWorkPath(Context context, String value) {
+		public static void setWorkPath(Context context, String value) {
 			setPath(context, WORK_PATH_KEY, value);
 		}
 
-		static String getBackupPath(Context context) {
+		public static String getBackupPath(Context context) {
 			return getWorkPath(context) + "/Backup";
 		}
 
-		static void setBackupPath(Context context, String value) {
+		public static void setBackupPath(Context context, String value) {
 			setPath(context, BACKUP_PATH_KEY, value);
 		}
 
@@ -197,7 +201,7 @@ class Helper {
 			}
 		}
 
-		static int getInt(Context context, String key, int defValue) {
+		public static int getInt(Context context, String key, int defValue) {
 			try {
 				SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
 				return prefs.getInt(key, defValue);
@@ -207,7 +211,7 @@ class Helper {
 			}
 		}
 
-		static void putInt(Context context, String key, int value) {
+		public static void putInt(Context context, String key, int value) {
 			try {
 				if (key != null) {
 					SharedPreferences prefs = context.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);
@@ -222,7 +226,7 @@ class Helper {
 	}
 
 	public static class TimeHelper {
-		static String getLasModified(File file) {
+		public static String getLasModified(File file) {
 			return getTimeString("yyyy-MM-dd a hh-mm-ss", file.lastModified());
 		}
 
@@ -240,7 +244,7 @@ class Helper {
 	public static class FileHelper {
 		private final static String TAG = "FileHelper";
 
-		static String readFileString(String path) {
+		public static String readFileString(String path) {
 			StringBuilder sb = new StringBuilder();
 			try {
 				FileInputStream fileInputStream = new FileInputStream(path);
@@ -329,7 +333,7 @@ class Helper {
 		}
 
 		@Nullable
-		static String backupDocumentFile(Context context, View view) {
+		public static String backupDocumentFile(Context context, View view) {
 			String ret = null;
 			boolean sourceChecked = false;
 			try {
@@ -357,7 +361,7 @@ class Helper {
 					DocumentFile backupDest = backup.findFile(destString);
 					if (backupDest == null)
 						backupDest = backup.createDirectory(destString);
-					new AsyncTaskDocumentFileDialog(context, view, "백업").execute(source, backupDest);
+					new AsyncTaskDocumentFileDialog(context, view, "백업", null).execute(source, backupDest);
 					return null;
 				}
 				throw new Exception();
@@ -417,7 +421,7 @@ class Helper {
 	}
 
 	public static class UiHelper {
-		static void textViewActivity(Activity context, String title, String text) {
+		public static void textViewActivity(Activity context, String title, String text) {
 			Intent intent = new Intent(context, WeldTextViewerActivity.class);
 			intent.putExtra("title", title);
 			intent.putExtra("text", text);
@@ -449,7 +453,7 @@ class Helper {
 			builder.show();
 		}
 
-		static void adMobExitDialog(final Activity context, AdView adView) {
+		public static void adMobExitDialog(final Activity context, AdView adView) {
 			TextView tvMessage = new TextView(context);
 			tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
 			tvMessage.setTypeface(Typeface.DEFAULT_BOLD);
@@ -468,12 +472,8 @@ class Helper {
 			builder.setPositiveButton("확인", (dialog, which) -> context.finish());
 			builder.setNegativeButton("취소", (dialog, which) -> {
 			});
-			builder.setOnCancelListener(dialog -> {
-				linearLayout.removeView(adView);
-			});
-			builder.setOnDismissListener(dialog -> {
-				linearLayout.removeView(adView);
-			});
+			builder.setOnCancelListener(dialog -> linearLayout.removeView(adView));
+			builder.setOnDismissListener(dialog -> linearLayout.removeView(adView));
 			builder.show();
 		}
 
@@ -482,7 +482,7 @@ class Helper {
 			return getCenterTranslateAnimation(parentView, view, 1.0f);
 		}
 
-		static TranslateAnimation getCenterTranslateAnimation(View parentView, View view, float scale) {
+		public static TranslateAnimation getCenterTranslateAnimation(View parentView, View view, float scale) {
 			float fromX = view.getX();
 			float toX = (parentView.getWidth() - view.getWidth()) / 2f - fromX;
 			float fromY = view.getY();
@@ -502,7 +502,7 @@ class Helper {
 				view.clearFocus();
 		}
 
-		static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
+		public static void hideSoftKeyboard(Activity activity, View view, KeyEvent event) {
 			if (event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
 				final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 				if (view == null)
@@ -547,21 +547,18 @@ class Helper {
 		private final Context mContext;
 		private final View view;
 		private final String msg;
+		private final Handler handler;
 		private ProgressDialog progressDialog;
-//		private Handler handler;
 
-		AsyncTaskDocumentFileDialog(Context context, View view, String msg) {
+		/**
+		 * @noinspection SameParameterValue, SameParameterValue
+		 */
+		public AsyncTaskDocumentFileDialog(Context context, View view, String msg, Handler handler) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;
+			this.handler = handler;
 		}
-
-//		AsyncTaskDocumentFileDialog(Context context, View view, @SuppressWarnings("SameParameterValue") String msg, Handler handler) {
-//			mContext = context;
-//			this.view = view;
-//			this.msg = msg;
-//			this.handler = handler;
-//		}
 
 		@Override
 		protected void onPreExecute() {
@@ -672,12 +669,12 @@ class Helper {
 						.setAction("Action", null).show();
 				Log.i("AsyncTask", "onPostExecute: " + result);
 			}
-//			if (handler != null) {
-//				Message msg = handler.obtainMessage();
-//				msg.what = MSG_REFRESH_DIR;
-//				msg.obj = null;
-//				handler.sendMessage(msg);
-//			}
+			if (handler != null) {
+				Message msg = handler.obtainMessage();
+				msg.what = MSG_REFRESH_DIR;
+				msg.obj = null;
+				handler.sendMessage(msg);
+			}
 		}
 	}
 
@@ -689,18 +686,13 @@ class Helper {
 		private final Context mContext;
 		private final View view;
 		private final String msg;
+		private final Handler handler;
 		private ProgressDialog progressDialog;
-		private Handler handler;
 
-// --Commented out by Inspection START (2017. 4. 18. PM 6:45):
-//		AsyncTaskFileDialog(Context context, View view, String msg) {
-//			mContext = context;
-//			this.view = view;
-//			this.msg = msg;
-//		}
-// --Commented out by Inspection STOP (2017. 4. 18. PM 6:45)
-
-		AsyncTaskFileDialog(Context context, View view, @SuppressWarnings("SameParameterValue") String msg, Handler handler) {
+		/**
+		 * @noinspection SameParameterValue
+		 */
+		public AsyncTaskFileDialog(Context context, View view, String msg, Handler handler) {
 			mContext = context;
 			this.view = view;
 			this.msg = msg;
@@ -768,7 +760,7 @@ class Helper {
 			deleteList.add(dir);
 		}
 
-		private String asyncTaskDelete(File dir) throws IOException {
+		private String asyncTaskDelete(File dir) {
 			try {
 				DocumentFile docFile = Pref.getDocumentFile(mContext, dir.getName());
 				if (docFile != null) {
@@ -838,12 +830,12 @@ class Helper {
 						.setAction("Action", null).show();
 				Log.i("AsyncTask", "onPostExecute: " + result);
 			}
-//			if (handler != null) {
-//				Message msg = handler.obtainMessage();
-//				msg.what = MSG_REFRESH_DIR;
-//				msg.obj = null;
-//				handler.sendMessage(msg);
-//			}
+			if (handler != null) {
+				Message msg = handler.obtainMessage();
+				msg.what = MSG_REFRESH_DIR;
+				msg.obj = null;
+				handler.sendMessage(msg);
+			}
 		}
 	}
 
@@ -853,14 +845,7 @@ class Helper {
 		static final String TAG = "TAG";
 		private static final String PRIMARY_VOLUME_NAME = "primary";
 
-		public static boolean isKitkat() {
-			return Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-		}
-
-		public static boolean isAndroid5() {
-			return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-		}
-
+		/** @noinspection unused*/
 		@NonNull
 		public static String getSdCardPath() {
 			String sdCardDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -873,8 +858,9 @@ class Helper {
 			return sdCardDirectory;
 		}
 
+		/** @noinspection unused*/
 		public static ArrayList<String> getExtSdCardPaths(Context con) {
-			ArrayList<String> paths = new ArrayList<String>();
+			ArrayList<String> paths = new ArrayList<>();
 			File[] files = ContextCompat.getExternalFilesDirs(con, "external");
 			File firstFile = files[0];
 			for (File file : files) {
@@ -932,10 +918,6 @@ class Helper {
 		}
 
 		private static String getVolumePath(final String volumeId, Context con) {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-				return null;
-			}
-
 			try {
 				StorageManager mStorageManager =
 						(StorageManager) con.getSystemService(Context.STORAGE_SERVICE);
@@ -1002,11 +984,11 @@ class Helper {
 			return File.separator;
 		}
 
-		public static boolean deleteUri(Activity activity, Uri uri) {
-			return DocumentsContract.deleteDocument(activity.getContentResolver(), uri);
+		static void deleteUri(Activity activity, Uri uri) {
+			DocumentsContract.deleteDocument(activity.getContentResolver(), uri);
 		}
 
-		public static void deleteTreeUri(Activity activity, Uri uri) {
+		static void deleteTreeUri(Activity activity, Uri uri) {
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 					Uri childDocUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));

@@ -7,7 +7,7 @@
 	android:layout_height="match_parent"
 	android:background="@color/grey_200"
 	android:paddingTop="2dp"
-	tools:context="com.changyoung.hi5controller.WeldCountFragment"
+	tools:context="com.changyoung.hi5controller.weldcount.WeldCountFragment"
 	tools:ignore="Overdraw">
 
 	<ImageView

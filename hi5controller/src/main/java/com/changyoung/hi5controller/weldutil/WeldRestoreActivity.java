@@ -1,4 +1,4 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.weldutil;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +13,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.EditText;
+
+import com.changyoung.hi5controller.R;
+import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.weldfile.WeldFileListFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -189,8 +194,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 		}
 	}
 
-	@Override
-	public boolean refresh(String path) {
+	private boolean refresh(String path) {
 		if (path != null) {
 			try {
 				File dir = new File(path);
@@ -248,7 +252,7 @@ public class WeldRestoreActivity extends AppCompatActivity
 				}
 				if (sourceChecked) {
 					new Helper.AsyncTaskDocumentFileDialog(getContext(),
-							findViewById(R.id.coordinator_layout_weld_restore_activity), "복원").execute(source, dest);
+							findViewById(R.id.coordinator_layout_weld_restore_activity), "복원", null).execute(source, dest);
 					return null;
 				}
 			}

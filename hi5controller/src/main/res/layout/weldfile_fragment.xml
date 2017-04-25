@@ -5,7 +5,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="com.changyoung.hi5controller.WeldFileFragment">
+	tools:context="com.changyoung.hi5controller.weldfile.WeldFileFragment">
 
 	<LinearLayout
 		android:id="@+id/work_path_layout"
@@ -24,7 +24,7 @@
 			android:layout_marginEnd="4dp"
 			android:layout_marginStart="4dp">
 
-			<com.changyoung.hi5controller.EditText
+			<com.changyoung.hi5controller.common.EditText
 				android:id="@+id/etWorkPath"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 
 		<fragment
 			android:id="@+id/weldfile_fragment"
-			class="com.changyoung.hi5controller.WeldFileListFragment"
+			class="com.changyoung.hi5controller.weldfile.WeldFileListFragment"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"

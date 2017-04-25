@@ -30,6 +30,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.Refresh;
+import com.changyoung.hi5controller.weldcondition.WeldConditionFragment;
+import com.changyoung.hi5controller.weldcount.WeldCountFragment;
+import com.changyoung.hi5controller.weldfile.WeldFileFragment;
+import com.changyoung.hi5controller.weldfile.WeldFileListFragment;
+import com.changyoung.hi5controller.weldutil.WeldRestoreActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;

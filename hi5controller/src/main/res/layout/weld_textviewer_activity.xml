@@ -7,7 +7,7 @@
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
 	app:statusBarBackground="@color/light_blue_A700"
-	tools:context="com.changyoung.hi5controller.WeldTextViewerActivity">
+	tools:context="com.changyoung.hi5controller.weldutil.WeldTextViewerActivity">
 
 	<android.support.design.widget.AppBarLayout
 		android:id="@+id/app_bar"

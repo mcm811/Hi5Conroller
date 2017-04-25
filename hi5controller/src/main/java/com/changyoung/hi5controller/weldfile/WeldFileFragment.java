@@ -1,4 +1,4 @@
-package com.changyoung.hi5controller;
+package com.changyoung.hi5controller.weldfile;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -21,6 +21,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 
+import com.changyoung.hi5controller.R;
+import com.changyoung.hi5controller.common.Helper;
+import com.changyoung.hi5controller.common.Refresh;
+
 import java.io.File;
 
 public class WeldFileFragment extends Fragment implements Refresh {
@@ -28,7 +32,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 	private static final String ARG_WORK_PATH = "workPath";
 	private static final String ARG_WORK_URI = "workUri";
 	private static final int OPEN_DIRECTORY_REQUEST_CODE = 1000;
-	EditText mEditTextPath;
+	private EditText mEditTextPath;
 	private WeldFileListFragment mWeldFileListFragment;
 	private View mView;
 	private String mWorkPath;
@@ -114,8 +118,7 @@ public class WeldFileFragment extends Fragment implements Refresh {
 		}
 	}
 
-	@Override
-	public boolean refresh(String path) {
+	private boolean refresh(String path) {
 		if (path != null && isAdded()) {
 			try {
 				File dir = new File(path);
@@ -535,11 +538,8 @@ public class WeldFileFragment extends Fragment implements Refresh {
 	 */
 	public interface OnWorkPathListener {
 		String onGetWorkPath();
-
 		void onSetWorkPath(String path);
-
 		String onGetWorkUri();
-
 		void onSetWorkUri(String uri, String path);
 	}
 }

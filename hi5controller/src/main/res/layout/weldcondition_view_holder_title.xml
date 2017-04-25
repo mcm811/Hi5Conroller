@@ -8,7 +8,8 @@
 	android:layout_gravity="center"
 	android:background="@color/white"
 	android:minHeight="0dp"
-	android:minWidth="25dp">
+	android:minWidth="25dp"
+	tools:ignore="Overdraw">
 	<!--android:background="@color/tab2_textview_background">-->
 	<TextView
 		android:id="@+id/tvTitleOutputData"
