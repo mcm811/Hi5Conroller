@@ -63,13 +63,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/local/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/local/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/local/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/assets" type="java-test-resource" />
@@ -77,6 +70,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestLocal/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testLocal/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -112,29 +112,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/processing-tools" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-rules" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/split-apk" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
