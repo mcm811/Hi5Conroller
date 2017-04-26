@@ -168,25 +168,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(),
 				weldCountJobFile);
 		mFileEditorDialogRecyclerView.setAdapter(weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter);
-
-/*
-		// 배너 광고
-		AdView adView = new AdView(mContext);
-		adView.setAdSize(AdSize.BANNER);
-		adView.setScaleX(0.85f);
-		adView.setScaleY(0.85f);
-		if (BuildConfig.DEBUG)
-			adView.setAdUnitId(mContext.getString(R.string.banner_ad_unit_id_debug));
-		else
-			adView.setAdUnitId(mContext.getString(R.string.banner_ad_unit_id_release));
-		AdRequest adRequest = new AdRequest.Builder()
-				.setRequestAgent("android_studio:ad_template").build();
-		adView.loadAd(adRequest);
-		LinearLayout linearLayoutWeldCount = (LinearLayout)
-				dialogView.findViewById(R.id.linearLayout_WeldCount);
-		linearLayoutWeldCount.addView(adView);
-*/
-
+		
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText(String.format(Locale.KOREA, "계열 수정 (CN: %d개)",
 				weldCountJobFile.getJobFileInfo().getTotal()));

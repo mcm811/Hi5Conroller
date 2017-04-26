@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 class WeldCountJobFile extends File {
 	static final int VALUE_MAX = 255;
@@ -136,16 +137,19 @@ class WeldCountJobFile extends File {
 		return sb.toString();
 	}
 
-//		public String getCNTest() {
-//			StringBuilder sb = new StringBuilder();
-//			for (JobFileItem job : jobFileItemList) {
-//				String cn = job.getCN();
-//				if (cn != null) {
-//					sb.append(String.format(Locale.KOREA, "%d: CN=%s\n", job.getJobNumber(), cn));
-//				}
-//			}
-//			return sb.toString();
-//		}
+	/**
+	 * @noinspection unused
+	 */
+	public String getCNTest() {
+		StringBuilder sb = new StringBuilder();
+		for (JobFileItem job : jobFileItemList) {
+			String cn = job.getCN();
+			if (cn != null) {
+				sb.append(String.format(Locale.KOREA, "%d: CN=%s\n", job.getJobNumber(), cn));
+			}
+		}
+		return sb.toString();
+	}
 
 	String getRowText() {
 		StringBuilder sb = new StringBuilder();
@@ -193,17 +197,23 @@ class WeldCountJobFile extends File {
 		return ret;
 	}
 
-//		public void updateCN(int start) {
-//			for (JobFileItem job : jobFileItemList) {
-//				if (job.getJobType() == JobFileItem.JOB_SPOT) {
-//					job.setCN((start++).toString());
-//				}
-//			}
-//		}
+	/**
+	 * @noinspection unused
+	 */
+	public void updateCN(int start) {
+		for (JobFileItem job : jobFileItemList) {
+			if (job.getJobType() == JobFileItem.JOB_SPOT) {
+				job.setCN(Integer.toString(start++));
+			}
+		}
+	}
 
-//		public void updateCN(int index, String value) {
-//			jobFileItemList.get(index).setCN(value);
-//		}
+	/**
+	 * @noinspection unused
+	 */
+	public void updateCN(int index, String value) {
+		jobFileItemList.get(index).setCN(value);
+		}
 
 	class JobFileInfo {
 		private final List<Integer> gnList;  // SPOT 단어 다음에 나오는 첫번째 단어 분석 해서 종류 결정(GN1, GN2, GN3, G1, G2)
