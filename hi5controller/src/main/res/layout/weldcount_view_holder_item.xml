@@ -22,7 +22,7 @@
 		>
 
 		<TextView
-			android:id="@+id/tvFileName"
+			android:id="@+id/tvJobFileName"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginEnd="8dp"
@@ -32,13 +32,13 @@
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textSize="18sp"
 			android:textStyle="bold"
-			card_view:layout_constraintEnd_toStartOf="@+id/tvJobCount"
+			card_view:layout_constraintEnd_toStartOf="@+id/tvInfo"
 			card_view:layout_constraintHorizontal_bias="0.0"
 			card_view:layout_constraintStart_toStartOf="parent"
 			card_view:layout_constraintTop_toTopOf="parent"/>
 
 		<TextView
-			android:id="@+id/tvJobCount"
+			android:id="@+id/tvInfo"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginEnd="8dp"
@@ -62,11 +62,11 @@
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textColor="@color/cnTextColor"
 			android:textSize="16sp"
-			card_view:layout_constraintEnd_toEndOf="@+id/tvJobCount"
+			card_view:layout_constraintEnd_toEndOf="@+id/tvInfo"
 			card_view:layout_constraintHorizontal_bias="0.0"
-			card_view:layout_constraintLeft_toLeftOf="@+id/tvFileName"
-			card_view:layout_constraintStart_toStartOf="@+id/tvFileName"
-			card_view:layout_constraintTop_toBottomOf="@+id/tvFileName"
+			card_view:layout_constraintLeft_toLeftOf="@+id/tvJobFileName"
+			card_view:layout_constraintStart_toStartOf="@+id/tvJobFileName"
+			card_view:layout_constraintTop_toBottomOf="@+id/tvJobFileName"
 			tools:ignore="SmallSp"/>
 
 		<TextView
@@ -78,7 +78,7 @@
 			android:text="@string/move"
 			android:textColor="@color/moveTextColor"
 			android:textSize="16sp"
-			card_view:layout_constraintEnd_toEndOf="@+id/tvJobCount"
+			card_view:layout_constraintEnd_toEndOf="@+id/tvInfo"
 			card_view:layout_constraintHorizontal_bias="0.0"
 			card_view:layout_constraintStart_toStartOf="@+id/tvCN"
 			card_view:layout_constraintTop_toBottomOf="@+id/tvCN"
@@ -93,14 +93,14 @@
 			android:text="@string/preview"
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textSize="16sp"
-			card_view:layout_constraintEnd_toEndOf="@+id/tvJobCount"
+			card_view:layout_constraintEnd_toEndOf="@+id/tvInfo"
 			card_view:layout_constraintHorizontal_bias="0.0"
 			card_view:layout_constraintStart_toStartOf="@+id/tvMove"
 			card_view:layout_constraintTop_toBottomOf="@+id/tvMove"
 			tools:ignore="SmallSp"/>
 
 		<TextView
-			android:id="@+id/tvFileTime"
+			android:id="@+id/tvJobFileTime"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="8dp"
@@ -110,15 +110,15 @@
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textSize="12sp"
 			card_view:layout_constraintBottom_toBottomOf="parent"
-			card_view:layout_constraintEnd_toStartOf="@+id/tvFileSize"
+			card_view:layout_constraintEnd_toStartOf="@+id/tvJobFileSize"
 			card_view:layout_constraintHorizontal_bias="0.0"
-			card_view:layout_constraintStart_toStartOf="@+id/tvFileName"
+			card_view:layout_constraintStart_toStartOf="@+id/tvJobFileName"
 			card_view:layout_constraintTop_toBottomOf="@+id/tvPreview"
 			card_view:layout_constraintVertical_bias="0.0"
 			tools:ignore="SmallSp"/>
 
 		<TextView
-			android:id="@+id/tvFileSize"
+			android:id="@+id/tvJobFileSize"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="8dp"
@@ -127,7 +127,7 @@
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textSize="12sp"
 			card_view:layout_constraintBottom_toBottomOf="parent"
-			card_view:layout_constraintEnd_toEndOf="@+id/tvJobCount"
+			card_view:layout_constraintEnd_toEndOf="@+id/tvInfo"
 			tools:ignore="SmallSp"/>
 
 	</android.support.constraint.ConstraintLayout>

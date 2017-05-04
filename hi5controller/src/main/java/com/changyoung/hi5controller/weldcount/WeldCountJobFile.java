@@ -34,10 +34,6 @@ class WeldCountJobFile extends File {
         return jobFileItemList.size();
     }
 
-    JobFileInfo getJobFileInfo() {
-        return jobFileInfo;
-    }
-
     void readFile() {
         jobFileItemList = readFile(getPath(), new ArrayList<>());
         jobFileInfo = createJobInfo(jobFileItemList, new JobFileInfo());
@@ -116,6 +112,18 @@ class WeldCountJobFile extends File {
             }
         }
         return jobFileInfo;
+    }
+
+    int getTotal() {
+        return jobFileInfo.getTotal();
+    }
+
+    String getInfo() {
+        return jobFileInfo.getString();
+    }
+
+    String getPreview() {
+        return jobFileInfo.getPreview();
     }
 
     String getCNList() {

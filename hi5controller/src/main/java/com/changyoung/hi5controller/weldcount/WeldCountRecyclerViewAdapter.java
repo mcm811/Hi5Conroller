@@ -67,7 +67,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 	boolean checkA() {
 		WeldCountJobFileEditorRecyclerViewAdapter weldCountJobFileEditorRecyclerViewAdapter;
 		for (WeldCountJobFile weldCountJobFile : mDataset) {
-			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+			if (weldCountJobFile.getTotal() > 0) {
 				weldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountJobFile);
 				if (weldCountJobFileEditorRecyclerViewAdapter.checkA()) {
 					return true;
@@ -84,7 +84,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		int updatedFileCount = 0;
 		int checkedFileCount = 0;
 		for (WeldCountJobFile weldCountJobFile : mDataset) {
-			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+			if (weldCountJobFile.getTotal() > 0) {
 				weldCountJobFileEditorRecyclerViewAdapter = new WeldCountJobFileEditorRecyclerViewAdapter(weldCountFragment, weldCountFragment.getActivity(), weldCountJobFile);
 				int ret = weldCountJobFileEditorRecyclerViewAdapter.updateZeroA();
 				if (ret > 0) {
@@ -147,7 +147,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
 	private void showFileEditorDialog(final int position) {
 		final WeldCountJobFile weldCountJobFile = weldCountFragment.mWeldCountRecyclerViewAdapter.getItem(position);
-		if (weldCountJobFile.getJobFileInfo().getTotal() == 0) {
+		if (weldCountJobFile.getTotal() == 0) {
 			show("CN 항목이 없습니다");
 			return;
 		}
@@ -171,7 +171,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		
 		TextView statusText = (TextView) dialogView.findViewById(R.id.statusText);
 		statusText.setText(String.format(Locale.KOREA, "계열 수정 (CN: %d개)",
-				weldCountJobFile.getJobFileInfo().getTotal()));
+				weldCountJobFile.getTotal()));
 
 		final TextInputEditText etBeginNumber = (TextInputEditText) dialogView.findViewById(R.id.etBeginNumber);
 		final SeekBar sbBeginNumber = (SeekBar) dialogView.findViewById(R.id.sampleSeekBar);
@@ -228,7 +228,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		});
 
 		dialogBuilder.setPositiveButton("저장", (dialog, which) -> {
-			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+			if (weldCountJobFile.getTotal() > 0) {
 				weldCountFragment.observer.stopWatching();
 				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.saveFile();
 				weldCountFragment.observer.startWatching();
@@ -238,7 +238,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		});
 
 		dialogBuilder.setNeutralButton("복구(A=0)", (dialog, which) -> {
-			if (weldCountJobFile.getJobFileInfo().getTotal() > 0) {
+			if (weldCountJobFile.getTotal() > 0) {
 				weldCountFragment.observer.stopWatching();
 				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.updateZeroA();       // A=0
 				weldCountFragment.mWeldCountJobFileEditorRecyclerViewAdapter.saveFile();
@@ -360,7 +360,7 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		holder.mItemView.setOnClickListener(v1 -> {
 			final int position = (int) v1.getTag();
 			final WeldCountJobFile weldCountJobFile = mDataset.get(position);
-			if (weldCountJobFile.getJobFileInfo().getTotal() == 0) {
+			if (weldCountJobFile.getTotal() == 0) {
 				UiHelper.textViewActivity(mActivity,
 						weldCountJobFile.getName(),
 						weldCountJobFile.getRowText());
@@ -423,37 +423,37 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 	public void onBindViewHolder(final RecyclerView.ViewHolder rh, final int position) {
 		final ViewHolder holder = (ViewHolder) rh;
 		final WeldCountJobFile jobFile = mDataset.get(position);
-		holder.tvFileName.setText(jobFile.getName());
-		holder.tvTime.setText(TimeStringHelper.getLasModified(jobFile));
-		holder.tvSize.setText(String.format(Locale.KOREA, "%dB", jobFile.length()));
+		holder.tvJobFileName.setText(jobFile.getName());
+		holder.tvJobFileTime.setText(TimeStringHelper.getLasModified(jobFile));
+		holder.tvJobFileSize.setText(String.format(Locale.KOREA, "%dB", jobFile.length()));
 
-		final String countString = jobFile.getJobFileInfo().getString();
-		if (countString == null || countString.isEmpty()) {
-			holder.tvCount.setVisibility(View.GONE);
+		final String infoString = jobFile.getInfo();
+		if (infoString == null || infoString.isEmpty()) {
+			holder.tvInfo.setVisibility(View.GONE);
 		} else {
-			holder.tvCount.setVisibility(View.VISIBLE);
-			holder.tvCount.setText(countString);
+			holder.tvInfo.setVisibility(View.VISIBLE);
+			holder.tvInfo.setText(infoString);
 		}
-		final String previewString = jobFile.getJobFileInfo().getPreview();
+		final String previewString = jobFile.getPreview();
 		if (previewString == null || previewString.isEmpty()) {
 			holder.tvPreview.setVisibility(View.GONE);
 		} else {
 			holder.tvPreview.setVisibility(View.VISIBLE);
 			holder.tvPreview.setText(previewString);
 		}
-		final String CNString = jobFile.getCNList();
-		if (CNString == null || CNString.isEmpty()) {
+		final String cnString = jobFile.getCNList();
+		if (cnString == null || cnString.isEmpty()) {
 			holder.tvCN.setVisibility(View.GONE);
 		} else {
 			holder.tvCN.setVisibility(View.VISIBLE);
-			holder.tvCN.setText(CNString);
+			holder.tvCN.setText(cnString);
 		}
-		final String MoveString = jobFile.getMoveList();
-		if (MoveString == null || MoveString.isEmpty()) {
+		final String moveListString = jobFile.getMoveList();
+		if (moveListString == null || moveListString.isEmpty()) {
 			holder.tvMove.setVisibility(View.GONE);
 		} else {
 			holder.tvMove.setVisibility(View.VISIBLE);
-			holder.tvMove.setText(MoveString);
+			holder.tvMove.setText(moveListString);
 		}
 		holder.mItemView.setTag(position);
 	}
@@ -469,10 +469,10 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
 	private class ViewHolder extends RecyclerView.ViewHolder {
 		final View mItemView;
-		final TextView tvFileName;
-		final TextView tvTime;
-		final TextView tvSize;
-		final TextView tvCount;
+		final TextView tvJobFileName;
+		final TextView tvJobFileTime;
+		final TextView tvJobFileSize;
+		final TextView tvInfo;
 		final TextView tvPreview;
 		final TextView tvCN;
 		final TextView tvMove;
@@ -480,10 +480,10 @@ public class WeldCountRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 		ViewHolder(View itemView) {
 			super(itemView);
 			mItemView = itemView;
-			tvFileName = (TextView) itemView.findViewById(R.id.tvFileName);
-			tvTime = (TextView) itemView.findViewById(R.id.tvFileTime);
-			tvSize = (TextView) itemView.findViewById(R.id.tvFileSize);
-			tvCount = (TextView) itemView.findViewById(R.id.tvJobCount);
+			tvJobFileName = (TextView) itemView.findViewById(R.id.tvJobFileName);
+			tvJobFileTime = (TextView) itemView.findViewById(R.id.tvJobFileTime);
+			tvJobFileSize = (TextView) itemView.findViewById(R.id.tvJobFileSize);
+			tvInfo = (TextView) itemView.findViewById(R.id.tvInfo);
 			tvPreview = (TextView) itemView.findViewById(R.id.tvPreview);
 			tvCN = (TextView) itemView.findViewById(R.id.tvCN);
 			tvMove = (TextView) itemView.findViewById(R.id.tvMove);
