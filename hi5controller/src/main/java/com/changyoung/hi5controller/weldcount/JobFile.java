@@ -14,11 +14,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 class JobFile extends File {
     static final int VALUE_MAX = 255;
-    private List<JobFileItem> jobFileItemList;
+    private List<JobFileItem> jobFileItems;
     private JobFileInfo jobFileInfo;
 
     JobFile(String path) {
@@ -27,16 +26,16 @@ class JobFile extends File {
     }
 
     JobFileItem get(int index) {
-        return jobFileItemList.get(index);
+        return jobFileItems.get(index);
     }
 
     int size() {
-        return jobFileItemList.size();
+        return jobFileItems.size();
     }
 
     void readFile() {
-        jobFileItemList = readFile(getPath(), new ArrayList<>());
-        jobFileInfo = createJobInfo(jobFileItemList, new JobFileInfo());
+        jobFileItems = readFile(getPath(), new ArrayList<>());
+        jobFileInfo = createJobInfo(jobFileItems, new JobFileInfo());
     }
 
     private List<JobFileItem> readFile(String fileName, List<JobFileItem> items) {
@@ -63,7 +62,7 @@ class JobFile extends File {
     }
 
     void saveFile(Activity activity) {
-        jobFileInfo = saveFile(getPath(), jobFileItemList, activity);
+        jobFileInfo = saveFile(getPath(), jobFileItems, activity);
     }
 
     private JobFileInfo
@@ -86,7 +85,7 @@ class JobFile extends File {
             e.printStackTrace();
         }
 
-        return createJobInfo(jobFileItemList, new JobFileInfo());
+        return createJobInfo(jobFileItems, new JobFileInfo());
     }
 
     private JobFileInfo createJobInfo(List<JobFileItem> jobFileItemList, JobFileInfo jobFileInfo) {
@@ -130,7 +129,7 @@ class JobFile extends File {
         final int MAX_CN_COUNT = 500;
         StringBuilder sb = new StringBuilder();
         int n = 0;
-        for (JobFileItem jobFileItem : jobFileItemList) {
+        for (JobFileItem jobFileItem : jobFileItems) {
             String cn = jobFileItem.getCN();
             if (cn != null) {
                 if (++n > MAX_CN_COUNT) {
@@ -147,7 +146,7 @@ class JobFile extends File {
 
     String getRowText() {
         StringBuilder sb = new StringBuilder();
-        for (JobFileItem JobFileItem : jobFileItemList) {
+        for (JobFileItem JobFileItem : jobFileItems) {
             sb.append(JobFileItem.getJobString()).append("\n");
         }
         return sb.toString();
@@ -156,7 +155,7 @@ class JobFile extends File {
     String getMoveList() {
         StringBuilder sb = new StringBuilder();
         JobFileItem prevJobFileItem = null;
-        for (JobFileItem jobFileItem : jobFileItemList) {
+        for (JobFileItem jobFileItem : jobFileItems) {
             if (prevJobFileItem != null && jobFileItem.isSpot()) {
                 String mv = prevJobFileItem.getA();
                 if (mv != null) {
@@ -175,7 +174,7 @@ class JobFile extends File {
     int updateZeroA() {
         int ret = 0;
         JobFileItem prevJobFileItem = null;
-        for (JobFileItem jobFileItem : jobFileItemList) {
+        for (JobFileItem jobFileItem : jobFileItems) {
             if (prevJobFileItem != null && jobFileItem.isSpot()) {
                 String mv = prevJobFileItem.getA();
                 if (mv != null) {
@@ -194,7 +193,7 @@ class JobFile extends File {
      * @noinspection unused
      */
     public void updateCN(int start) {
-        for (JobFileItem job : jobFileItemList) {
+        for (JobFileItem job : jobFileItems) {
             if (job.getJobType() == JobFileItem.JOB_SPOT) {
                 job.setCN(Integer.toString(start++));
             }
@@ -205,7 +204,7 @@ class JobFile extends File {
      * @noinspection unused
      */
     public void updateCN(int index, String value) {
-        jobFileItemList.get(index).setCN(value);
+        jobFileItems.get(index).setCN(value);
     }
 
     class JobFileInfo {
