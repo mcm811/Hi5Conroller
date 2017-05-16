@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class WeldCountJobFile extends File {
+class JobFile extends File {
     static final int VALUE_MAX = 255;
     private List<JobFileItem> jobFileItemList;
     private JobFileInfo jobFileInfo;
 
-    WeldCountJobFile(String path) {
+    JobFile(String path) {
         super(path);
         readFile();
     }

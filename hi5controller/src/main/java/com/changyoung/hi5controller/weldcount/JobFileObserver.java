@@ -7,13 +7,13 @@ import android.os.Message;
 import java.io.File;
 import java.util.Locale;
 
-public class WeldCountJobFileListObserver extends FileObserver {
+public class JobFileObserver extends FileObserver {
 	private static final int mask = CREATE | DELETE | DELETE_SELF |
 			MOVED_FROM | MOVED_TO | MOVE_SELF | CLOSE_WRITE;
 	private final File file;
 	private final Handler handler;
 
-	WeldCountJobFileListObserver(String path, Handler handler) {
+	JobFileObserver(String path, Handler handler) {
 		super(path, mask);
 		this.file = new File(path);
 		this.handler = handler;
