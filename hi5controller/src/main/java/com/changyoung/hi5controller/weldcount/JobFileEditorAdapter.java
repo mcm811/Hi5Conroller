@@ -17,15 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class JobEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class JobFileEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final JobFile mFile;
 	private final List<JobFile.JobFileItem> mDataset;
 	private final Activity mActivity;
 	private final WeldCountFragment weldCountFragment;
 
-	JobEditorAdapter(WeldCountFragment weldCountFragment,
-					 Activity activity,
-					 JobFile jobFile) {
+	JobFileEditorAdapter(WeldCountFragment weldCountFragment,
+	                     Activity activity,
+	                     JobFile jobFile) {
 		this.weldCountFragment = weldCountFragment;
 		mFile = jobFile;
 		mDataset = new ArrayList<>();
@@ -136,8 +136,8 @@ class JobEditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		ViewHolder(View itemView) {
 			super(itemView);
 			mItemView = itemView;
-			textInputLayout = (TextInputLayout) mItemView.findViewById(R.id.textInputLayout);
-			editText = (TextInputEditText) mItemView.findViewById(R.id.editText);
+			textInputLayout = mItemView.findViewById(R.id.textInputLayout);
+			editText = mItemView.findViewById(R.id.editText);
 		}
 	}
 }

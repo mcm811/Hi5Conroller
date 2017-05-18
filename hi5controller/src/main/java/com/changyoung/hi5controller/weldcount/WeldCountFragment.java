@@ -56,7 +56,7 @@ public class WeldCountFragment extends Fragment
 	private static final int LAYOUT_TYPE_GRID = 1;
 
 	public JobFileAdapter mJobFileAdapter;
-	JobEditorAdapter mJobEditorAdapter;
+	JobFileEditorAdapter mJobFileEditorAdapter;
 	View mView;
 	JobFileObserver observer;
 	TextToSpeech mTts;
@@ -177,13 +177,13 @@ public class WeldCountFragment extends Fragment
 		logD("onCreateView");
 		mView = inflater.inflate(R.layout.weldcount_fragment, container, false);
 
-		final SwipeRefreshLayout refresher = (SwipeRefreshLayout) mView.findViewById(R.id.srl);
+		final SwipeRefreshLayout refresher = mView.findViewById(R.id.srl);
 		refresher.setOnRefreshListener(() -> {
 			onRefresh(true);
 			refresher.setRefreshing(false);
 		});
 
-		mFabStorage = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_storage);
+		mFabStorage = mView.findViewById(R.id.fab_weldcount_storage);
 		if (mFabStorage != null) {
 			mFabStorage.setOnClickListener(v -> {
 				logD("FabStorage");
@@ -202,7 +202,7 @@ public class WeldCountFragment extends Fragment
 			});
 		}
 
-		mFabUpdate = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_update);
+		mFabUpdate = mView.findViewById(R.id.fab_weldcount_update);
 		if (mFabUpdate != null) {
 			mFabUpdate.setOnClickListener(v -> {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -216,7 +216,7 @@ public class WeldCountFragment extends Fragment
 			});
 		}
 
-		mFabSort = (FloatingActionButton) mView.findViewById(R.id.fab_weldcount_sort);
+		mFabSort = mView.findViewById(R.id.fab_weldcount_sort);
 		if (mFabSort != null) {
 			mFabSort.setOnClickListener(new View.OnClickListener() {
 				private void startOnClickAnimationFab() {
@@ -336,7 +336,7 @@ public class WeldCountFragment extends Fragment
 */
 		}
 
-		mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_view);
+		mRecyclerView = mView.findViewById(R.id.recycler_view);
 		if (mRecyclerView != null) {
 			mRecyclerView.setHasFixedSize(true);
 /*
